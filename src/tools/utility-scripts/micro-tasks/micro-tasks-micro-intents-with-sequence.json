@@ -1,0 +1,258 @@
+{
+	"userRequestQuery": {
+		"input": "we are moving the last two links to be the sources in the first two. we need to follow the @agentic-workflows/rules/citation-guidelines.md\n\n  can we make a script that could do some of this for us?\n\n  1. validate source file\n  2. return the ast for the source markdown file\n  3. create citation links\n  4. create citation anchors",
+		"domain": "Software Development",
+		"category": "Documentation Automation",
+		"primaryFocus": "Citation management script creation"
+	},
+	"tasks": [
+		{
+			"id": 1,
+			"task": "analyze the current citation issues in the target file to understand specific problems",
+			"intentType": "implicit",
+			"implicitCategory": "requirement clarification",
+			"reasoning": "The user mentions 'moving the last two links' but doesn't specify which file or what exact citation problems exist. Understanding the current state is essential before building automation.",
+			"status": "done",
+			"nextTask": 2,
+			"previousTask": null,
+			"phase": "discovery"
+		},
+		{
+			"id": 2,
+			"task": "review the citation guidelines document to understand required formats and standards",
+			"intentType": "explicit",
+			"implicitCategory": null,
+			"reasoning": "The user explicitly references the citation guidelines document that needs to be followed, making this a direct requirement.",
+			"status": "done",
+			"nextTask": 11,
+			"previousTask": 1,
+			"phase": "discovery"
+		},
+		{
+			"id": 11,
+			"task": "research and clarify the difference between anchors, headers, and headers with markdown (not just emphasis)",
+			"intentType": "implicit",
+			"implicitCategory": "requirement clarification",
+			"reasoning": "Understanding the different anchor patterns used in the project is essential for designing a script that generates correct citations following the established conventions.",
+			"status": "to_do",
+			"nextTask": 3,
+			"previousTask": 2,
+			"phase": "discovery"
+		},
+		{
+			"id": 3,
+			"task": "design the script architecture based on anchor pattern analysis to handle validation, AST parsing, citation link creation, and anchor generation",
+			"intentType": "implicit",
+			"implicitCategory": "required workflow step",
+			"reasoning": "The user asks if we can make a script but doesn't explicitly request architectural planning. However, proper design is necessary before implementation.",
+			"status": "in_progress",
+			"nextTask": 4,
+			"previousTask": 11,
+			"phase": "planning",
+			"inputs": {
+				"summary": "Citation guidelines, anchor pattern analysis results, broken citation examples from story files, and project ES module standards",
+				"paths": [
+					"/Users/wesleyfrederick/Documents/ObsidianVault/0_SoftwareDevelopment/claude-code-knowledgebase/agentic-workflows/rules/citation-guidelines.md",
+					"/Users/wesleyfrederick/Documents/ObsidianVault/0_SoftwareDevelopment/claude-code-knowledgebase/design-docs/features/version-based-analysis/version-based-analysis-prd.md",
+					"/Users/wesleyfrederick/Documents/ObsidianVault/0_SoftwareDevelopment/claude-code-knowledgebase/design-docs/features/version-based-analysis/stories/1.1.version-detection-directory-scaffolding.story.md"
+				]
+			},
+			"outputs": {
+				"acceptanceCriteria": [
+					"Architecture document SHALL define complete system requirements (FR/NFR) with caret syntax anchors",
+					"Architecture document SHALL specify all five core components with clear responsibilities",
+					"Architecture document SHALL document caret syntax business logic patterns for FR, NFR, US, AC, and Task identifiers",
+					"Architecture document SHALL define CLI interface commands and options for all four functions",
+					"Architecture document SHALL specify integration points with existing agentic-workflows project"
+				],
+				"summary": "Comprehensive architecture document with requirements, component design, pattern specifications, and CLI interface",
+				"paths": [
+					"/Users/wesleyfrederick/Documents/ObsidianVault/0_SoftwareDevelopment/claude-code-knowledgebase/agentic-workflows/utility-scripts/citation-links/ARCHITECTURE.md"
+				]
+			},
+			"todoList": [
+				{
+					"task": "✅ Analyze citation guidelines and broken link examples to understand requirements",
+					"useSubAgent": false
+				},
+				{
+					"task": "✅ Research and document anchor pattern types (caret, emphasis-marked, standard headers)",
+					"useSubAgent": false
+				},
+				{
+					"task": "✅ Define functional and non-functional requirements with caret syntax anchors",
+					"useSubAgent": false
+				},
+				{
+					"task": "✅ Design five core component classes with clear responsibilities",
+					"useSubAgent": false
+				},
+				{
+					"task": "✅ Specify caret syntax business logic patterns for context-aware anchor generation",
+					"useSubAgent": false
+				},
+				{
+					"task": "✅ Define CLI interface commands (validate, fix, generate-anchors, ast) and options",
+					"useSubAgent": false
+				},
+				{
+					"task": "Define current baseline (manual citation fixing) vs proposed improvement (automated script)",
+					"useSubAgent": false
+				},
+				{
+					"task": "Specify integration strategy with existing agentic-workflows package.json and ES modules",
+					"useSubAgent": false
+				}
+			],
+			"scopeNotes": "Task 3 captures the comprehensive architecture design for the citation management script. GOAL: Automate citation validation, broken link detection, and anchor generation to eliminate manual citation fixing friction in documentation workflow. BASELINE: Currently manual process of finding broken links, fixing file paths, and creating missing anchors. IMPROVEMENT: Automated script with CLI interface that validates, fixes, and generates citations following established anchor patterns (caret syntax for requirements/stories, emphasis-marked for components, URL-encoded cross-document links). Architecture must integrate with existing ES module agentic-workflows project and support all four specified functions: validation, AST parsing, link creation, and anchor generation."
+		},
+		{
+			"id": 4,
+			"task": "implement source file validation functionality",
+			"intentType": "explicit",
+			"implicitCategory": null,
+			"reasoning": "This is explicitly listed as requirement #1 in the user's request.",
+			"status": "to_do",
+			"nextTask": 6,
+			"previousTask": 3,
+			"phase": "implementation",
+			"inputs": {
+				"summary": "Architecture document with MVP-P1 validation requirements, citation guidelines with pattern specifications, existing `marked` dependency, and testing strategy for comprehensive validation",
+				"paths": [
+					"/Users/wesleyfrederick/Documents/ObsidianVault/0_SoftwareDevelopment/claude-code-knowledgebase/agentic-workflows/utility-scripts/citation-links/ARCHITECTURE.md",
+					"/Users/wesleyfrederick/Documents/ObsidianVault/0_SoftwareDevelopment/claude-code-knowledgebase/agentic-workflows/rules/citation-guidelines.md",
+					"/Users/wesleyfrederick/Documents/ObsidianVault/0_SoftwareDevelopment/claude-code-knowledgebase/agentic-workflows/package.json"
+				]
+			},
+			"outputs": {
+				"acceptanceCriteria": [
+					"CLI command SHALL accept markdown file path and return validation report within 5 seconds",
+					"System SHALL detect broken cross-document links and report specific file paths and missing anchors",
+					"System SHALL validate caret syntax patterns (^FR1, ^US1-1AC1, ^NFR2) and report format violations",
+					"System SHALL identify malformed emphasis-marked anchors and suggest correct patterns",
+					"System SHALL provide actionable error messages with specific line numbers and fix suggestions"
+				],
+				"summary": "MVP Priority 1 validation functionality with CLI interface, comprehensive pattern detection, and detailed error reporting",
+				"paths": [
+					"/Users/wesleyfrederick/Documents/ObsidianVault/0_SoftwareDevelopment/claude-code-knowledgebase/agentic-workflows/utility-scripts/citation-links/citation-manager.js",
+					"/Users/wesleyfrederick/Documents/ObsidianVault/0_SoftwareDevelopment/claude-code-knowledgebase/agentic-workflows/utility-scripts/citation-links/test/validation.test.js",
+					"/Users/wesleyfrederick/Documents/ObsidianVault/0_SoftwareDevelopment/claude-code-knowledgebase/agentic-workflows/utility-scripts/citation-links/test/fixtures/",
+					"/Users/wesleyfrederick/Documents/ObsidianVault/0_SoftwareDevelopment/claude-code-knowledgebase/agentic-workflows/utility-scripts/citation-links/ARCHITECTURE.md"
+				]
+			},
+			"todoList": [
+				{
+					"task": "Setup CLI interface with commander for validate command",
+					"useSubAgent": false
+				},
+				{
+					"task": "Implement markdown parsing using existing `marked` library",
+					"useSubAgent": false
+				},
+				{
+					"task": "Create citation pattern validation logic (cross-document, caret syntax, emphasis-marked)",
+					"useSubAgent": false
+				},
+				{
+					"task": "Add cross-document link existence checking with file system validation",
+					"useSubAgent": false
+				},
+				{
+					"task": "Implement error reporting with actionable suggestions and line numbers",
+					"useSubAgent": false
+				},
+				{
+					"task": "Optimize for <5 second validation performance requirement",
+					"useSubAgent": false
+				},
+				{
+					"task": "Create test fixtures directory with sample markdown files containing known citation issues",
+					"useSubAgent": false
+				},
+				{
+					"task": "Write integration test for end-to-end validation command testing",
+					"useSubAgent": false
+				},
+				{
+					"task": "Write edge case tests for broken links, malformed emphasis anchors, and invalid caret patterns",
+					"useSubAgent": false
+				},
+				{
+					"task": "Add test npm script to package.json for running validation tests",
+					"useSubAgent": false
+				},
+				{
+					"task": "Validate against real broken citations from story files to ensure practical effectiveness",
+					"useSubAgent": false
+				}
+			],
+			"scopeNotes": "Task 4 implements MVP Priority 1 (Citation Validation) with highest impact and lowest effort. GOAL: Provide immediate value through automated detection of 90% of citation issues including broken cross-document links, missing anchors, and format violations. SCOPE: CLI `validate` command with comprehensive error reporting, pattern validation for all three anchor types (caret ^FR1, emphasis-marked ==**Component**==, standard headers), and file existence checking. TESTING: Integration test plus 3 edge cases covering broken links, malformed patterns, and invalid caret syntax. PERFORMANCE: <5 seconds for typical story files. DELIVERABLE: Working validation command that catches real citation issues and provides actionable fix suggestions."
+		},
+		{
+			"id": 6,
+			"task": "implement citation link creation functionality",
+			"intentType": "explicit",
+			"implicitCategory": null,
+			"reasoning": "This is explicitly listed as requirement #3 in the user's request.",
+			"status": "to_do",
+			"nextTask": 5,
+			"previousTask": 4,
+			"phase": "implementation"
+		},
+		{
+			"id": 5,
+			"task": "implement AST generation for markdown files",
+			"intentType": "explicit",
+			"implicitCategory": null,
+			"reasoning": "This is explicitly listed as requirement #2 in the user's request.",
+			"status": "to_do",
+			"nextTask": 8,
+			"previousTask": 6,
+			"phase": "implementation"
+		},
+		{
+			"id": 8,
+			"task": "test the script against the current citation problems to validate it works",
+			"intentType": "implicit",
+			"implicitCategory": "quality assurance practice",
+			"reasoning": "The user doesn't explicitly request testing, but validating that the script solves the original citation problems is essential for successful delivery.",
+			"status": "to_do",
+			"nextTask": 9,
+			"previousTask": 5,
+			"phase": "validation"
+		},
+		{
+			"id": 9,
+			"task": "integrate the script into the project's build/workflow process",
+			"intentType": "implicit",
+			"implicitCategory": "assumption about deliverables",
+			"reasoning": "The user asks for automation but doesn't specify how it should be used. Integration into existing workflows is implied for practical utility.",
+			"status": "to_do",
+			"nextTask": 7,
+			"previousTask": 8,
+			"phase": "implementation"
+		},
+		{
+			"id": 7,
+			"task": "implement citation anchor generation functionality",
+			"intentType": "explicit",
+			"implicitCategory": null,
+			"reasoning": "This is explicitly listed as requirement #4 in the user's request.",
+			"status": "to_do",
+			"nextTask": 10,
+			"previousTask": 9,
+			"phase": "implementation"
+		},
+		{
+			"id": 10,
+			"task": "document the script usage and configuration options",
+			"intentType": "implicit",
+			"implicitCategory": "assumption about deliverables",
+			"reasoning": "The user doesn't explicitly request documentation, but providing usage instructions is standard practice for automation scripts.",
+			"status": "to_do",
+			"nextTask": null,
+			"previousTask": 7,
+			"phase": "implementation"
+		}
+	]
+}

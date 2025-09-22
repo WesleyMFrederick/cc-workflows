@@ -1,0 +1,441 @@
+#!/usr/bin/env node
+
+import { Command } from "commander";
+import { CitationValidator } from "./src/CitationValidator.js";
+import { FileCache } from "./src/FileCache.js";
+import { MarkdownParser } from "./src/MarkdownParser.js";
+
+class CitationManager {
+	constructor() {
+		this.parser = new MarkdownParser();
+		this.validator = new CitationValidator();
+		this.fileCache = new FileCache();
+	}
+
+	async validate(filePath, options = {}) {
+		try {
+			const startTime = Date.now();
+
+			// Build file cache if scope is provided
+			if (options.scope) {
+				const cacheStats = this.fileCache.buildCache(options.scope);
+				// Only show cache messages in non-JSON mode
+				if (options.format !== "json") {
+					console.log(
+						`📁 Scanned ${cacheStats.totalFiles} files in ${cacheStats.scopeFolder}`,
+					);
+					if (cacheStats.duplicates > 0) {
+						console.log(
+							`⚠️  Found ${cacheStats.duplicates} duplicate filenames`,
+						);
+					}
+				}
+				this.validator.setFileCache(this.fileCache);
+			}
+
+			const result = await this.validator.validateFile(filePath);
+			const endTime = Date.now();
+
+			result.validationTime = `${((endTime - startTime) / 1000).toFixed(1)}s`;
+
+			// Apply line range filtering if specified
+			if (options.lines) {
+				const filteredResult = this.filterResultsByLineRange(
+					result,
+					options.lines,
+				);
+				if (options.format === "json") {
+					return this.formatAsJSON(filteredResult);
+				} else {
+					return this.formatForCLI(filteredResult);
+				}
+			}
+
+			if (options.format === "json") {
+				return this.formatAsJSON(result);
+			} else {
+				return this.formatForCLI(result);
+			}
+		} catch (error) {
+			if (options.format === "json") {
+				return JSON.stringify(
+					{
+						error: error.message,
+						file: filePath,
+						success: false,
+					},
+					null,
+					2,
+				);
+			} else {
+				return `❌ ERROR: ${error.message}`;
+			}
+		}
+	}
+
+	filterResultsByLineRange(result, lineRange) {
+		const { startLine, endLine } = this.parseLineRange(lineRange);
+
+		const filteredResults = result.results.filter((citation) => {
+			return citation.line >= startLine && citation.line <= endLine;
+		});
+
+		const filteredSummary = {
+			total: filteredResults.length,
+			valid: filteredResults.filter((r) => r.status === "valid").length,
+			errors: filteredResults.filter((r) => r.status === "error").length,
+			warnings: filteredResults.filter((r) => r.status === "warning").length,
+		};
+
+		return {
+			...result,
+			results: filteredResults,
+			summary: filteredSummary,
+			lineRange: `${startLine}-${endLine}`,
+		};
+	}
+
+	parseLineRange(lineRange) {
+		if (lineRange.includes("-")) {
+			const [start, end] = lineRange
+				.split("-")
+				.map((n) => parseInt(n.trim(), 10));
+			return { startLine: start, endLine: end };
+		} else {
+			const line = parseInt(lineRange.trim(), 10);
+			return { startLine: line, endLine: line };
+		}
+	}
+
+	formatForCLI(result) {
+		const lines = [];
+		lines.push("Citation Validation Report");
+		lines.push("==========================");
+		lines.push("");
+		lines.push(`File: ${result.file}`);
+		if (result.lineRange) {
+			lines.push(`Line Range: ${result.lineRange}`);
+		}
+		lines.push(`Processed: ${result.summary.total} citations found`);
+		lines.push("");
+
+		if (result.summary.errors > 0) {
+			lines.push(`❌ CRITICAL ERRORS (${result.summary.errors})`);
+			result.results
+				.filter((r) => r.status === "error")
+				.forEach((error, index) => {
+					const isLast =
+						index ===
+						result.results.filter((r) => r.status === "error").length - 1;
+					const prefix = isLast ? "└─" : "├─";
+					lines.push(`${prefix} Line ${error.line}: ${error.citation}`);
+					lines.push(`│  └─ ${error.error}`);
+					if (error.suggestion) {
+						lines.push(`│  └─ Suggestion: ${error.suggestion}`);
+					}
+					if (!isLast) lines.push("│");
+				});
+			lines.push("");
+		}
+
+		if (result.summary.warnings > 0) {
+			lines.push(`⚠️  WARNINGS (${result.summary.warnings})`);
+			result.results
+				.filter((r) => r.status === "warning")
+				.forEach((warning, index) => {
+					const isLast =
+						index ===
+						result.results.filter((r) => r.status === "warning").length - 1;
+					const prefix = isLast ? "└─" : "├─";
+					lines.push(`${prefix} Line ${warning.line}: ${warning.citation}`);
+					if (warning.suggestion) {
+						lines.push(`│  └─ ${warning.suggestion}`);
+					}
+					if (!isLast) lines.push("│");
+				});
+			lines.push("");
+		}
+
+		if (result.summary.valid > 0) {
+			lines.push(`✅ VALID CITATIONS (${result.summary.valid})`);
+			result.results
+				.filter((r) => r.status === "valid")
+				.forEach((valid, index) => {
+					const isLast =
+						index ===
+						result.results.filter((r) => r.status === "valid").length - 1;
+					const prefix = isLast ? "└─" : "├─";
+					lines.push(`${prefix} Line ${valid.line}: ${valid.citation} ✓`);
+				});
+			lines.push("");
+		}
+
+		lines.push("SUMMARY:");
+		lines.push(`- Total citations: ${result.summary.total}`);
+		lines.push(`- Valid: ${result.summary.valid}`);
+		lines.push(`- Warnings: ${result.summary.warnings}`);
+		lines.push(`- Critical errors: ${result.summary.errors}`);
+		lines.push(`- Validation time: ${result.validationTime}`);
+		lines.push("");
+
+		if (result.summary.errors > 0) {
+			lines.push(
+				`❌ VALIDATION FAILED - Fix ${result.summary.errors} critical errors`,
+			);
+		} else if (result.summary.warnings > 0) {
+			lines.push(
+				`⚠️  VALIDATION PASSED WITH WARNINGS - ${result.summary.warnings} issues to review`,
+			);
+		} else {
+			lines.push("✅ ALL CITATIONS VALID");
+		}
+
+		return lines.join("\n");
+	}
+
+	formatAsJSON(result) {
+		return JSON.stringify(result, null, 2);
+	}
+
+	async extractBasePaths(filePath) {
+		try {
+			const { resolve, dirname, isAbsolute } = await import("node:path");
+			const result = await this.validator.validateFile(filePath);
+
+			const basePaths = new Set();
+			const sourceDir = dirname(filePath);
+
+			result.results.forEach((citation) => {
+				// Extract path from citation link - handle multiple patterns
+				let path = null;
+
+				// Standard markdown link pattern: [text](path) or [text](path#anchor)
+				const standardMatch = citation.citation.match(
+					/\[([^\]]+)\]\(([^)#]+)(?:#[^)]+)?\)/,
+				);
+				if (standardMatch) {
+					path = standardMatch[2];
+				}
+
+				// Citation pattern: [cite: path]
+				const citeMatch = citation.citation.match(/\[cite:\s*([^\]]+)\]/);
+				if (citeMatch) {
+					path = citeMatch[1].trim();
+				}
+
+				if (path) {
+					// Convert relative paths to absolute paths
+					const absolutePath = isAbsolute(path)
+						? path
+						: resolve(sourceDir, path);
+					basePaths.add(absolutePath);
+				}
+			});
+
+			return Array.from(basePaths).sort();
+		} catch (error) {
+			throw new Error(`Failed to extract base paths: ${error.message}`);
+		}
+	}
+
+	async fix(filePath, options = {}) {
+		try {
+			// Import fs for file operations
+			const { readFileSync, writeFileSync } = await import("node:fs");
+
+			// Build file cache if scope is provided
+			if (options.scope) {
+				const cacheStats = this.fileCache.buildCache(options.scope);
+				console.log(
+					`📁 Scanned ${cacheStats.totalFiles} files in ${cacheStats.scopeFolder}`,
+				);
+				if (cacheStats.duplicates > 0) {
+					console.log(`⚠️  Found ${cacheStats.duplicates} duplicate filenames`);
+				}
+				this.validator.setFileCache(this.fileCache);
+			}
+
+			// First, validate to find fixable issues
+			const validationResult = await this.validator.validateFile(filePath);
+
+			// Find kebab-case citations that can be auto-fixed
+			const fixableCitations = validationResult.results.filter(
+				(citation) =>
+					citation.status === "error" &&
+					citation.suggestion &&
+					citation.suggestion.includes(
+						"Use raw header format for better Obsidian compatibility",
+					),
+			);
+
+			if (fixableCitations.length === 0) {
+				return `✅ No auto-fixable kebab-case citations found in ${filePath}`;
+			}
+
+			// Read the file content
+			const fileContent = readFileSync(filePath, "utf8");
+			const lines = fileContent.split("\n");
+
+			let fixedCount = 0;
+			const fixes = [];
+
+			// Apply fixes for each citation
+			fixableCitations.forEach((citation) => {
+				const lineIndex = citation.line - 1; // Convert to 0-based index
+				const oldLine = lines[lineIndex];
+
+				// Extract the suggested fix from the error message
+				const suggestionMatch = citation.suggestion.match(
+					/Use raw header format for better Obsidian compatibility: #(.+)$/,
+				);
+				if (suggestionMatch) {
+					const newAnchor = suggestionMatch[1];
+
+					// Find the old anchor in the citation
+					const citationMatch = citation.citation.match(
+						/\[([^\]]+)\]\(([^)]+)#([^)]+)\)/,
+					);
+					if (citationMatch) {
+						const [, linkText, filePath] = citationMatch;
+						const newCitation = `[${linkText}](${filePath}#${newAnchor})`;
+
+						// Replace the citation in the line
+						const newLine = oldLine.replace(citation.citation, newCitation);
+						lines[lineIndex] = newLine;
+
+						fixes.push({
+							line: citation.line,
+							old: citation.citation,
+							new: newCitation,
+						});
+						fixedCount++;
+					}
+				}
+			});
+
+			// Write the fixed content back to the file
+			if (fixedCount > 0) {
+				writeFileSync(filePath, lines.join("\n"), "utf8");
+
+				// Format the output
+				const output = [
+					`🔧 Fixed ${fixedCount} kebab-case citation${fixedCount === 1 ? "" : "s"} in ${filePath}`,
+					"",
+					"Changes made:",
+				];
+
+				fixes.forEach((fix) => {
+					output.push(`  Line ${fix.line}:`);
+					output.push(`    - ${fix.old}`);
+					output.push(`    + ${fix.new}`);
+					output.push("");
+				});
+
+				return output.join("\n");
+			} else {
+				return `⚠️  Found ${fixableCitations.length} fixable citations but could not apply fixes`;
+			}
+		} catch (error) {
+			return `❌ ERROR: ${error.message}`;
+		}
+	}
+}
+
+const program = new Command();
+
+program
+	.name("citation-manager")
+	.description("Citation validation and management tool for markdown files")
+	.version("1.0.0");
+
+program
+	.command("validate")
+	.description("Validate citations in a markdown file")
+	.argument("<file>", "path to markdown file to validate")
+	.option("--format <type>", "output format (cli, json)", "cli")
+	.option(
+		"--lines <range>",
+		'validate specific line range (e.g., "150-160" or "157")',
+	)
+	.option(
+		"--scope <folder>",
+		"limit file resolution to specific folder (enables smart filename matching)",
+	)
+	.option(
+		"--fix",
+		"automatically fix kebab-case anchors to raw header format for better Obsidian compatibility",
+	)
+	.action(async (file, options) => {
+		const manager = new CitationManager();
+		let result;
+
+		if (options.fix) {
+			result = await manager.fix(file, options);
+			console.log(result);
+		} else {
+			result = await manager.validate(file, options);
+			console.log(result);
+		}
+
+		// Set exit code based on validation result (only for validation, not fix)
+		if (!options.fix) {
+			if (options.format === "json") {
+				const parsed = JSON.parse(result);
+				if (parsed.error) {
+					process.exit(2); // File not found or other errors
+				} else {
+					process.exit(parsed.summary?.errors > 0 ? 1 : 0);
+				}
+			} else {
+				if (result.includes("❌ ERROR:")) {
+					process.exit(2); // File not found or other errors
+				} else {
+					process.exit(result.includes("VALIDATION FAILED") ? 1 : 0);
+				}
+			}
+		}
+	});
+
+program
+	.command("ast")
+	.description("Show AST and extracted data from markdown file")
+	.argument("<file>", "path to markdown file to analyze")
+	.action(async (file) => {
+		const manager = new CitationManager();
+		const ast = await manager.parser.parseFile(file);
+		console.log(JSON.stringify(ast, null, 2));
+	});
+
+program
+	.command("base-paths")
+	.description("Extract distinct base paths from citations in a markdown file")
+	.argument("<file>", "path to markdown file to analyze")
+	.option("--format <type>", "output format (cli, json)", "cli")
+	.action(async (file, options) => {
+		try {
+			const manager = new CitationManager();
+			const basePaths = await manager.extractBasePaths(file);
+
+			if (options.format === "json") {
+				console.log(
+					JSON.stringify({ file, basePaths, count: basePaths.length }, null, 2),
+				);
+			} else {
+				console.log("Distinct Base Paths Found:");
+				console.log("========================");
+				console.log("");
+				basePaths.forEach((path, index) => {
+					console.log(`${index + 1}. ${path}`);
+				});
+				console.log("");
+				console.log(
+					`Total: ${basePaths.length} distinct base path${basePaths.length === 1 ? "" : "s"}`,
+				);
+			}
+		} catch (error) {
+			console.error(`❌ ERROR: ${error.message}`);
+			process.exit(1);
+		}
+	});
+
+program.parse();

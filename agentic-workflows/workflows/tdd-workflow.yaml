@@ -1,0 +1,195 @@
+# TDD (Test-Driven Development) Workflow Definition
+# This workflow implements the test-first development cycle:
+# test-writer → backend-code-developer → engineering-mentor → feedback loops
+
+# CRITICAL DEPENDENCY: This workflow depends on the parse-workflow.js script
+# Script location: utility-scripts/parse-workflow.js
+# Script purpose: Parse workflow state from story files and generate Task tool calls for orchestrator agent coordination
+# Usage: node utility-scripts/parse-workflow.js agentic-workflows/workflows/tdd-workflow.yaml [story-file] [options]
+# Multi-agent support: Use --agent=frontend-developer-agent to override step 2 agent for frontend work
+
+# Workflow metadata
+workflow:
+  id: tdd-workflow
+  name: Test-Driven Development Workflow
+  description: Automated TDD cycle with test creation, implementation, and validation
+  version: 1.0
+
+# Global configuration
+config:
+  default-retry-limit: 3
+  step-timeout: 30
+  continue-on-failure: false
+
+# TDD workflow steps
+steps:
+  # Step 1: Create tests first (TDD principle)
+  - id: write-tests
+    name: Write Tests
+    agent: test-writer
+    task-template: write-tests.md
+    description: Create comprehensive tests based on story acceptance criteria before implementation
+    success-criteria:
+      status: success
+      content-contains: "tests created"
+    retry-limit: 3
+    required: true
+    depends-on: []
+
+  # Step 2: Implement code to make tests pass
+  - id: implement-code
+    name: Implement Code
+    agent: code-developer-agent
+    task-template: implement-story.md
+    description: Implement the minimum code required to make all tests pass
+    success-criteria:
+      status: success
+      files-modified: true
+      tests-passing: true
+    retry-limit: 3
+    required: true
+    depends-on: ["write-tests"]
+
+  # Step 3: Validate implementation meets requirements
+  - id: validate-implementation
+    name: Validate Implementation
+    agent: engineering-mentor-code
+    task-template: review-user-story-code-implement.md
+    description: Review implementation for quality, completeness, and requirement compliance
+    success-criteria:
+      status: success
+      validation-passed: true
+    retry-limit: 2
+    required: true
+    depends-on: ["implement-code"]
+    # If validation documents Known Issues, route to fix-issue; otherwise retry implementation
+    on-failure:
+      # Dynamic routing based on Known Issues documentation
+      route-to: fix-issue  # Route to issue resolution when Known Issues documented
+      fallback: implement-code  # Fallback if no Known Issues found
+      max-iterations: 3
+
+  # Step 4: Fix documented issues (dynamically invoked when Known Issues exist)
+  - id: fix-issue
+    name: Fix Issue
+    agent: dynamic-from-known-issues  # Placeholder - dynamically overridden by Owner Agent
+    task-template: fix-issue.md
+    description: Resolve specific issues identified during validation using targeted agent from Known Issues
+    success-criteria:
+      status: success
+      issue-resolved: true
+    retry-limit: 2
+    required: false  # Conditional step - only executed when routed from validation
+    depends-on: ["validate-implementation"]
+    # After fixing issues, always return to validation to verify resolution
+    on-success:
+      route-to: validate-implementation  # Return to validation after successful fix
+    on-failure:
+      route-to: implement-code  # If fix fails, fallback to full re-implementation
+      max-iterations: 2
+
+# Error handling configuration
+error-handling:
+  on-step-failure:
+    action: halt-workflow
+    update-story-status: "Blocked"
+    failure-message: "TDD workflow failed at step: {{failed-step}}"
+
+  on-retry-exceeded:
+    action: halt-workflow
+    update-story-status: "Needs Manual Review" 
+    failure-message: "Step {{step-id}} exceeded retry limit ({{retry-limit}}). Manual intervention required."
+
+# Story file integration
+story-integration:
+  progress-tracking:
+    method: task-checkboxes
+    section: "Tasks / Subtasks"
+    entry-format: "- [{{status}}] {{step-name}} (Workflow: TDD) - {{timestamp}}"
+
+  status-updates:
+    on-start: "InProgress"
+    on-success: "Ready for Review"
+    on-failure: "Blocked"
+
+# Agent communication format
+agent-communication:
+  response-format:
+    type: structured-json
+    required-fields:
+      - status  # success/fail/partial
+      - message # brief description of work performed
+      - next-action # ready-for-next-step/needs-retry/manual-review
+    optional-fields:
+      - issues # problems encountered
+      - files-modified # list of files changed
+      - test-results # test execution results
+      - recommendations # suggestions for next steps
+
+# TDD-specific workflow logic
+tdd-specific:
+  # Validation feedback routing
+  validation-feedback:
+    # When mentor finds issues, determine which agent should fix them
+    implementation-issues:
+      route-to: implement-code
+      message: "Implementation needs revision based on mentor feedback"
+    
+    test-issues:
+      route-to: write-tests
+      message: "Tests need revision based on mentor feedback"
+    
+    design-issues:
+      route-to: implement-code
+      message: "Design approach needs revision based on mentor feedback"
+
+  # Quality gates
+  quality-gates:
+    # Tests must pass before validation
+    pre-validation:
+      - all-tests-passing
+      - no-compilation-errors
+      - basic-functionality-working
+    
+    # Final acceptance criteria
+    final-acceptance:
+      - mentor-approval
+      - all-acceptance-criteria-met
+      - no-critical-issues
+
+# Workflow execution reference
+execution:
+  command: "node utility-scripts/parse-workflow.js agentic-workflows/workflows/tdd-workflow.yaml [story-file]"
+  description: "Parse workflow state and generate next Task tool call for orchestrator"
+
+# Success criteria for complete workflow
+completion-criteria:
+  # All steps must complete successfully
+  all-steps-complete: true
+  
+  # Final validations
+  final-checks:
+    - All tests passing
+    - All acceptance criteria met
+    - Mentor validation passed
+    - No critical issues identified
+    - Story marked as "Ready for Review"
+
+# Workflow metrics and tracking
+metrics:
+  track:
+    - total-execution-time
+    - retry-count-per-step
+    - feedback-loop-iterations
+    - test-coverage-percentage
+    - critical-issues-found
+
+# Example usage:
+# 1. Orchestrator calls: node utility-scripts/parse-workflow.js tdd-workflow.yaml story.md
+# 2. Script determines next step (e.g., write-tests) 
+# 3. Orchestrator executes: Task tool with test-writer agent
+# 4. Agent completes tests, responds with structured format
+# 5. Orchestrator calls parse-workflow.js again to get next step
+# 6. Process continues through implement-code and validate-implementation
+# 7. If validation fails, workflow routes back to appropriate step
+# 8. Cycle continues until all steps complete successfully

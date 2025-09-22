@@ -1,0 +1,32 @@
+{
+	"name": "agentic-workflows",
+	"version": "1.0.0",
+	"description": "Agentic workflow management system with utility scripts for prompt parsing, workflow validation, and system maintenance",
+	"type": "module",
+	"scripts": {
+		"parse-prompt": "node utility-scripts/parse-prompt.js",
+		"parse-workflow": "node utility-scripts/parse-workflow.js",
+		"shard-markdown": "node utility-scripts/shard-markdown.js",
+		"commit-highlights": "node utility-scripts/commit_highlights.js",
+		"test:citation": "node --test utility-scripts/citation-links/test/validation.test.js",
+		"help": "echo 'Available scripts:\\n  parse-prompt    - Parse and process task prompts with template variables\\n  parse-workflow  - Validate workflow definition files\\n  mirror          - Sync agentic-workflows/ ↔ .claude/commands/\\n  create-commands - Generate command files\\n  shard-markdown  - Process markdown files\\n  commit-highlights - Analyze git commit patterns\\n  citation:validate - Validate citations in markdown files\\n  citation:ast    - Show AST and extracted data from markdown\\n  test:citation   - Run citation validation tests'"
+	},
+	"keywords": [
+		"agentic",
+		"workflows",
+		"automation",
+		"prompt-engineering",
+		"claude-code"
+	],
+	"author": "",
+	"license": "ISC",
+	"dependencies": {
+		"commander": "^14.0.1",
+		"fs-extra": "^11.3.2",
+		"marked": "^15.0.12",
+		"yaml": "^2.8.1"
+	},
+	"engines": {
+		"node": ">=18.0.0"
+	}
+}

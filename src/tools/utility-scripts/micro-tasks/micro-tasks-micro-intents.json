@@ -1,0 +1,90 @@
+{
+	"userRequestQuery": {
+		"input": "we are moving the last two links to be the sources in the first two. we need to follow the @agentic-workflows/rules/citation-guidelines.md\n\n  can we make a script that could do some of this for us?\n\n  1. validate source file\n  2. return the ast for the source markdown file\n  3. create citation links\n  4. create citation anchors",
+		"domain": "Software Development",
+		"category": "Documentation Automation",
+		"primaryFocus": "Citation management script creation"
+	},
+	"tasks": [
+		{
+			"id": 1,
+			"task": "analyze the current citation issues in the target file to understand specific problems",
+			"intentType": "implicit",
+			"implicitCategory": "requirement clarification",
+			"reasoning": "The user mentions 'moving the last two links' but doesn't specify which file or what exact citation problems exist. Understanding the current state is essential before building automation.",
+			"status": "to_do"
+		},
+		{
+			"id": 2,
+			"task": "review the citation guidelines document to understand required formats and standards",
+			"intentType": "explicit",
+			"implicitCategory": null,
+			"reasoning": "The user explicitly references the citation guidelines document that needs to be followed, making this a direct requirement.",
+			"status": "to_do"
+		},
+		{
+			"id": 3,
+			"task": "design the script architecture to handle the four specified functions",
+			"intentType": "implicit",
+			"implicitCategory": "required workflow step",
+			"reasoning": "The user asks if we can make a script but doesn't explicitly request architectural planning. However, proper design is necessary before implementation.",
+			"status": "to_do"
+		},
+		{
+			"id": 4,
+			"task": "implement source file validation functionality",
+			"intentType": "explicit",
+			"implicitCategory": null,
+			"reasoning": "This is explicitly listed as requirement #1 in the user's request.",
+			"status": "to_do"
+		},
+		{
+			"id": 5,
+			"task": "implement AST generation for markdown files",
+			"intentType": "explicit",
+			"implicitCategory": null,
+			"reasoning": "This is explicitly listed as requirement #2 in the user's request.",
+			"status": "to_do"
+		},
+		{
+			"id": 6,
+			"task": "implement citation link creation functionality",
+			"intentType": "explicit",
+			"implicitCategory": null,
+			"reasoning": "This is explicitly listed as requirement #3 in the user's request.",
+			"status": "to_do"
+		},
+		{
+			"id": 7,
+			"task": "implement citation anchor generation functionality",
+			"intentType": "explicit",
+			"implicitCategory": null,
+			"reasoning": "This is explicitly listed as requirement #4 in the user's request.",
+			"status": "to_do"
+		},
+		{
+			"id": 8,
+			"task": "test the script against the current citation problems to validate it works",
+			"intentType": "implicit",
+			"implicitCategory": "quality assurance practice",
+			"reasoning": "The user doesn't explicitly request testing, but validating that the script solves the original citation problems is essential for successful delivery.",
+			"status": "to_do"
+		},
+		{
+			"id": 9,
+			"task": "integrate the script into the project's build/workflow process",
+			"intentType": "implicit",
+			"implicitCategory": "assumption about deliverables",
+			"reasoning": "The user asks for automation but doesn't specify how it should be used. Integration into existing workflows is implied for practical utility.",
+			"status": "to_do"
+		},
+		{
+			"id": 10,
+			"task": "document the script usage and configuration options",
+			"intentType": "implicit",
+			"implicitCategory": "assumption about deliverables",
+			"reasoning": "The user doesn't explicitly request documentation, but providing usage instructions is standard practice for automation scripts.",
+			"status": "to_do"
+		}
+	]
+}

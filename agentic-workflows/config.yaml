@@ -1,0 +1,82 @@
+# Core Configuration for Agentic Workflows
+# Configured for: Claude Code Knowledgebase Architecture Baseline
+
+# Configuration metadata
+type: agentic-workflows-config
+version: 4.29.0
+outputBase: /Users/wesleyfrederick/Documents/ObsidianVault/0_SoftwareDevelopment/claude-code-knowledgebase/design-docs/
+featurePrefix: features/version-based-analysis/
+
+# Product Requirements Document configuration
+prd:
+  prdFile: version-based-analysis-prd.md # Single PRD file location
+  prdVersion: v4 # PRD format version for compatibility
+  prdSharded: true # Whether PRD is split into multiple files (true) or single file (false)
+  prdShardedLocation: prd/ # Directory containing sharded PRD files
+  epicFilePattern: epic-{n}*.md # File naming pattern for epic files where {n} is epic number
+
+# Architecture documentation configuration  
+architecture:
+  architectureFile: version-based-analysis-architecture.md # Single architecture file location
+  architectureVersion: v4 # Architecture format version for compatibility
+  architectureSharded: true # Whether architecture is split into multiple files (true) or single file (false)
+  architectureShardedLocation: architecture/ # Directory containing sharded architecture files
+
+
+# Files that should always be loaded for development context
+devLoadAlwaysFiles:
+  - architecture/coding-standards.md # Project coding standards
+  - architecture/tech-stack.md # Technology stack documentation
+  - architecture/source-tree.md # Source code organization
+
+# Development workflow configuration
+devStoryLocation: stories/ # Directory where user stories are stored
+templatePath: agentic-workflows/templates # Directory containing workflow templates
+tasksPath: agentic-workflows/tasks # Directory containing workflow tasks
+checklistsPath: agentic-workflows/checklists # Directory containing workflow checklists
+
+# Mirroring configuration for .claude/commands
+mirrorPaths:
+  - agents  # Start with agents directory only for testing
+  - tasks   # Add tasks to test removal behavior
+
+  # Uncomment to add more directories as needed:
+  # - templates
+  # - checklists
+  # - workflows
+
+mirrorRecursive: false  # Don't mirror subdirectories, only files in specified paths
+
+# Analysis exclusion patterns - folders/files to exclude from architecture analysis
+analysisExclusions:
+  - agentic-workflows/        # IDE-like workflow system, not core functionality
+  - .claude/                  # Claude Code configuration directory
+  - .serena/                  # Serena memory and configuration files
+  - node_modules/            # Dependencies, not application code
+  - test/                    # Test files, focus on production code
+  - tests/                   # Alternative test directory naming
+  - spec/                    # Spec/test files
+  - docs/                    # Documentation, not implementation
+  - .git/                    # Git metadata
+  - .vscode/                 # IDE configuration
+  - .idea/                   # JetBrains IDE configuration
+  - dist/                    # Build output
+  - build/                   # Build output
+  - coverage/                # Test coverage reports
+  - logs/                    # Log files
+  - tmp/                     # Temporary files
+  - temp/                    # Temporary files
+  - "*.log"                  # Log files
+  - "*.trace"                # Trace files
+  - "*.lock"                 # Lock files
+  - ".DS_Store"              # macOS system files
+  - "*.tmp"                  # Temporary files
+  - .claude-trace/           # Claude trace files
+  - .structurizr/            # Structurizr files
+  - critique-risks-logs/     # Risk analysis logs
+  - styles/                  # Vale style files not core code
+  - Claude.md                # Claude documentation
+  
+
+
+

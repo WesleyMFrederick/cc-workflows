@@ -1,0 +1,41 @@
+# Core Configuration Template for Agentic Workflows
+# Copy this file and customize the bracketed values for each new feature
+
+# System version for compatibility tracking
+version: 4.29.0
+
+# Enable markdown processing features
+markdownExplorer: true
+
+# Base path configuration - customize these for each feature
+paths:
+  outputBase: [path/to/documentation/output/] # Base path for all documentation output files. Not used for code files. Example: "docs"
+  featurePrefix: [path/to/feature/prefix] # Gets added to outputBase for feature isolation. Example: "features/my-feature"
+
+# Product Requirements Document configuration
+prd:
+  prdFile: '{{paths.outputBase}}/{{paths.featurePrefix}}/prd.md' # Single PRD file location
+  prdVersion: v4 # PRD format version for compatibility
+  prdSharded: true # Whether PRD is split into multiple files (true) or single file (false)
+  prdShardedLocation: '{{paths.outputBase}}/{{paths.featurePrefix}}/prd' # Directory containing sharded PRD files
+  epicFilePattern: epic-{n}*.md # File naming pattern for epic files where {n} is epic number
+
+# Architecture documentation configuration  
+architecture:
+  architectureFile: '{{paths.outputBase}}/{{paths.featurePrefix}}/architecture.md' # Single architecture file location
+  architectureVersion: v4 # Architecture format version for compatibility
+  architectureSharded: true # Whether architecture is split into multiple files (true) or single file (false)
+  architectureShardedLocation: '{{paths.outputBase}}/{{paths.featurePrefix}}/architecture' # Directory containing sharded architecture files
+
+# Additional technical documents specific to this feature (null if none)
+customTechnicalDocuments: null
+
+# Files that should always be loaded for development context
+devLoadAlwaysFiles:
+  - '{{paths.outputBase}}/{{paths.featurePrefix}}/architecture/coding-standards.md' # Project coding standards
+  - '{{paths.outputBase}}/{{paths.featurePrefix}}/architecture/tech-stack.md' # Technology stack documentation
+  - '{{paths.outputBase}}/{{paths.featurePrefix}}/architecture/source-tree.md' # Source code organization
+
+# Development workflow configuration
+devDebugLog: .ai/debug-log.md # Location for development debug logs
+devStoryLocation: '{{paths.outputBase}}/{{paths.featurePrefix}}/stories' # Directory where user stories are stored

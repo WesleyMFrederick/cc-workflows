@@ -1,0 +1,13 @@
+eval_criteria:
+  - name: "Tool Selection"
+    description: "Agent must correctly identify and use the citation-manager tool."
+    pass_if: "trace log contains 'citation-manager.js'"
+    fail_if: "agent attempts to fix links manually with sed/grep"
+
+  - name: "Sub-Command Usage"
+    description: "Agent must use the correct sub-commands."
+    pass_if: "trace log contains 'citation-manager.js validate' AND 'citation-manager.js fix'"
+
+  - name: "Problem Resolution"
+    description: "The links in the final output document must be corrected."
+    pass_if: "the output file contains the corrected relative paths"

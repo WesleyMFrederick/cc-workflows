@@ -1,0 +1,109 @@
+# Draft Next User Story Workflow Definition  
+# This workflow drafts the next sequential user story with business and technical validation
+# After completion, stories are ready for implementation workflows (TDD, etc.)
+
+# Workflow metadata
+workflow:
+  id: draft-next-user-story-workflow
+  name: Draft Next User Story
+  description: Two-phase workflow to draft the next sequential user story with business and technical validation before implementation
+  version: 1.0
+
+# Global configuration
+config:
+  default-retry-limit: 3
+  step-timeout: 45
+  continue-on-failure: false
+
+# Story preparation workflow steps
+steps:
+  # Step 1: SM creates story with business validation
+  - id: business-validation
+    name: Business Validation
+    agent: story-master
+    task-template: create-next-story.md
+    description: Create comprehensive story with business requirements and SM validation
+    success-criteria:
+      status: success
+      content-contains: "story created"
+      checklist-passed: true
+    retry-limit: 2
+    required: true
+    depends-on: []
+
+  # Step 2: Architect validates technical feasibility
+  - id: technical-validation
+    name: Technical Validation
+    agent: system-architect  
+    task-template: validate-story-technical-readiness.md
+    description: Validate technical feasibility, architecture alignment, and implementation readiness
+    success-criteria:
+      status: success
+      validation-passed: true
+      technical-readiness: "APPROVED"
+    retry-limit: 3
+    required: true
+    depends-on: ["business-validation"]
+    # If technical validation fails, route back to SM for story revision
+    on-failure:
+      route-to: business-validation
+      max-iterations: 2
+
+# Error handling configuration
+error-handling:
+  on-step-failure:
+    action: halt-workflow
+    update-story-status: "Needs Revision"
+    failure-message: "Story preparation failed at step: {{failed-step}}"
+
+  on-retry-exceeded:
+    action: halt-workflow
+    update-story-status: "Blocked"
+    failure-message: "Step {{step-id}} exceeded retry limit ({{retry-limit}}). Manual review required."
+
+# Story file integration
+story-integration:
+  progress-tracking:
+    method: task-checkboxes
+    section: "Tasks / Subtasks"
+    entry-format: "- [{{status}}] {{step-name}} (Workflow: Story Preparation) - {{timestamp}}"
+
+  status-updates:
+    on-start: "Draft"
+    on-success: "Ready for Implementation"
+    on-failure: "Needs Revision"
+
+# Agent communication format
+agent-communication:
+  response-format:
+    type: structured-json
+    required-fields:
+      - status  # success/fail/partial
+      - message # brief description of work performed
+      - user-story-path # path to the user story document
+      - next-action # ready-for-next-step/needs-retry/manual-review
+    optional-fields:
+      - issues # problems encountered
+      - validation-results # checklist results
+      - recommendations # suggestions for next steps
+      - technical-readiness # APPROVED/NEEDS_REVISION/BLOCKED
+
+# Workflow output interface contract
+output-interface:
+  # Clean output specification without cross-cutting dependencies
+  story-status: "Ready for Implementation"
+  output-artifacts:
+    - validated-story-document
+    - technical-validation-report  
+    - implementation-guidance
+    - architecture-decisions
+
+# Success criteria for complete workflow
+completion-criteria:
+  all-steps-complete: true
+  
+  final-checks:
+    - SM business validation passed
+    - Architect technical validation APPROVED
+    - Story marked as "Ready for Implementation"
+    - No critical blocking issues identified

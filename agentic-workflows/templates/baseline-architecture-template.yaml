@@ -1,0 +1,322 @@
+template:
+  id: baseline-architecture
+  name: Baseline Architecture Template
+  version: 1.0
+  purpose: C4 methodology-based architecture documentation template for precise impact analysis
+  description: |
+    Captures baseline architecture using C4 methodology to enable precise impact analysis during feature development. When implementing improvements or new capabilities, this baseline serves as the reference point for identifying which containers, components, and code files require modification.
+  output:
+    format: markdown
+    filename: "Baseline Architecture - {{project_name}}.md"
+    title: "{{project_name}} Baseline Architecture"
+  suggested-agents:
+    - id: application-tech-lead
+      path: agentic-workflows/agents/application-tech-lead.md
+      description: Use for application-level architecture, technical leadership, and hands-on implementation guidance focused on practical delivery.
+
+
+workflow:
+  mode: interactive
+  elicitation: agentic-workflows/data/elicitation-methods.md
+
+document-instructions: "Treat [Text] as instructions to be replaced with actual content. Treat {{placeholders}} as variables to be filled in with project-specific details. Treat each `sections` as a distinct subsection, with its markdown header set relative to its parent section
+
+h1-template: |
+  # {{project_name}} Baseline Architecture
+
+  [Describe the core purpose of this product/project. What problem does it solve?]
+
+sections:
+  - id: target-users
+    title: Target Users
+    instruction: Who are the primary users of this product? What are their needs and pain points?
+    template: |
+      **Primary Users:** [Describe the main user types, e.g. "Technical PMs, Developers, Architects"]
+
+      **Secondary Users**
+      - [Stakeholder 1, Role, Interest]
+      - [Stakeholder 2, Role, Interest]
+      - ... continue for each key stakeholder
+
+  - id: document-overview
+    title: Document Overview
+    template: |
+      This document captures the baseline architecture of the {{project-name}} {{system-description-bullet}} system to enable precise impact analysis during feature development. When implementing improvements or new capabilities, this baseline serves as the reference point for identifying which containers, components, and code files require modification.
+    sections:
+      - id: c4-methodology
+        title: C4 Methodology
+        template: |
+          The C4 model decomposes complex architecture by drilling down through four levels: Context (system boundaries), Containers (deployable units), Components (grouped functionality), and Code (implementation details). This structured approach enables understanding of the system at appropriate levels of detail, from high-level system interactions down to specific file and class implementations.
+
+      - id: processing-status
+        title: Document Processing Status
+        template: |
+          - [x] Architecture Overview
+          - [x] Level 1: System Context
+          - [ ] Level 2: Containers
+          - [ ] Level 3: Components
+          - [ ] Level 4: Code
+          - [ ] Cross-Level Concerns
+          - [ ] Architecture Decision Records
+          - [ ] Implementation Roadmap
+          - [ ] Appendices
+
+  - id: system-overview
+    title: System Overview
+    template: |
+      **System Purpose:** [Describe in one clear sentence, e.g. "Reverse engineering analysis system for understanding {{system_name}} via AI-powered code decomposition and Q&A."]
+      **User Value Statement:** [Describe in one clear sentence, e.g. "Enables PMs and developers to get direct, actionable insights using static analysis of implemented code."]
+    sections:
+      - id: Core Architectural Style
+        title: Core Architectural Style
+        template: |
+          **Architecture Pattern:** 
+          [High-level architectural approach, e.g. "Batch Processing Pipeline + Interactive Query Interface" or "Microservices with Event-Driven Architecture"]
+
+          **Rationale:** 
+          - [Rational 1, One sentence explaining why this pattern fits the system purpose and constraints, e.g. "Chosen to efficiently process and analyze large, minified codebases that cannot be handled in a single pass."]
+          - [Rational 2, e.g. "CLI interface prioritizes developer speed of iteration, scripting, and local troubleshooting."]
+          - ... continue for each key rationale
+
+          **Key Characteristics:**
+          [List 3-5 defining characteristics that differentiate this architecture from others. Examples: "Interaction Style", "Runtime Model", "Deployment Model", "Scaling Approach", etc.]
+          - **{{Key Characteristic 1}}:** {{Description, e.g. "CLI-based, streaming outputs for rapid feedback"}}
+          - ... continue for each key characteristic
+
+  - id: level-1-system
+    title: "Level 1: System Level"
+    sections:
+      - id: system-diagram
+        title: System Context Diagram
+        type: mermaid
+        instruction: |
+          Create a C4 System Context diagram that answers three key questions:
+          1. What is the software system we're building?
+          2. Who is using it?
+          3. How does it fit in the existing environment?
+          
+          This diagram must be suitable for both technical and non-technical audiences - it's your big picture view.
+          
+          ## Core Requirements
+          - Position your system in the center, surrounded by users and external systems
+          - Every interaction arrow must explain WHY systems connect (purpose), not HOW (avoid protocols/formats)
+          - Keep descriptions high-level - avoid implementation details
+          - Optional: Add enterprise boundary to show what's inside vs outside your organization
+          
+          ## Why This Matters
+          - Makes system scope and boundaries explicit (no assumptions)
+          - Shows what's being added to existing environment
+          - Identifies integration points and stakeholders to engage
+          - Serves as discussion starting point for all audiences
+          
+          ## Content Guidelines
+          - **Person descriptions**: Focus on role and primary use case, keeping descriptions clear and accessible
+          - **System descriptions**: Core purpose and key differentiator, avoiding implementation details  
+          - **External system descriptions**: What it provides to your system, not how it works internally
+          - **Action descriptions**: Use active verbs explaining WHY systems interact, not technical HOW details
+          - **Entity names**: Use bold styling for improved readability
+          
+          ## Visual Standards
+          - C4 color coding: person (green stroke), main system (dark gray stroke), external systems (blue stroke)
+          - Transparent fills with colored stroke borders for clean appearance
+          - Bold entity names using `<b style="font-size: 1.15em;">` for visual hierarchy
+          - Directional arrows with descriptive action labels
+          
+          <example>
+          ```mermaid
+          graph TB
+              Wesley("<b style=\"font-size: 1.15em;\">Wesley</b><br/>[Person]<br/><br/>Technical PM using AI coding agents")
+              
+              System("<b style=\"font-size: 1.15em;\">Claude Code Knowledgebase</b><br/>[Software System]<br/><br/>Reverse engineering analysis system that splits minified CLI into chunks, analyzes them with AI, and provides intelligent architectural insights")
+              
+              CliSource("<b style=\"font-size: 1.15em;\">Claude Code CLI Binary</b><br/>[Software System]<br/><br/>8.6MB minified JavaScript file")
+              
+              GeminiCLI("<b style=\"font-size: 1.15em;\">Gemini CLI</b><br/>[Software System]<br/><br/>Google's command-line interface using gemini-2.5-flash or gemini-2.5-pro")
+              
+              Wesley -.->|"Runs CLI commands and asks questions USING"| System
+              
+              System -.->|"Ingests, prettifies code, & Chunks USING"| CliSource
+              System -.->|"Analyzes code chunks and prompts USING"| GeminiCLI
+              
+              GeminiCLI -.->|"Returns JSON dependency analysis and Q&A responses TO"| System
+              System -.->|"Sends CLI output and answers TO"| Wesley
+              
+              %% C4 Color coding
+              classDef person stroke:#2a7e06, stroke-width:2px, color:#2a7e06, fill:transparent
+              classDef softwareSystemFocus stroke:#444444, stroke-width:2px, color:#444444, fill:transparent
+              classDef softwareSystemExt stroke:#1a5790, stroke-width:2px, color:#1a5790, fill:transparent
+              
+              class Wesley person
+              class System softwareSystemFocus
+              class CliSource,GeminiCLI softwareSystemExt
+          ```
+          </example>
+
+
+  - id: level-4-code
+    title: "Level 4: Code Level"
+    instruction: |
+      Organize code into modules, classes, and functions that realize components. Focus on:
+      - Code organization and module structure
+      - Key classes/functions and their responsibilities
+      - Code-level patterns and conventions
+      - Testing and quality approaches
+    elicit: true
+    sections:
+      - id: code-organization
+        title: Code Organization Structure
+        type: code
+        language: text
+        instruction: |
+          Define the project structure showing how functional domains map to code organization.
+          Include key directories, modules, and their purposes.
+
+      - id: key-components
+        title: Key Code Components
+        repeatable: true
+        template: |
+          **Component: {{component_name}}**
+          - **Domain:** {{component_domain}}
+          - **Responsibility:** {{component_responsibility}}
+          - **Key Classes/Modules:**
+            - {{class_1}}: {{class_1_purpose}}
+            - {{class_2}}: {{class_2_purpose}}
+            - {{class_3}}: {{class_3_purpose}}
+          - **External Dependencies:** {{external_dependencies}}
+          - **Testing Approach:** {{testing_approach}}
+
+      - id: coding-patterns
+        title: Code-Level Patterns & Conventions
+        template: |
+          **Naming Conventions:**
+          - {{naming_convention_1}}
+          - {{naming_convention_2}}
+          - {{naming_convention_3}}
+
+          **Code Patterns:**
+          - **Error Handling:** {{code_error_pattern}}
+          - **Logging:** {{code_logging_pattern}}
+          - **Configuration:** {{code_config_pattern}}
+          - **Testing:** {{code_testing_pattern}}
+
+      - id: quality-approach
+        title: Code Quality & Testing
+        template: |
+          **Quality Standards:**
+          - **Code Review:** {{code_review_process}}
+          - **Static Analysis:** {{static_analysis_tools}}
+          - **Documentation:** {{documentation_standards}}
+
+          **Testing Strategy:**
+          - **Unit Testing:** {{unit_test_approach}}
+          - **Integration Testing:** {{integration_test_approach}}
+          - **End-to-End Testing:** {{e2e_test_approach}}
+          - **Test Coverage Goals:** {{coverage_targets}}
+
+  - id: cross-level-concerns
+    title: Cross-Level Concerns
+    instruction: |
+      Address concerns that span multiple levels of the architecture hierarchy.
+    sections:
+      - id: security
+        title: Security (Cross-Level)
+        template: |
+          **System Level Security:** {{system_security}}
+          **Domain Level Security:** {{domain_security}}
+          **Implementation Security:** {{implementation_security}}
+          **Code Level Security:** {{code_security}}
+
+      - id: performance
+        title: Performance (Cross-Level)
+        template: |
+          **System Level Performance:** {{system_performance}}
+          **Domain Level Performance:** {{domain_performance}}
+          **Implementation Performance:** {{implementation_performance}}
+          **Code Level Performance:** {{code_performance}}
+
+      - id: maintainability
+        title: Maintainability (Cross-Level)
+        template: |
+          **System Level Maintainability:** {{system_maintainability}}
+          **Domain Level Maintainability:** {{domain_maintainability}}
+          **Implementation Maintainability:** {{implementation_maintainability}}
+          **Code Level Maintainability:** {{code_maintainability}}
+
+  - id: architecture-decisions
+    title: Architecture Decision Records
+    instruction: |
+      Document key architectural decisions using ADR format, organized by the 5-level hierarchy.
+    sections:
+      - id: adr-template
+        title: Decision Record Template
+        repeatable: true
+        template: |
+          **ADR-{{number}}: {{decision_title}}**
+          - **Level:** {{architecture_level}}
+          - **Status:** {{decision_status}}
+          - **Date:** {{decision_date}}
+          - **Context:** {{decision_context}}
+          - **Decision:** {{decision_made}}
+          - **Consequences:** {{decision_consequences}}
+          - **Alternatives Considered:** {{alternatives_considered}}
+
+  - id: implementation-roadmap
+    title: Implementation Roadmap
+    instruction: |
+      Map out implementation phases based on the 5-level hierarchy.
+    sections:
+      - id: implementation-phases
+        title: Implementation Phases
+        repeatable: true
+        template: |
+          **Phase {{phase_number}}: {{phase_name}}**
+          - **Duration:** {{phase_duration}}
+          - **Focus Levels:** {{levels_addressed}}
+          - **Key Deliverables:**
+            - {{deliverable_1}}
+            - {{deliverable_2}}
+            - {{deliverable_3}}
+          - **Dependencies:** {{phase_dependencies}}
+          - **Success Criteria:** {{success_criteria}}
+
+      - id: risk-mitigation
+        title: Implementation Risks & Mitigation
+        template: |
+          **High-Risk Areas:**
+          - **{{risk_area_1}}:** {{risk_description_1}} → **Mitigation:** {{mitigation_1}}
+          - **{{risk_area_2}}:** {{risk_description_2}} → **Mitigation:** {{mitigation_2}}
+          - **{{risk_area_3}}:** {{risk_description_3}} → **Mitigation:** {{mitigation_3}}
+
+  - id: appendices
+    title: Appendices
+    sections:
+      - id: glossary
+        title: Glossary
+        template: |
+          **{{term}}:** {{definition}}
+
+      - id: references
+        title: References & Further Reading
+        template: |
+          **Related Architecture Documents:**
+          - {{existing_doc_1}}: {{doc_1_relevance}}
+          - {{existing_doc_2}}: {{doc_2_relevance}}
+          - {{existing_doc_3}}: {{doc_3_relevance}}
+          
+          **5-Level Hierarchical Analysis:**
+          - {{reference_1}}
+          - {{reference_2}}
+          
+          **Technology References:**
+          - {{tech_reference_1}}
+          - {{tech_reference_2}}
+          
+          **Organizational Standards:**
+          - {{org_standard_1}}: {{standard_1_link}}
+          - {{org_standard_2}}: {{standard_2_link}}
+
+      - id: change-log
+        title: Architecture Change Log
+        type: table
+        columns: [Date, Version, Level, Change Description, Author]
+        instruction: Track changes to the architecture across all levels

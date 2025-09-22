@@ -1,0 +1,8 @@
+projectInclusions:
+- claude-code-analysis/
+- docs/
+- src/
+- biome.json
+- config.json
+- package.json
+- README.md
