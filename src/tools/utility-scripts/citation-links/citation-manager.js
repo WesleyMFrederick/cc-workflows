@@ -262,11 +262,10 @@ class CitationManager {
 			const fixableResults = validationResult.results.filter(
 				(result) =>
 					(result.status === "warning" && result.pathConversion) ||
-					(result.status === "error" &&
-						result.suggestion &&
-						result.suggestion.includes(
-							"Use raw header format for better Obsidian compatibility",
-						)),
+					(result.status === "error" && result.suggestion && (
+						result.suggestion.includes("Use raw header format for better Obsidian compatibility") ||
+						(result.error.startsWith("Anchor not found") && result.suggestion.includes("Available headers:"))
+					)),
 			);
 
 			if (fixableResults.length === 0) {
@@ -296,13 +295,12 @@ class CitationManager {
 					fixType = "path";
 				}
 
-				// Apply anchor fix if needed (maintain existing logic)
+				// Apply anchor fix if needed (expanded logic for all anchor errors)
 				if (
 					result.status === "error" &&
 					result.suggestion &&
-					result.suggestion.includes(
-						"Use raw header format for better Obsidian compatibility",
-					)
+					(result.suggestion.includes("Use raw header format for better Obsidian compatibility") ||
+					(result.error.startsWith("Anchor not found") && result.suggestion.includes("Available headers:")))
 				) {
 					newCitation = this.applyAnchorFix(newCitation, result);
 					anchorFixesApplied++;
@@ -367,6 +365,34 @@ class CitationManager {
 		);
 	}
 
+	// Parse "Available headers: \"Vision Statement\" → #Vision Statement, ..."
+	parseAvailableHeaders(suggestion) {
+		const headerRegex = /"([^"]+)"\s*→\s*#([^,]+)/g;
+		return [...suggestion.matchAll(headerRegex)].map(match => ({
+			text: match[1].trim(),
+			anchor: `#${match[2].trim()}`
+		}));
+	}
+
+	// Convert "#kebab-case-format" to "kebab case format"
+	normalizeAnchorForMatching(anchor) {
+		return anchor.replace('#', '').replace(/-/g, ' ').toLowerCase();
+	}
+
+	// Find best header match using fuzzy logic
+	findBestHeaderMatch(brokenAnchor, availableHeaders) {
+		const searchText = this.normalizeAnchorForMatching(brokenAnchor);
+		return availableHeaders.find(header =>
+			header.text.toLowerCase() === searchText ||
+			header.text.toLowerCase().replace(/[.\s]/g, '') === searchText.replace(/\s/g, '')
+		);
+	}
+
+	// Apply URL encoding: "Vision Statement" → "Vision%20Statement"
+	urlEncodeAnchor(headerText) {
+		return headerText.replace(/ /g, '%20').replace(/\./g, '%2E');
+	}
+
 	// Helper method for applying anchor fixes (maintain existing logic)
 	applyAnchorFix(citation, result) {
 		const suggestionMatch = result.suggestion.match(
@@ -380,6 +406,23 @@ class CitationManager {
 				return `[${linkText}](${filePath}#${newAnchor})`;
 			}
 		}
+
+		// Handle anchor not found errors
+		if (result.error.startsWith("Anchor not found") && result.suggestion.includes("Available headers:")) {
+			const availableHeaders = this.parseAvailableHeaders(result.suggestion);
+			const citationMatch = citation.match(/\[([^\]]+)\]\(([^)]+)#([^)]+)\)/);
+
+			if (citationMatch && availableHeaders.length > 0) {
+				const [, linkText, filePath, brokenAnchor] = citationMatch;
+				const bestMatch = this.findBestHeaderMatch(`#${brokenAnchor}`, availableHeaders);
+
+				if (bestMatch) {
+					const encodedAnchor = this.urlEncodeAnchor(bestMatch.text);
+					return `[${linkText}](${filePath}#${encodedAnchor})`;
+				}
+			}
+		}
+
 		return citation;
 	}
 }
@@ -406,7 +449,7 @@ program
 	)
 	.option(
 		"--fix",
-		"automatically fix kebab-case anchors to raw header format for better Obsidian compatibility",
+		"automatically fix citation anchors including kebab-case conversions and missing anchor corrections",
 	)
 	.action(async (file, options) => {
 		const manager = new CitationManager();
