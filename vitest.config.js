@@ -6,7 +6,11 @@ export default defineConfig({
 		environment: "node",
 
 		// Test file patterns - support both existing and new test locations
-		include: ["src/tests/**/*.test.js", "test/**/*.test.js"],
+		include: [
+			"src/tests/**/*.test.js",
+			"test/**/*.test.js",
+			"tools/**/test/**/*.test.js",
+		],
 		exclude: ["node_modules/**", "dist/**"],
 
 		// Use forks for better CommonJS isolation

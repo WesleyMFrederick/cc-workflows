@@ -7,16 +7,18 @@
 	},
 	"files": {
 		"ignoreUnknown": false,
-		"includes": [
-			"**",
-			"!**/node_modules",
-			"!**/dist",
-			"!**/build",
-			"!**/.git",
-			"!**/.hg",
-			"!**/.svn",
-			"!**/.DS_Store",
-			"!**/claude-code-analysis"
+		"include": [
+			"**"
+		],
+		"ignore": [
+			"**/node_modules",
+			"**/dist",
+			"**/build",
+			"**/.git",
+			"**/.hg",
+			"**/.svn",
+			"**/.DS_Store",
+			"**/claude-code-analysis"
 		]
 	},
 	"formatter": {
@@ -34,12 +36,7 @@
 			"quoteStyle": "double"
 		}
 	},
-	"assist": {
-		"enabled": true,
-		"actions": {
-			"source": {
-				"organizeImports": "on"
-			}
-		}
+	"organizeImports": {
+		"enabled": true
 	}
 }

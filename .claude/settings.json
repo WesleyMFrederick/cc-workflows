@@ -1,14 +1,6 @@
 {
 	"permissions": {
 		"allow": [
-			"mcp__serena-mcp__check_onboarding_performed",
-			"mcp__serena-mcp__activate_project",
-			"mcp__serena-mcp__list_dir",
-			"mcp__serena-mcp__get_symbols_overview",
-			"mcp__serena-mcp__write_memory",
-			"mcp__serena-mcp__read_memory",
-			"mcp__serena-mcp__find_file",
-			"mcp__serena-mcp__find_symbol",
 			"Bash(rm:*)",
 			"Bash(node:*)",
 			"Bash(git checkout:*)",
@@ -42,22 +34,13 @@
 			"mcp__deepwiki__read_wiki_structure",
 			"mcp__deepwiki__read_wiki_contents",
 			"mcp__deepwiki__ask_question",
-			"mcp__serena__list_dir",
-			"mcp__serena__activate_project",
-			"mcp__serena__read_memory",
-			"mcp__serena__list_dir",
-			"mcp__serena__find_file",
-			"mcp__serena__get_symbols_overview",
-			"mcp__serena__search_for_pattern",
 			"Read(//Users/wesleyfrederick/.claude/scripts/**)",
 			"mcp__Context7__resolve-library-id",
 			"mcp__Context7__get-library-docs",
 			"Bash(npx markdownlint:*)",
-			"mcp__serena__check_onboarding_performed",
 			"Bash(npm run mirror-workflows:*)"
 		],
 		"deny": [
-			"mcp__serena-mcp__search_for_pattern"
 		],
 		"ask": [],
 		"additionalDirectories": [
@@ -71,7 +54,6 @@
 		"Context7",
 		"perplexity-mcp",
 		"deepwiki",
-		"serena"
 	],
 	"hooks": {
 		"PostToolUse": [

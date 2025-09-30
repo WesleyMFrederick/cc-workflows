@@ -11,7 +11,6 @@ Convert the feature design into a series of prompts for a code-generation LLM th
 - **Agent-Friendly**: Clear input/output with minimal context switching
 - **Coding Task Focused**: Excludes any task that cannot be completed through writing/modifying/testing code
 - **Hallucination Free**: All tasks and sub-tasks are derived from design documentation
-- **Time Boxing**: Completable in 15-30 minutes by an experienced developer
 
 ### Task Format Guidelines
 - Format as numbered checkbox list with maximum two levels of hierarchy
