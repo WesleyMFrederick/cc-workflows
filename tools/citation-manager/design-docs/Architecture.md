@@ -221,7 +221,7 @@ node citation-manager.js ast <file>
 - **Automated Validation**: Script detects broken citations and missing anchors automatically
 - **Obsidian-Optimized Format**: Enforces cross-document style links (`[text](file.md#anchor)` and ``[text](file.md#^block-anchor`)
 - **Preview Modal Support**: Ensures citations work with Obsidian's hover preview functionality
-- **Anchor Generation**: *Helps* LLM creates missing anchors following established caret syntax patterns, by reporting broken or missing caret patters.
+- **Anchor Generation**: _Helps_ LLM creates missing anchors following established caret syntax patterns, by reporting broken or missing caret patters.
 - **LLM-Friendly**: Provides clear validation feedback to help AI assistants maintain citation quality. Allows LLMs to use techniques like passing text or document line-numbers (line numbers allowing for less token usage)
 - **Workflow Integration**: CLI commands enable LLMs to validate/fix citations during document editing
 - **Time Reduction**: From 5-10 minutes per document to seconds for citation maintenance
@@ -245,7 +245,7 @@ node citation-manager.js validate <markdown-file-path> [--format <type>]
 
 **Output Formats:**
 
-*CLI Format (default):*
+_CLI Format (default):_
 
 ```text
 Citation Validation Report
@@ -276,7 +276,7 @@ SUMMARY:
 ❌ VALIDATION FAILED - Fix 2 critical errors
 ```
 
-*JSON Format (--format json):*
+_JSON Format (--format json):_
 
 ```json
 {

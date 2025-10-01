@@ -14,9 +14,10 @@
 		"test:coverage": "vitest run --coverage",
 		"test:unit": "vitest run src/tests/unit",
 		"test:integration": "vitest run src/tests/integration",
-		"citation:validate": "node src/tools/utility-scripts/citation-links/citation-manager.js validate",
-		"citation:ast": "node src/tools/utility-scripts/citation-links/citation-manager.js ast",
-		"citation:base-paths": "node src/tools/utility-scripts/citation-links/citation-manager.js base-paths",
+		"citation:validate": "node tools/citation-manager/src/citation-manager.js validate",
+		"citation:ast": "node tools/citation-manager/src/citation-manager.js ast",
+		"citation:base-paths": "node tools/citation-manager/src/citation-manager.js base-paths",
+		"citation:fix": "node tools/citation-manager/src/citation-manager.js validate --fix",
 		"mock:run": "node tools/mock-tool/src/mock-tool.js"
 	},
 	"keywords": [],

@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 
 import { Command } from "commander";
-import { CitationValidator } from "./src/CitationValidator.js";
-import { FileCache } from "./src/FileCache.js";
-import { MarkdownParser } from "./src/MarkdownParser.js";
+import { CitationValidator } from "./CitationValidator.js";
+import { FileCache } from "./FileCache.js";
+import { MarkdownParser } from "./MarkdownParser.js";
 
 class CitationManager {
 	constructor() {

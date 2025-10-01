@@ -44,7 +44,7 @@
 		],
 		"ask": [],
 		"additionalDirectories": [
-			"/Users/wesleyfrederick/Documents/ObsidianVaultNew/0_SoftwareDevelopment/claude-code-knowledgebase/design-docs",
+			"/Users/wesleyfrederick/Documents/ObsidianVaultNew/0_SoftwareDevelopment/cc-workflows/design-docs",
 			"/Users/wesleyfrederick/.claude/scripts/calculate-risk",
 			"/Users/wesleyfrederick/Documents/ObsidianVaultNew/Technical KnowledgeBase"
 		]
@@ -53,7 +53,7 @@
 	"enabledMcpjsonServers": [
 		"Context7",
 		"perplexity-mcp",
-		"deepwiki",
+		"deepwiki"
 	],
 	"hooks": {
 		"PostToolUse": [
