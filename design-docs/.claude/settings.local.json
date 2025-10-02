@@ -1,0 +1,28 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git init:*)",
+      "Bash(git cplsm:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git cp:*)",
+      "Bash(git cplms)",
+      "Bash(git checkpoint:*)",
+      "Bash(git checkout:*)",
+      "Bash(git merge:*)",
+      "Bash(git branch:*)",
+      "Read(//Users/wesleyfrederick/Documents/ObsidianVault/0_SoftwareDevelopment/cc-workflows/**)",
+      "Read(//Users/wesleyfrederick/Documents/ObsidianVaultNew/0_SoftwareDevelopment/cc-workflows/**)",
+      "Bash(node:*)",
+      "mcp__perplexity-mcp__reason",
+      "mcp__perplexity-mcp__search"
+    ],
+    "deny": [],
+    "ask": [],
+    "additionalDirectories": [
+      "/Users/wesleyfrederick/Documents/ObsidianVaultNew/0_SoftwareDevelopment/claude-code-knowledgebase/design-docs",
+      "/Users/wesleyfrederick/Documents/ObsidianVaultNew/Technical KnowledgeBase",
+      "/Users/wesleyfrederick/Documents/ObsidianVault/0_SoftwareDevelopment/cc-workflows"
+    ]
+  }
+}
