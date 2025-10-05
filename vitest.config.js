@@ -16,6 +16,17 @@ export default defineConfig({
 		// Use forks for better CommonJS isolation
 		pool: "forks",
 
+		// Pool configuration for memory management
+		poolOptions: {
+			forks: {
+				maxForks: 4, // Controlled parallelism
+				minForks: 1,
+			},
+		},
+
+		// Force exit after tests complete to prevent hanging worker processes
+		forceExit: true,
+
 		// Timeout settings for file system operations
 		testTimeout: 10000,
 		hookTimeout: 10000,

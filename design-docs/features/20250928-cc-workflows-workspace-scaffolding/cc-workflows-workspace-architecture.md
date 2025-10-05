@@ -670,6 +670,59 @@ The workspace provides a **shared Vitest testing framework** that discovers and 
 - **Test Discovery**: Vitest is configured with multiple glob patterns to discover tests in both legacy locations (`src/tests/**/*.test.js`) and new workspace packages (`tools/**/test/**/*.test.js`). This multi-pattern approach is a deliberate strategy to support the incremental migration of existing tools like `citation-manager`.
 - **Testing Principles**: All tests must adhere to the **"Real Systems, Fake Fixtures"** principle, which mandates a zero-tolerance policy for mocking application components and favors testing against real file system operations. Tests must also follow the **BDD Given-When-Then** comment structure and use **`snake_case`** for test method names for clarity and improved AI comprehension.
 
+#### Vitest Process Management and Cleanup
+
+Vitest worker processes can accumulate in memory when tests spawn child processes (e.g., via `execSync()` for CLI integration testing) that don't clean up properly. This is particularly common in CLI integration tests that execute the tool binary directly.
+
+**Configuration Best Practices** (`vitest.config.js`):
+
+```javascript
+export default defineConfig({
+  test: {
+    // Force exit after tests complete
+    forceExit: true,
+
+    // Use single fork mode for tools with CLI integration tests
+    pool: 'forks',
+    poolOptions: {
+      forks: {
+        singleFork: true,  // Reduces memory footprint
+      }
+    },
+
+    // Set timeouts to prevent hanging
+    testTimeout: 10000,
+    hookTimeout: 10000,
+  }
+});
+```
+
+**Package Scripts** (add to `package.json`):
+
+```json
+{
+  "scripts": {
+    "test": "vitest run",
+    "test:clean": "pkill -f 'vitest' || true && vitest run",
+    "posttest": "pkill -f 'vitest.*worker' || true"
+  }
+}
+```
+
+**Manual Cleanup** (when processes hang):
+
+```bash
+# Kill all Vitest worker processes
+pkill -f "vitest"
+
+# Or more precisely, kill only worker processes
+ps aux | grep "vitest" | grep -v grep | awk '{print $2}' | xargs kill -9
+```
+
+**Prevention in Test Code**:
+
+When writing CLI integration tests using `execSync()`, ensure proper cleanup in `afterEach()` hooks if your tool spawns long-running child processes. Most CLI tools that run synchronously don't require special cleanup.
+
 ### Dependency Management
 
 **NPM Workspaces** manages all dependencies through a centralized installation process that **hoists** shared packages to the root level while supporting package-specific requirements.
