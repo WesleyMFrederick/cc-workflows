@@ -48,7 +48,7 @@ status: Draft
 
 ## Status
 
-Draft
+Done
 
 ## Story
 

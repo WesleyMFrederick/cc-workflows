@@ -27,15 +27,16 @@
 	- [ ] Requirements document that contains epics and user stories
 	- [ ] Requirements architecture document
 	- [ ] Citation guidelines document
-- [ ] **Step 2**: Identify User Story
-	- [ ] 
-- [ ] **Step 3**: **CRITICAL**: Story definition and acceptance criteria populated **EXACTLY** from requirements document
-- [ ] **Step 3**: Architectural context gathered using C4 framework
-- [ ] **Step 4**: 
-- [ ] **Step 5**: Dev Notes section completed with architectural citations
-- [ ] **Step 6**: Story validation completed
-- [ ] **Step 7**: Citation validation passed
-- [ ] **Step 8**: Phase 1 ready for Phase 2 task generation
+- [ ] **Step 2**: Extract story definition and acceptance criteria from PRD
+- [ ] **Step 3**: Populate architectural context (Dev Notes)
+	- [ ] Architectural Context (C4)
+	- [ ] Technical Details
+	- [ ] Design Principles Adherence
+	- [ ] Previous Story Insights
+- [ ] **Step 4**: Define testing requirements
+	- [ ] Test Framework and Strategy
+	- [ ] Required Test Implementation
+- [ ] **Step 5**: Validate all citations using citation manager
 
 ## Status
 [Current status: Draft | In Progress | Ready for Review | Complete]

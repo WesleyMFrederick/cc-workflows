@@ -177,6 +177,7 @@ _User Story Link:_ [us1.2-migrate-citation-manager-source-code](user-stories/us1
 
 _Depends On_: Story 1.2
 _Functional Requirements_: [[#^FR7|FR7]], [[#^FR8|FR8]]
+_User Story Link:_ [us1.3-make-migrated-citation-manager-executable](user-stories/us1.3-make-migrated-citation-manager-executable/us1.3-make-migrated-citation-manager-executable.md)
 
 ### Story 1.4: Migrate and Validate `citation-manager` Test Suite
 

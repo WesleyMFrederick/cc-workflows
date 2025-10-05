@@ -19,8 +19,7 @@
 > - - ==Enhancements== are written as if the functionality already exists and has been merged into production. Do not use future tense or phrases like "...now includes...", or "...now interacts with..."
 > - Enhancement additions and modification overviews are often included in markdown %% comment tags so they do not display in the read mode%%. This allows the llm to easily identify the feature's impact, while still maintaining the format of the `Architecture Baseline`. When it comes time to merge the feature architecture into the `Architecture Baseline`, we will programmatically strip the %% comment %% tags from the document.
 <!-- -->
-> [!danger] **Critial LLM Initialization Instructions**
-> When first reading this file, you MUST IMMEDIATELY run citation manager to extract base paths: `npm run citation:base-paths <this-file-path> -- --format json`. Read ALL discovered base path files to gather complete architectural context before proceeding.
+**Critial LLM Initialization Instructions**: When first reading this file, you MUST IMMEDIATELY run citation manager to extract base paths: `npm run citation:base-paths <this-file-path> -- --format json`. Read ALL discovered base path files to gather complete architectural context before proceeding.
 
 **Purpose**: CC Workflows provides a **centralized** **workspace** that acts as a **single source of truth** for development tools by establishing shared infrastructure for testing and builds. It is designed to accelerate all future development by providing a refined and repeatable platform for building new tools and workflows.
 
@@ -721,31 +720,3 @@ _[Risk assessment will be conducted during detailed design phase]_
 ---
 
 ## Whiteboard
-
-Here’s a logical sequence for tackling the elicitation, sense-making, and solution-framing needed to populate the minimum required sections of the architecture document for User Story 1.1.
-
-The process is broken into three phases, starting with high-level alignment and progressively moving to concrete implementation details.
-
-Phase 1: Foundational Alignment and High-Level Decisions
-
-First, we must align on the project's core identity and make the most critical technical decision. This ensures all subsequent structural choices are based on a shared understanding of our goals and the primary architectural pattern.
-
-~~1. System Purpose & Principles: We'll start by eliciting the core goals from the PRD to write the System Purpose Statement. We'll then select the most relevant guidelines from the Core Architectural Principles document to frame our design philosophy.~~
-
-~~2. System Overview & ADR: Next, we'll make sense of the provided research to frame our primary solution. We will formally decide to use NPM Workspaces as our core pattern in the System Overview and immediately document this choice and its rationale in our first Architecture Decision Record (ADR).~~
-
-~~Phase 2: Defining the Physical Structure
-
-~~With the high-level pattern chosen, we'll define the concrete file and configuration structure that a developer will interact with.~~
-
-~~1. Directory Organization (Level 4): We'll frame the solution for the physical layout by designing the exact folder structure (packages/, tools/, etc.) that supports an NPM Workspace. This directly addresses the core requirement of the user story.~~
-
-~~2. Technology Stack & Configuration: Based on that structure, we will elicit the required dev dependencies from the PRD (Vitest, a linter) and define them in the Technology Stack. We'll then specify where the configuration files for these tools will live in the Configuration Management section.~~
-
-Phase 3: Defining the Operational Strategy
-
-Finally, with the physical structure in place, we'll define how key development operations will function within it.
-
-~~1. Testing Strategy: We'll frame the solution for our testing approach by designing the root Vitest configuration. This will specify how the npm test command discovers and executes tests for tools located in separate sub-packages, a critical detail for ensuring the shared framework is truly functional.~~
-
-1. Container Definition (Level 2): With all other decisions made, we can now easily complete the C4 documentation. We will formally describe the "CC Workflows Workspace" container, summarizing its technology (Node.js) and its contents (the directory structure and configurations designed in the previous steps).
