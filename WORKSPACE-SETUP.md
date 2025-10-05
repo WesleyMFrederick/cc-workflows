@@ -2,15 +2,6 @@
 
 This document describes the validated workspace patterns established in User Story 1.1 for the CC Workflows monorepo using NPM Workspaces.
 
-## Table of Contents
-
-- [NPM Workspaces Configuration](#npm-workspaces-configuration)
-- [Vitest Test Discovery Pattern](#vitest-test-discovery-pattern)
-- [Biome Configuration Approach](#biome-configuration-approach)
-- [CLI Execution Pattern](#cli-execution-pattern)
-- [Common Operations](#common-operations)
-- [Migration Notes](#migration-notes)
-
 ## NPM Workspaces Configuration
 
 ### Overview
@@ -125,7 +116,7 @@ import { describe, it, expect } from "vitest";
 import { greet } from "../src/greeter.js";
 
 describe("Greeter Module", () => {
- it("test_greet_returns_formatted_greeting", () => {
+ it("should return formatted greeting", () => {
   // Given: A name input
   const name = "Alice";
 
@@ -141,7 +132,7 @@ describe("Greeter Module", () => {
 **Key Patterns**:
 
 - Use `describe()` for module/feature grouping
-- Test function names use `snake_case` (exception to JavaScript conventions)
+- Test descriptions use natural language with spaces in `it()` method strings
 - Follow Given-When-Then comment structure for clarity
 - Import test utilities explicitly (no globals)
 
@@ -413,72 +404,3 @@ npm run test --workspaces
 # Run script in specific workspace
 npm run test -w @cc-workflows/mock-tool
 ```
-
-## Migration Notes
-
-### Architectural Deviations
-
-**Biome Configuration Schema**: Initial `biome.json` used deprecated keys that have been corrected:
-
-- Changed `includes` → `include` (files configuration)
-- Changed `assist` → `assists` (top-level configuration)
-- Moved `organizeImports` from nested `assists.actions.source` to top-level
-
-**Impact**: Minimal. Configuration now complies with Biome v1.9.4 schema. Functionality unchanged.
-
-**Reference**: See `biome.json` commit history for exact changes.
-
-### Coexistence Strategy
-
-The workspace structure coexists with legacy `src/` directory during migration:
-
-- **New structure**: `tools/`, `packages/` (workspace packages)
-- **Legacy structure**: `src/tools/utility-scripts/citation-links/` (existing citation-manager)
-- **Test patterns**: Both patterns active simultaneously
-
-**Migration Path**: Stories 1.2-1.4 will migrate citation-manager from `src/` → `tools/citation-manager/` using validated patterns.
-
-### Testing Strategy Notes
-
-- **No Regression**: Existing citation tests continue to pass (42 passing tests confirmed)
-- **Test Failures**: Some existing citation tests have pre-existing failures (6 failed tests) unrelated to workspace changes
-- **Validation**: Mock-tool test successfully discovered and passes via workspace pattern
-
-### Module System
-
-**Decision**: Mock-tool uses **ESM** (ES Modules) rather than CommonJS:
-
-- **Reason**: Modern standard, better tree-shaking, native browser compatibility
-- **Root package.json**: Contains `"type": "module"` (inherited by workspace packages)
-- **Impact**: Use `import`/`export` syntax instead of `require`/`module.exports`
-
-**Citation-manager Migration**: Will assess whether to maintain CommonJS or migrate to ESM during Stories 1.2-1.4.
-
-## Next Steps
-
-### Story 1.2-1.4: Citation-Manager Migration
-
-With validated workspace patterns, proceed to migrate citation-manager:
-
-1. **Story 1.2**: Move citation-manager codebase to `tools/citation-manager/`
-2. **Story 1.3**: Update import paths and workspace package.json
-3. **Story 1.4**: Validate all citation-manager tests pass in new location
-
-### Future Workspace Packages
-
-Use this documentation as a reference when adding new workspace packages:
-
-1. Create package directory: `tools/[package-name]/` or `packages/[package-name]/`
-2. Add `package.json` with `@cc-workflows/[package-name]` naming
-3. Create `src/` and `test/` directories
-4. Write tests following BDD structure with snake_case naming
-5. Implement functionality to pass tests
-6. Add root-level npm scripts for CLI tools
-7. Validate with `npm test` and `npx biome check`
-
----
-
-**Document Version**: 1.0
-**Created**: 2025-09-30
-**Author**: Application Tech Lead Agent
-**Related Story**: US1.1 - Establish Workspace Directory Structure & Basic Config

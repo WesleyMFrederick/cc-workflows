@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import { greet } from "../src/greeter.js";
 
 describe("Greeter Module", () => {
-	it("test_greet_returns_formatted_greeting", () => {
+	it("should return formatted greeting", () => {
 		// Given: A name input
 		const name = "Alice";
 

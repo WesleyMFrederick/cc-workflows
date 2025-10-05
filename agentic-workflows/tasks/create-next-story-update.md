@@ -83,7 +83,6 @@ ALWAYS cite source documents using proper markdown links: `[Source Description](
    - Basic information: Title, status (Draft), Story statement, Acceptance Criteria from Epic
    - **Dev Notes**: Package architectural information for developer
 
-
 #### Dev Notes Section Structure
 
 Package all gathered architectural information:

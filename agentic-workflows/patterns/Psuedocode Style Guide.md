@@ -1,6 +1,8 @@
 # Pseudocode Style Guide
 
-This comprehensive guide covers pseudocode as both a basic syntax tool and an architectural communication medium for competent developers working with user stories. It emphasizes interfaces, boundaries, interactions, and integration points while providing complete syntax reference.
+- Covers pseudocode as an architectural communication tool
+- Emphasizes interfaces, boundaries, interactions, and integration points
+- Provides complete syntax reference
 
 ## Philosophy
 
@@ -46,7 +48,7 @@ Rarely needed - only for architecturally significant algorithms or syntax exampl
 
 ### General Structure
 
-- Use fenced code blocks to wrap your pseudocode. Use the `tsx` for the fenced block language, but follow the style conventions below. *Example:*
+- Use fenced code blocks to wrap your pseudocode. Use the `tsx` for the fenced block language, but follow the style conventions below. _Example:_
 
 ```tsx
 // Some pseudocode
@@ -64,7 +66,7 @@ abstract Pseudocode is
   - Multi-line comments also use `//` at the start of each line.
   - Ellipses `// ...` are used to represent omitted code within blocks.
   - Comments explaining a unit/block of code should be placed above the block. Do not interrupt a unit mid block with comments.
-  - **CRITICAL**: NEVER place a line comment after the `is` declaration. ALWAYS add a line break when adding a new comment for a block. This makes the pseudocode easier to scan.  *For example:*
+  - **CRITICAL**: NEVER place a line comment after the `is` declaration. ALWAYS add a line break when adding a new comment for a block. This makes the pseudocode easier to scan.  _For example:_
 
 ```tsx
 // Defines a Logger class ensuring only one instance exists (Singleton pattern).
@@ -692,4 +694,4 @@ public method createMockBinary(version, testName) {
 
 ---
 
-*This comprehensive guide serves competent developers who need both basic syntax reference and architectural clarity to implement user stories efficiently.*
+_This comprehensive guide serves competent developers who need both basic syntax reference and architectural clarity to implement user stories efficiently._

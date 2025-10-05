@@ -33,7 +33,7 @@ Before beginning Phase 3, ensure you have:
 1. **Load Story File**: Open the story file with completed high-level milestones from Phase 2
 2. **Verify Completion**: Confirm Phase 2 completion checklist is 100% complete
 3. **Review Milestone Structure**: Understand all high-level milestones, agent type assignments, and requirements
-4. **Analyze Milestone Scope**: Assess each milestone to plan atomic subtask breakdown (typically 3-7 subtasks per milestone)
+4. **Analyze Milestone Scope**: Assess each task phase to plan atomic subtask breakdown (typically 3-7 subtasks per milestone)
 5. **Understand Constraints**: Remember that Phase 2 milestones are NOT atomic - they may span many files
 6. **Update Progress**: Mark Step 1 complete in Phase 3 Progress Tracking section
 
@@ -210,6 +210,7 @@ Use this exact format for each subtask:
 ### Example 1: TDD Workflow Transformation (Code-Heavy Feature)
 
 **Phase 2 Milestone (High-Level, NOT Atomic):**
+
 ```markdown
 - [ ] **1. Set up project structure and core interfaces**
   - **Description**: Establish the foundational architecture and define system boundaries
@@ -223,6 +224,7 @@ Use this exact format for each subtask:
 ```
 
 **Phase 3 Atomic Breakdown (STRICTLY Atomic):**
+
 ```markdown
 - [ ] **1.1 Create base directory structure** ^T1-1
   - **Agent**: code-developer-agent
@@ -296,6 +298,7 @@ Use this exact format for each subtask:
 ### Example 2: Direct Implementation Transformation (Infrastructure Setup)
 
 **Phase 2 Milestone (High-Level, NOT Atomic):**
+
 ```markdown
 - [ ] **1. Configure workspace NPM scripts**
   - **Description**: Set up root package.json scripts to execute citation-manager from new location
@@ -309,6 +312,7 @@ Use this exact format for each subtask:
 ```
 
 **Phase 3 Atomic Breakdown (Direct Implementation - NO TDD):**
+
 ```markdown
 - [ ] **1.1 Update root package.json citation scripts** ^T1-1
   - **Agent**: code-developer-agent

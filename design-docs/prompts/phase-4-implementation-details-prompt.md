@@ -45,10 +45,9 @@ Before beginning Phase 4, ensure you have:
 For each prioritized subtask:
 
 1. **Create New File**: Use naming convention: `[phase-number]-[task-number]-[subtask-number]-[subtask-slug]-us[story-number].md`
-2. **Populate Template**: Use `implementation-details-template.md` as starting structure
-3. **Define Implementation Gap**: Clearly articulate current vs required state for the subtask
-4. **Include Background Context**: Gather all architectural context needed for implementation
-5. **Update Progress**: Mark Step 3 complete in Phase 4 Progress Tracking section
+2. **Define Implementation Gap**: Clearly articulate current vs required state for the subtask
+3. **Include Background Context**: Gather all architectural context needed for implementation
+4. **Update Progress**: Mark Step 3 complete in Phase 4 Progress Tracking section
 
 #### Step 4: Populate Implementation Gap Analysis
 
@@ -77,7 +76,7 @@ For each implementation details file:
 
 1. **List Affected Files**: All files that will be created, modified, or affected
 2. **Describe Change Patterns**: Specific implementation approaches and technical patterns
-3. **Provide Code Examples**: Implementation pattern examples showing expected structure
+3. **Provide Code Examples**: Implementation pattern examples showing expected structure. Assume we have a junior level developer. You are only showing the patterns. DO NOT CREATE THE ACTUAL IMPLEMENT
 4. **Define Critical Rules**: Non-negotiable requirements and constraints
 5. **Update Progress**: Mark Step 6 complete in Phase 4 Progress Tracking section
 

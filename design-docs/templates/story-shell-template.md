@@ -24,18 +24,18 @@
 > Update this section as you complete each step of Phase 1 story creation.
 
 - [ ] **Step 1**: **CRITICAL** Gather all required files
-	- [ ] Requirements document that contains epics and user stories
-	- [ ] Requirements architecture document
-	- [ ] Citation guidelines document
+  - [ ] Requirements document that contains epics and user stories
+  - [ ] Requirements architecture document
+  - [ ] Citation guidelines document
 - [ ] **Step 2**: Extract story definition and acceptance criteria from PRD
 - [ ] **Step 3**: Populate architectural context (Dev Notes)
-	- [ ] Architectural Context (C4)
-	- [ ] Technical Details
-	- [ ] Design Principles Adherence
-	- [ ] Previous Story Insights
+  - [ ] Architectural Context (C4)
+  - [ ] Technical Details
+  - [ ] Design Principles Adherence
+  - [ ] Previous Story Insights
 - [ ] **Step 4**: Define testing requirements
-	- [ ] Test Framework and Strategy
-	- [ ] Required Test Implementation
+  - [ ] Test Framework and Strategy
+  - [ ] Required Test Implementation
 - [ ] **Step 5**: Validate all citations using citation manager
 
 ## Status
