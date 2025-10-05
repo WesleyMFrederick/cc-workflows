@@ -271,6 +271,33 @@ NEW_LINES=$(wc -l < path/to/test.js)
 # Expected: NEW_LINES ≈ OLD_LINES
 ```
 
+**Vitest Process Cleanup** (for CLI integration tests):
+
+Tests using `execSync()` for CLI integration testing may leave Vitest worker processes in memory. Add cleanup configuration to prevent memory accumulation:
+
+```javascript
+// vitest.config.js additions
+export default defineConfig({
+  test: {
+    forceExit: true,  // Exit after tests complete
+    pool: 'forks',
+    poolOptions: {
+      forks: { singleFork: true }  // Reduce memory footprint
+    },
+    testTimeout: 10000,
+    hookTimeout: 10000,
+  }
+});
+```
+
+Manual cleanup if processes hang:
+
+```bash
+pkill -f "vitest"  # Kill all Vitest worker processes
+```
+
+Reference: [Workspace Testing Infrastructure - Vitest Process Management](../../../design-docs/features/20250928-cc-workflows-workspace-scaffolding/cc-workflows-workspace-architecture.md#Vitest%20Process%20Management%20and%20Cleanup)
+
 **Feature Implementation Tasks** (e.g., new component):
 
 ```markdown
