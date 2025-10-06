@@ -33,6 +33,33 @@ Include ONLY information needed to execute THIS task. Exclude: other tasks, futu
 **Prime Directive #2: Trust-Based Specification**
 Show BEFORE/AFTER transformation patterns with clear examples. State WHAT needs to change (objective, scope, components) not HOW line-by-line (trust capable agents). Avoid brittle line-number instructions that break with any edit.
 
+**AFTER Code Block Guidelines**:
+- Use **MEDIUM-IMPLEMENTATION level** from [Pseudocode Style Guide](../../../agentic-workflows/patterns/Psuedocode%20Style%20Guide.md#MEDIUM-IMPLEMENTATION)
+- Show **one complete pattern example** to establish structure
+- Abbreviate remaining examples with `...` ellipsis
+- Use **real syntax** (tsx/javascript) but truncate implementation details
+- Focus on **what** changes, not **how** line-by-line
+
+**Example - Test Creation Task**:
+
+```tsx
+// First test: Complete pattern showing structure
+it("should validate using factory", () => {
+  const validator = createValidator()
+  const result = validator.validate(fixture)
+  expect(result.isValid).toBe(true)
+  expect(result.errors).toHaveLength(...)  // Value agent determines
+})
+
+// Remaining tests: Abbreviated with Given-When-Then
+it("should detect errors", () => {
+  // Given: Factory-created validator
+  // When: Process invalid fixture
+  // Then: Errors detected
+  ...
+})
+```
+
 **Prime Directive #3: Executable Validation**
 Provide bash commands with expected outputs that verify success. Make validation concrete and executable, not abstract criteria.
 
