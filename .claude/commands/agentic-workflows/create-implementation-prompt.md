@@ -61,6 +61,12 @@ Target 150-500 lines per task file. Remove all bloat: integration context for fu
 - If $3 provided: Generate prompt for single task matching task-id
 - If $2 provided: Generate prompts for all tasks in specified wave
 - If neither provided: Generate prompts for ALL tasks in story
+
+**Story File Update**:
+After creating each implementation detail file, update the user story file to add bidirectional link:
+- Locate the corresponding task/subtask section in the story file
+- Add implementation detail file path under the task heading
+- Format: `**Implementation Details**: [tasks/[filename].md](tasks/[filename].md)`
 </file-processing-methodology>
 
 <implementation-prompt-structure>
@@ -367,6 +373,7 @@ After generating each file, confirm with:
    Task: [task-id] - [task-objective]
    Wave: [wave-number]
    Lines: [approximate-line-count]
+   Story Updated: ✅ Added link to implementation details
 ```
 
 </output-file-organization>
@@ -384,8 +391,9 @@ After generating each file, confirm with:
    - Extract before/after states
    - Identify integration points
 6. **Generate Implementation Files**: Create comprehensive specs
-7. **Validate Output**: Confirm all Prime Directives satisfied
-8. **Report Completion**: Summary of files created
+7. **Update Story File**: Add implementation detail links to each task
+8. **Validate Output**: Confirm all Prime Directives satisfied
+9. **Report Completion**: Summary of files created and story file updated
 </execution-workflow>
 
 <resilience-instructions>
