@@ -35,6 +35,16 @@ Before beginning Phase 2, ensure you have:
 #### Step 2: Apply Task Generation Principles
 
 1. **Review Atomic Requirements**: Ensure understanding of 1-5 file maximum per task
+ 1. Atomic Task Requirements (CRITICAL FOR AGENT EXECUTION)
+  - **File Scope**: Touches 1-5 related files maximum
+  - **Single Purpose**: One complete implementation unit per task
+      - Multiple related edits allowed per task
+      - All changes must work together toward one validation checkpoint
+      - The validation test can be written in one clear and impactful sentence
+  - **Specific Files**: Must specify exact files to create/modify
+  - **Agent-Friendly**: Clear input/output with minimal context switching
+  - **Coding Task Focused**: Excludes any task that cannot be completed through writing/modifying/testing code
+  - **Hallucination Free**: All tasks and sub-tasks are derived from Phase 1 architectural context
 2. **Study Agent Capabilities**: Map task types to appropriate agents:
    - `test-writer`: Test infrastructure, test creation, TDD setup, validation test implementation
    - `code-developer-agent`: Core implementation, class creation, method implementation, integration code
@@ -175,7 +185,7 @@ Use these guidelines to determine the primary agent type for each milestone:
 - Quality assurance checkpoints
 - Story completion validation
 
-**Note**: The agent type identified here represents the *primary* type. In Phase 3, individual subtasks may use different specialized agents following TDD cycles (test-writer for RED, code-developer-agent for GREEN, application-tech-lead for REFACTOR).
+**Note**: The agent type identified here represents the _primary_ type. In Phase 3, individual subtasks may use different specialized agents following TDD cycles (test-writer for RED, code-developer-agent for GREEN, application-tech-lead for REFACTOR).
 
 ### Milestone Sequencing and Organization
 
