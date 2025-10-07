@@ -508,9 +508,8 @@ Before finalizing each implementation file, verify:
 - [ ] **#1 Focused Context**: ONLY this task info, NO other tasks/phases/philosophy
 - [ ] **#2 Trust-Based Spec**: BEFORE/AFTER patterns + component-level changes (NO line-by-line instructions)
 - [ ] **#3 Executable Validation**: Bash commands with expected outputs
-- [ ] **#4 Lean Template**: 150-200 lines max, NO bloat
+- [ ] **#4 Lean Template**: 150-500 lines max, NO bloat
 
 **Structure:**
 - [ ] **File Naming**: `[phase]-[task]-[subtask]-[slug]-us[story].md`
 - [ ] **Agent Templates**: Implementation & evaluation note sections included
-- [ ] **Line Count**: Target 150-200 lines (NOT 500+)
