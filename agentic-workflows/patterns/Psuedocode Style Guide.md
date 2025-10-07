@@ -150,7 +150,7 @@ method validateCLITool(toolName: string): ValidationResult is
 
 Use standardized comment categories for consistent architectural communication:
 
-#### **Core Categories**
+#### Core Categories
 
 ```tsx
 // Research: External investigation or validation needed
@@ -165,7 +165,7 @@ Use standardized comment categories for consistent architectural communication:
 // Fallback: Alternative approaches for failure scenarios
 ```
 
-#### **Usage Examples**
+#### Usage Examples
 
 ```tsx
 // Component initialization with comprehensive context

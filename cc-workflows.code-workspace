@@ -1,7 +1,12 @@
 {
 	"folders": [
 		{
+			"name": "cc-workflows",
 			"path": "."
+		},
+		{
+			"name": ".claude",
+			"path": "../../../../.claude"
 		}
 	],
 	"settings": {}
