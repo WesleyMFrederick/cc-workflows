@@ -35,10 +35,19 @@ Show BEFORE/AFTER transformation patterns with clear examples. State WHAT needs 
 
 **AFTER Code Block Guidelines**:
 - Use **MEDIUM-IMPLEMENTATION level** from [Pseudocode Style Guide](../../../agentic-workflows/patterns/Psuedocode%20Style%20Guide.md#MEDIUM-IMPLEMENTATION)
-- Show **one complete pattern example** to establish structure
-- Abbreviate remaining examples with `...` ellipsis
-- Use **real syntax** (tsx/javascript) but truncate implementation details
-- Focus on **what** changes, not **how** line-by-line
+- **Show pattern structure, not complete implementation**
+- Use **numbered decision points** (// 1., // 2., // 3...) to show control flow
+- Use __inline comments in /_ ... _/__ to indicate implementation strategy without writing the code
+- Use **real syntax** (tsx/javascript) but replace implementation details with descriptive comments
+- **Trust the agent** to fill in the implementation based on the pattern shown
+- Focus on **what** changes (structure, flow, integration points) not **how** line-by-line
+
+**For component implementation:**
+- Show the method structure and control flow
+- Indicate key decision points (if/else, loops)
+- Show integration patterns (how it calls dependencies)
+- Use `/* placeholder */` for actual implementation code
+- Annotate with WHY comments, not WHAT-TO-DO comments
 
 **Example - Test Creation Task**:
 
@@ -60,11 +69,91 @@ it("should detect errors", () => {
 })
 ```
 
+**Example - Component Implementation Task**:
+
+```javascript
+// GOOD: MEDIUM-IMPLEMENTATION (shows pattern, not complete code)
+async resolveParsedFile(filePath) {
+  // 1. Normalize path to absolute for consistent cache keys
+  const cacheKey = /* path.resolve(path.normalize(filePath)) */;
+
+  // 2. Decision point: Check cache
+  if (this.cache.has(cacheKey)) {
+    // Cache hit: Return existing Promise
+    return /* cached Promise */;
+  }
+
+  // 3. Cache miss: Create parse operation
+  const parsePromise = /* this.parser.parseFile(cacheKey) */;
+
+  // 4. Store Promise IMMEDIATELY (handles concurrent requests)
+  this.cache.set(cacheKey, parsePromise);
+
+  // 5. Error handling: Cleanup on failure
+  parsePromise.catch(() => {
+    /* remove failed promise from cache */
+  });
+
+  return parsePromise;
+}
+
+// BAD: Full implementation (agent's job, not spec's job)
+async resolveParsedFile(filePath) {
+  const cacheKey = resolve(normalize(filePath));
+  if (this.cache.has(cacheKey)) {
+    return this.cache.get(cacheKey);
+  }
+  const parsePromise = this.parser.parseFile(cacheKey);
+  this.cache.set(cacheKey, parsePromise);
+  parsePromise.catch(() => {
+    this.cache.delete(cacheKey);
+  });
+  return parsePromise;
+}
+```
+
 **Prime Directive #3: Executable Validation**
 Provide bash commands with expected outputs that verify success. Make validation concrete and executable, not abstract criteria.
 
 **Prime Directive #4: Lean Template (~500 lines max)**
 Target 150-500 lines per task file. Remove all bloat: integration context for future phases, architectural philosophy, design principles justification, redundant explanations, line-by-line edit instructions.
+
+**Anti-Patterns to Avoid in AFTER Code Blocks**:
+
+❌ **Complete Implementation** (violates Prime Directive #2)
+
+```javascript
+// This is the agent's job, not the spec's job
+const cacheKey = resolve(normalize(filePath));
+if (this.cache.has(cacheKey)) {
+  return this.cache.get(cacheKey);
+}
+```
+
+✅ **Pattern-Level Specification** (correct approach)
+
+```javascript
+// This shows WHAT needs to happen, trusts agent for HOW
+const cacheKey = /* normalize to absolute path using path.resolve() */;
+if (this.cache.has(cacheKey)) {
+  return /* cached Promise */;
+}
+```
+
+❌ **Line-by-line instructions**
+
+```javascript
+// Line 1: Import resolve and normalize
+// Line 2: Define async method
+// Line 3: Create cacheKey variable...
+```
+
+✅ **Flow-level pattern with decision points**
+
+```javascript
+// 1. Normalize path → 2. Check cache → 3. Return cached or create new
+```
+
 </prime-directives>
 
 <file-processing-methodology>
@@ -506,9 +595,15 @@ Before finalizing each implementation file, verify:
 
 **Prime Directive Compliance:**
 - [ ] **#1 Focused Context**: ONLY this task info, NO other tasks/phases/philosophy
-- [ ] **#2 Trust-Based Spec**: BEFORE/AFTER patterns + component-level changes (NO line-by-line instructions)
+- [ ] **#2 Trust-Based Spec**: BEFORE/AFTER patterns + component-level changes (NO complete implementations, use `/* placeholders */`)
 - [ ] **#3 Executable Validation**: Bash commands with expected outputs
 - [ ] **#4 Lean Template**: 150-500 lines max, NO bloat
+
+**Code Block Quality:**
+- [ ] **AFTER blocks use MEDIUM-IMPLEMENTATION level** (pattern structure, not complete code)
+- [ ] **Numbered decision points** (// 1., // 2., // 3...) show control flow
+- [ ] **Inline `/* ... */` comments** indicate implementation strategy without writing code
+- [ ] **Good/Bad examples** demonstrate pattern vs. full implementation contrast
 
 **Structure:**
 - [ ] **File Naming**: `[phase]-[task]-[subtask]-[slug]-us[story].md`
