@@ -115,6 +115,53 @@ Review the completed "Implementation Agent Notes" section, execute validation pe
 - Continue with next agent/task (don't halt entire workflow)
 - Collect errors for final report
 
+#### Update Task Status
+
+**After all agents complete for a task:**
+
+1. **Determine Final Status**:
+   - If all defined agents succeeded → Set `status: "Done"`
+   - If any agent failed → Set `status: "Failed"`
+   - If implementation succeeded but evaluation failed → Set `status: "Needs Review"`
+
+2. **Update Frontmatter**:
+   - Use Edit tool to modify the `status` field in the task file's YAML frontmatter
+   - Locate the line containing `status:` within the frontmatter (between `---` markers)
+   - Replace current status value with determined status
+
+3. **Preserve Other Fields**: Keep all other frontmatter fields unchanged (story, epic, phase, task-id, agents)
+
+4. **Update User Story Task Checkbox** (when status = "Done"):
+   - Extract `story` field from task frontmatter to identify parent user story
+   - Search for user story document containing matching story title
+   - Find task checkbox corresponding to current `task-id`
+   - Mark checkbox as complete: `- [ ]` → `- [x]`
+   - Use Edit tool to update the user story document
+
+**Example Status Update:**
+
+```yaml
+# Before (in task file frontmatter)
+status: "ready"
+
+# After successful completion
+status: "Done"
+
+# After failure
+status: "Failed"
+```
+
+**Example User Story Checkbox Update:**
+
+```markdown
+# In user story document
+
+## Tasks
+- [x] Task 1.1: Relocate test files (marked when task completes)
+- [ ] Task 1.2: Update parser tests
+- [ ] Task 1.3: Refactor parser
+```
+
 ### Step 5: Report Results
 
 **Generate summary report:**
@@ -226,6 +273,18 @@ Options:
 ❌ Error: Task file not found at {file-path}. Skipping.
 ```
 
+**If user story document not found:**
+
+```text
+⚠️ Warning: Could not find user story document for "{story-title}" to update task checkbox. Task status updated in task file only.
+```
+
+**If task checkbox not found in user story:**
+
+```text
+⚠️ Warning: Could not find checkbox for Task {task-id} in user story "{story-title}". Task status updated in task file only.
+```
+
 ## Examples
 
 ### Task File Frontmatter Structure
@@ -303,6 +362,8 @@ evaluation-agent: "application-tech-lead"
 - [ ] Frontmatter correctly parsed for each file
 - [ ] Agents launched only if defined in frontmatter
 - [ ] Todo list reflects actual execution status
+- [ ] Task file frontmatter status updated to reflect completion state
+- [ ] User story task checkboxes marked when status = "Done"
 - [ ] Final report includes all tasks with accurate status and branch name
 - [ ] Error messages clear and actionable
 - [ ] Implementation and validation notes populated in task files
