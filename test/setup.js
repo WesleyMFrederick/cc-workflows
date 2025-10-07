@@ -9,13 +9,13 @@ global.testCleanupCallbacks = [];
 
 // Register cleanup callback for process exit
 process.on("exit", () => {
-	global.testCleanupCallbacks.forEach((callback) => {
+	for (const callback of global.testCleanupCallbacks) {
 		try {
 			callback();
 		} catch (error) {
 			console.warn("Cleanup callback failed:", error.message);
 		}
-	});
+	}
 });
 
 // Handle forced exits

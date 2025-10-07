@@ -8,11 +8,7 @@
 		"test": "vitest run",
 		"start": "node src/mock-tool.js"
 	},
-	"keywords": [
-		"mock",
-		"poc",
-		"workspace-validation"
-	],
+	"keywords": ["mock", "poc", "workspace-validation"],
 	"author": "",
 	"license": "ISC"
 }
