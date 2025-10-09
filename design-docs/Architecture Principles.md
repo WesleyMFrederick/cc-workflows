@@ -76,6 +76,7 @@
 - **Confusion Prevention**: Provide enough detail in names to eliminate ambiguity about function or responsibility ^confusion-prevention
 - **Contextual Comments**: Include docstrings and inline comments that provide sufficient context for AI to understand file purpose and usage patterns ^contextual-comments
 - **Follow Conventions**: Design systems to behave as users and developers expect, minimizing surprises ^follow-conventions
+- **Selective Documentation**: Document all class-level architecture and public APIs with JSDoc including `@param`/`@returns`. Document complex private methods with multi-step algorithms or important behavioral notes. Use inline comments for simple utilities. ^selective-documentation
 
 ---
 ## Safety-First Design Patterns
