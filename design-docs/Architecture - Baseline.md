@@ -26,25 +26,25 @@
 
 The system's design is guided by core principles that prioritize **simplicity, maintainability, and extensibility** through a **modular, CLI-first architecture.**
 
-### [Minimum Viable Product (MVP) Principles](Architecture%20Principles.md#Minimum%20Viable%20Product%20(MVP)%20Principles)
+### [Minimum Viable Product (MVP) Principles](<Architecture Principles.md#Minimum Viable Product (MVP) Principles>)
 
 - **Key Concept**: **Validate the core concept** of a centralized workspace by delivering value quickly. Every architectural decision is weighed against the goal of avoiding over-engineering to accelerate learning and iteration.
   
 - **Implementation Approach**: We are implementing this by choosing **native, low-overhead tooling** like NPM Workspaces and focusing strictly on the functionality required to migrate and enhance a single tool, `citation-manager`, as defined in the PRD.
 
-### [Modular Design Principles](Architecture%20Principles.md#Modular%20Design%20Principles)
+### [Modular Design Principles](<Architecture Principles.md#Modular Design Principles>)
 
 - **Key Concept**: The system's architecture must support a collection of **independent, reusable, and replaceable tools**. This modularity is foundational to achieving the project's long-term goals of maintainability and extensibility as new tools are added to the workspace.
   
 - **Implementation Approach**: We are enforcing modularity by structuring the workspace with **NPM Workspaces**, where each tool lives in an isolated package with its own explicit dependencies and API boundaries.
 
-### [Foundation Reuse](Architecture%20Principles.md#^foundation-reuse)
+### [Foundation Reuse](<Architecture Principles.md#^foundation-reuse>)
 
 - **Key Concept**: This principle directly addresses the core business problem of **eliminating duplicated effort and inconsistent quality**. The workspace must serve as the single, authoritative repository for all development tools and workflows.
 
 - **Implementation Approach**: The **centralized mono-repository structure** is the direct implementation of this principle, ensuring that any improvements to a tool like `citation-manager` are immediately available to all consumers without manual porting.
 
-### [Deterministic Offloading Principles](Architecture%20Principles.md#Deterministic%20Offloading%20Principles)
+### [Deterministic Offloading Principles](<Architecture Principles.md#Deterministic Offloading Principles>)
 
 - **Key Concept**: The tools within this workspace are defined as **predictable, mechanical processors** that handle repeatable tasks. This clarifies their role and boundaries within a larger development workflow that may also involve non-deterministic AI agents.
 
@@ -64,17 +64,17 @@ The C4 model decomposes complex architecture by drilling down through four level
 
 ### Architectural and System Design
 
-- **Architecture Pattern:** Monorepo (multi-package workspace) — a single repo acting as a [centralized, single source of truth](Architecture%20Principles.md#^foundation-reuse) for multiple, distinct development utilities. The first tool is the `citation-manager`.
+- **Architecture Pattern:** Monorepo (multi-package workspace) — a single repo acting as a [centralized, single source of truth](<Architecture Principles.md#^foundation-reuse>) for multiple, distinct development utilities. The first tool is the `citation-manager`.
 
 - **System Design:** tooling monorepo hosting a multi-command CLI with shared packages for test/build. This is a toolkit of independent tools that consume common services like [testing (FR2)](cc-workflows-workspace-prd.md#^FR2) and [builds (FR3)](cc-workflows-workspace-prd.md#^FR3)—not a single linear pipeline.
 
 #### Architectural Pattern Implementations
-- `Monorepo` implemented via `npm workspaces` ([NPM Workspaces vs Alternatives](research/content-aggregation-research.md#2%2E1%20NPM%20Workspaces%20vs%20Alternatives))
+- `Monorepo` implemented via `npm workspaces` ([NPM Workspaces vs Alternatives](<research/content-aggregation-research.md#2.1 NPM Workspaces vs Alternatives>))
 - `cli multi-command` implemented via `commander` (initial). Clear upgrade path to `oclif` if/when plugin-based extensibility is required.
 
 ### Key Software Design Patterns
 
-- [**Modular Component Design**](Architecture%20Principles.md#Modular%20Design%20Principles): - each tool (e.g., citation-manager) is isolated for independent evolution and migration, while shared utilities live in shared packages.
+- [**Modular Component Design**](<Architecture Principles.md#Modular Design Principles>): - each tool (e.g., citation-manager) is isolated for independent evolution and migration, while shared utilities live in shared packages.
 
 ### Key Characteristics
 - **Interaction Style**: CLI-based, with commands executed via root-level NPM scripts.
@@ -83,7 +83,7 @@ The C4 model decomposes complex architecture by drilling down through four level
 - **Scaling Approach**: Scales by adding new, isolated tool packages to the workspace, with a clear migration path to more advanced tooling if the package count grows significantly. Start with `npm workspaces`; if growth demands, adopt `Nx/Turborepo` for caching & task orchestration.
 
 ### Rationale
-- [**Simplicity First:**](Architecture%20Principles.md#^simplicity-first) Native Node.js + npm integration minimizes tooling overhead.
+- [**Simplicity First:**](<Architecture Principles.md#^simplicity-first>) Native Node.js + npm integration minimizes tooling overhead.
 - **Right-Sized Performance:** Optimized for ~5–10 tools/packages—fast installs/builds without premature complexity.
 - **Less Meta-Work:** Shared dependencies and scripts reduce coordination cost while keeping each tool|package independently maintainable.
 - [ADR-001: NPM Workspaces for Monorepo Management](#ADR-001%20NPM%20Workspaces%20for%20Monorepo%20Management)
@@ -356,7 +356,7 @@ design-docs/features/20250928-cc-workflows-workspace-scaffolding/
 ---
 ## Coding Standards and Conventions
 
-This project follows JavaScript/TypeScript naming conventions with one strategic exception for test methods, aligned with our [Self-Contained Naming Principles](Architecture%20Principles.md#^self-contained-naming-principles-definition).
+This project follows JavaScript/TypeScript naming conventions with one strategic exception for test methods, aligned with our [Self-Contained Naming Principles](<Architecture Principles.md#^self-contained-naming-principles-definition>).
 
 ### JavaScript Naming Conventions
 
@@ -374,14 +374,14 @@ This project follows JavaScript/TypeScript naming conventions with one strategic
 
 ### Code Organization
 
-- **Modular Structure**: Each module should have a single, clear responsibility ([Single Responsibility](Architecture%20Principles.md#^single-responsibility))
-- **Interface Boundaries**: Define clear APIs between components ([Black Box Interfaces](Architecture%20Principles.md#^black-box-interfaces))
-- **Error Handling**: Implement fail-fast principles with clear error messages ([Fail Fast](Architecture%20Principles.md#^fail-fast))
+- **Modular Structure**: Each module should have a single, clear responsibility ([Single Responsibility](<Architecture Principles.md#^single-responsibility>))
+- **Interface Boundaries**: Define clear APIs between components ([Black Box Interfaces](<Architecture Principles.md#^black-box-interfaces>))
+- **Error Handling**: Implement fail-fast principles with clear error messages ([Fail Fast](<Architecture Principles.md#^fail-fast>))
 
 ### Documentation Requirements
 
-- **Self-Documenting Code**: Names should provide immediate understanding without lookup ([Immediate Understanding](Architecture%20Principles.md#immediate-understanding))
-- **Inline Comments**: Include contextual comments for complex logic ([Contextual Comments](Architecture%20Principles.md#contextual-comments))
+- **Self-Documenting Code**: Names should provide immediate understanding without lookup ([Immediate Understanding](<Architecture Principles.md#immediate-understanding>))
+- **Inline Comments**: Include contextual comments for complex logic ([Contextual Comments](<Architecture Principles.md#contextual-comments>))
 - **Function Documentation**: Use docstrings to document public APIs and their contracts
 
 ---
@@ -427,7 +427,7 @@ Our strategy distinguishes between cross-cutting workspace functionality and too
 
 #### Testing Naming Conventions
 
-Test method names follow our [Self-Contained Naming Principles](Architecture%20Principles.md#^self-contained-naming-principles-definition) with a specific exception to optimize for readability and clarity:
+Test method names follow our [Self-Contained Naming Principles](<Architecture Principles.md#^self-contained-naming-principles-definition>) with a specific exception to optimize for readability and clarity:
 
 ##### Test Description Naming: Natural Language Convention
 - **Convention**: Use **natural language with spaces** for test descriptions in `it()` method strings
@@ -461,7 +461,7 @@ describe('PaymentProcessor', () => {
 });
 ```
 
-This naming convention aligns with our **"Names as Contracts"** philosophy ([Descriptive Labels](Architecture%20Principles.md#^descriptive-labels), [Immediate Understanding](Architecture%20Principles.md#^immediate-understanding)) by prioritizing communication clarity and natural readability.
+This naming convention aligns with our **"Names as Contracts"** philosophy ([Descriptive Labels](<Architecture Principles.md#^descriptive-labels>), [Immediate Understanding](<Architecture Principles.md#^immediate-understanding>)) by prioritizing communication clarity and natural readability.
 
 #### BDD-Style Test Structure (Given-When-Then)
 
@@ -528,7 +528,7 @@ describe('Citation Manager Integration Tests', () => {
 
 When testing component collaboration, use constructor dependency injection to pass in real dependencies (not mocks).
 
-**Note:** This example represents the target architecture after refactoring citation-manager to implement DI ([technical debt](../../../tools/citation-manager/design-docs/features/20251003-content-aggregation/content-aggregation-architecture.md#Lack%20of%20Dependency%20Injection)) and factory pattern ([mitigation strategy](#Constructor-Based%20DI%20Wiring%20Overhead)).
+**Note:** This example represents the target architecture after refactoring citation-manager to implement DI ([technical debt](<../../../tools/citation-manager/design-docs/features/20251003-content-aggregation/content-aggregation-architecture.md#Lack of Dependency Injection>)) and factory pattern ([mitigation strategy](#Constructor-Based%20DI%20Wiring%20Overhead)).
 
 **Production Code - USES Factory:**
 
@@ -612,7 +612,7 @@ describe('CitationValidator Integration Tests', () => {
 
 ### Citation-Manager: Reference Test Structure
 
-The citation-manager tool provides the established pattern for tool-level testing within the workspace. See [Citation Manager Testing Strategy](../../../tools/citation-manager/design-docs/features/20251003-content-aggregation/content-aggregation-architecture.md#Testing%20Strategy) for complete test structure and principles.
+The citation-manager tool provides the established pattern for tool-level testing within the workspace. See [Citation Manager Testing Strategy](<../../../tools/citation-manager/design-docs/features/20251003-content-aggregation/content-aggregation-architecture.md#Testing Strategy>) for complete test structure and principles.
 
 ---
 
@@ -700,7 +700,7 @@ Use **Dependency Injection (DI)** as a foundational pattern to achieve a modular
 
 While DI makes it possible to inject mock dependencies for isolated unit testing, our testing philosophy explicitly prioritizes integration tests that verify real component interactions. Therefore, the workspace adheres to the **"Real Systems, Fake Fixtures"** principle, which includes a **"zero-tolerance policy for mocking"** application components. Our strategy is to use DI to inject _real_ dependencies during testing to gain the highest confidence that our components work together correctly.
 
-For example, the `CitationValidator` should receive its `MarkdownParser` dependency via its constructor. During testing, we will pass in the _real_ `MarkdownParser` to ensure the validation logic works with the actual parsing output. This gives us confidence that the integrated system functions as expected. The existing `citation-manager` code, which does not fully use DI, has been [identified as technical debt](../../../tools/citation-manager/design-docs/features/20251003-content-aggregation/content-aggregation-architecture.md#Lack%20of%20Dependency%20Injection) to be refactored to align with this principle.
+For example, the `CitationValidator` should receive its `MarkdownParser` dependency via its constructor. During testing, we will pass in the _real_ `MarkdownParser` to ensure the validation logic works with the actual parsing output. This gives us confidence that the integrated system functions as expected. The existing `citation-manager` code, which does not fully use DI, has been [identified as technical debt](<../../../tools/citation-manager/design-docs/features/20251003-content-aggregation/content-aggregation-architecture.md#Lack of Dependency Injection>) to be refactored to align with this principle.
 
 ---
 ## Known Risks and Technical Debt
@@ -742,7 +742,7 @@ For example, the `CitationValidator` should receive its `MarkdownParser` depende
 - [CC Workflows PRD](cc-workflows-workspace-prd.md): Product requirements and epic breakdown for MVP implementation
 - [Content Aggregation Research](research/content-aggregation-research.md): Industry patterns and technical recommendations for workspace management
 - [C4 Model Framework Overview](/Users/wesleyfrederick/Documents/ObsidianVaultNew/Technical KnowledgeBase/AI Coding Assistants/Concepts/C4 Framework Overview.md): Architectural documentation methodology used in this document
-- [Psuedocode Style Guide](../../../agentic-workflows/patterns/Psuedocode%20Style%20Guide.md): Pseudocode syntax reference used in this document
+- [Psuedocode Style Guide](<../../../agentic-workflows/patterns/Psuedocode Style Guide.md>): Pseudocode syntax reference used in this document
 - [citation-guidelines](../../../agentic-workflows/rules/citation-guidelines.md): Citation and reference formatting standards used in this document
 - [WORKSPACE-SETUP](../../../WORKSPACE-SETUP.md): Validated workspace patterns for workspace configuration and development
 

@@ -139,7 +139,7 @@ Mark external dependencies and validation needs:
 
 ```tsx
 // Environment validation boundary
-method validateCLITool(toolName: string): ValidationResult is
+method validateCLITool(toolName: string): CitationValidator.ValidationResult.Output.DataContrac is
   // Research: which ${toolName}
   // Verify: ${toolName} --version >= required_version
   // Fallback: Installation instructions or alternative approach
