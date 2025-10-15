@@ -198,7 +198,9 @@ Example: `01-1-1-refactor-citation-validator-constructor-di-us1.4b.md`
 
 **Required Sections**:
 
-1. **Frontmatter Metadata** (YAML)
+1. **Frontmatter Metadata** (YAML) - **MANDATORY FIRST SECTION**
+
+   **CRITICAL**: Every generated task file MUST begin with YAML frontmatter. This is required for `/execute-tasks` orchestration.
 
    ```yaml
    ---
@@ -213,6 +215,17 @@ Example: `01-1-1-refactor-citation-validator-constructor-di-us1.4b.md`
    status: "ready"
    ---
    ```
+
+   **Required Fields**:
+   - `story`: Full user story title from story file
+   - `epic`: Epic name from story frontmatter
+   - `phase`: Phase name (e.g., "Phase 1: Test File Relocation and Setup")
+   - `task-id`: Task identifier (e.g., "1.1", "2.3")
+   - `task-anchor`: Anchor link to task in story file (e.g., "#task-11-relocate-test-files")
+   - `wave`: Wave identifier (e.g., "1a", "2b")
+   - `implementation-agent`: Agent type for implementation (e.g., "code-developer", "test-writer")
+   - `evaluation-agent`: Agent type for validation (e.g., "application-tech-lead", "qa-validation")
+   - `status`: Always set to "ready" for new tasks
 
 2. **Objective Section**
    - Clear, specific objective from subtask definition (1-2 sentences)

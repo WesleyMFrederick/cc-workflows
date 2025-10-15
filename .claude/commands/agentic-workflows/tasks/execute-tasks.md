@@ -22,6 +22,7 @@ If no path is provided ($1 is empty), respond with: "Error: Please provide at le
 Arguments: $1 $2 $3 $4 $5 $6 $7 $8 $9
 </task-paths-input>
 
+<execution-workflow>
 ## Execution Workflow
 
 ### Step 1: Parse Input & Discover Task Files
@@ -55,7 +56,9 @@ Arguments: $1 $2 $3 $4 $5 $6 $7 $8 $9
    - If `evaluation-agent` present: Add to execution plan (runs AFTER implementation)
    - If no agents defined: Skip task with warning
 
-4. **Create Todo List**: Track each agent execution per task
+4. **Create Todo List with Execution Todos and QA Checkpoints**:
+   - Build unified todo list with execution todos (actual work) and QA checkpoints (quality gates) interspersed logically
+   - See Todo List Structure section below for detailed specification
 
 ### Step 3: Feature Branch Creation (First Task Only)
 
@@ -115,7 +118,7 @@ Review the completed "Implementation Agent Notes" section, execute validation pe
 - Continue with next agent/task (don't halt entire workflow)
 - Collect errors for final report
 
-#### Update Task Status
+### Step 5: Update Task Status
 
 **After all agents complete for a task:**
 
@@ -129,6 +132,19 @@ Review the completed "Implementation Agent Notes" section, execute validation pe
    - Locate the line containing `status:` within the frontmatter (between `---` markers)
    - Replace current status value with determined status
 
+   **Step 3 Example: Status Update:**
+
+   ```yaml
+   # Before (in task file frontmatter)
+   status: "ready"
+
+   # After successful completion
+   status: "Done"
+
+   # After failure
+   status: "Failed"
+   ```
+
 3. **Preserve Other Fields**: Keep all other frontmatter fields unchanged (story, epic, phase, task-id, agents)
 
 4. **Update User Story Task Checkbox** (when status = "Done"):
@@ -138,33 +154,61 @@ Review the completed "Implementation Agent Notes" section, execute validation pe
    - Mark checkbox as complete: `- [ ]` → `- [x]`
    - Use Edit tool to update the user story document
 
-**Example Status Update:**
+   **Step 4 Example: User Story Checkbox Update:**
 
-```yaml
-# Before (in task file frontmatter)
-status: "ready"
+   ```markdown
+   # In user story document
 
-# After successful completion
-status: "Done"
+   ## Tasks
+   - [x] Task 1.1: Relocate test files (marked when task completes)
+   - [ ] Task 1.2: Update parser tests
+   - [ ] Task 1.3: Refactor parser
+   ```
 
-# After failure
-status: "Failed"
-```
+5. **Update Execution Todo List** (AFTER checkbox update):
+   - Mark task execution todo items as `completed` in the execution todo list
+   - **Execution Order**: Checkbox updates happen first, then todo list updates
+   - This ensures user story reflects completion before execution tracking is marked done
+   - Provides proper observability: users see story progress before execution todos complete
 
-**Example User Story Checkbox Update:**
+### Step 6: Post-Execution Updates & Reporting
 
-```markdown
-# In user story document
+**After all tasks complete:**
 
-## Tasks
-- [x] Task 1.1: Relocate test files (marked when task completes)
-- [ ] Task 1.2: Update parser tests
-- [ ] Task 1.3: Refactor parser
-```
+#### 6.1: Check User Story Completion & Update PRD Status
 
-### Step 5: Report Results
+1. **Extract User Story Reference**:
+   - Get `story` field from task frontmatter
+   - Locate the user story document containing this story title
 
-**Generate summary report:**
+2. **Check All Tasks Complete**:
+   - Read all task checkboxes in the user story document
+   - Count total tasks vs. completed tasks `[x]`
+   - If any tasks remain incomplete `[ ]`, skip PRD update
+
+3. **Update PRD Status When Story Complete**:
+   - If all task checkboxes are marked complete `[x]`:
+     - Search for PRD document that references this user story
+     - Locate the status line for this user story in the PRD
+     - Update status: `📋 PENDING` → `🔍 Needs Evaluation`
+     - Use Edit tool to update the PRD document
+
+   **Example PRD Status Update:**
+
+   ```markdown
+   # Before (in PRD)
+   **Status**: 📋 PENDING
+
+   # After (when all story tasks complete)
+   **Status**: 🔍 Needs Evaluation
+   ```
+
+4. **Error Handling**:
+   - If user story document not found: Log warning, continue to reporting
+   - If PRD document not found: Log warning, continue to reporting
+   - If status line not found in PRD: Log warning, continue to reporting
+
+#### 6.2: Generate Execution Summary Report
 
 ```markdown
 ## Execution Summary
@@ -189,6 +233,9 @@ status: "Failed"
 - Ready to merge if all tests pass
 ```
 
+</execution-workflow>
+
+<agent-prompt-templates>
 ## Agent Prompt Templates
 
 ### Implementation Agent Prompt
@@ -224,19 +271,98 @@ Review the completed "Implementation Agent Notes" section, execute validation pe
 5. Populate "Evaluation Agent Notes" with validation checklist results, outcome (PASS/FAIL), and any remediation needed
 ```
 
-## Todo List Management
+</agent-prompt-templates>
 
-**Create initial todo list** with entries including branch creation and agent execution:
+<todo-list-instructions>
+## Todo List Structure
 
-- Branch creation entry (first task only)
-- Implementation agent execution entry (if agent defined)
-- Validation agent execution entry (if agent defined)
+**Create unified todo list with execution todos and QA checkpoints interspersed:**
 
-**Update status in real-time:**
-- Mark `in_progress` before launching agent or creating branch
-- Mark `completed` when agent returns successfully or branch created
-- Mark `failed` if agent reports errors or branch creation fails
+### For Single Task Execution
 
+```javascript
+TodoWrite({
+  todos: [
+    // Phase 1: Discovery & Planning
+    { content: "Discover and validate task files", status: "pending", activeForm: "Discovering task files" },
+    { content: "Parse frontmatter configuration", status: "pending", activeForm: "Parsing frontmatter" },
+
+    // Phase 2: Branch Setup (first task only)
+    { content: "Create feature branch: feature/{story-slug}", status: "pending", activeForm: "Creating feature branch" },
+    { content: "✓ QA: Branch creation successful", status: "pending", activeForm: "Verifying branch creation" },
+
+    // Phase 3: Implementation
+    { content: "Execute Task {task-id} with {implementation-agent}", status: "pending", activeForm: "Executing Task {task-id} with {implementation-agent}" },
+    { content: "✓ QA: Implementation agent completed successfully", status: "pending", activeForm: "Verifying implementation" },
+
+    // Phase 4: Validation (if evaluation-agent defined)
+    { content: "Validate Task {task-id} with {evaluation-agent}", status: "pending", activeForm: "Validating Task {task-id} with {evaluation-agent}" },
+    { content: "✓ QA: Evaluation agent completed successfully", status: "pending", activeForm: "Verifying evaluation" },
+
+    // Phase 5: Status Updates
+    { content: "Update Task {task-id} status in task file", status: "pending", activeForm: "Updating task status" },
+    { content: "Mark Task {task-id} checkbox in user story", status: "pending", activeForm: "Marking checkbox" },
+    { content: "✓ QA: Task status and checkbox updated", status: "pending", activeForm: "Verifying status updates" },
+
+    // Phase 6: Post-Execution & Reporting
+    { content: "Check user story completion and update PRD status if complete", status: "pending", activeForm: "Checking story completion" },
+    { content: "✓ QA: PRD status updated if applicable", status: "pending", activeForm: "Verifying PRD update" },
+    { content: "Generate execution summary report", status: "pending", activeForm: "Generating report" },
+    { content: "✓ QA: All workflow steps completed", status: "pending", activeForm: "Final verification" }
+  ]
+})
+```
+
+### For Multiple Task Execution
+
+For multiple tasks, repeat Phases 3-5 for each task:
+
+```javascript
+TodoWrite({
+  todos: [
+    // Phase 1: Discovery & Planning
+    { content: "Discover and validate all task files", status: "pending", activeForm: "Discovering task files" },
+    { content: "Parse frontmatter for all tasks", status: "pending", activeForm: "Parsing frontmatter" },
+
+    // Phase 2: Branch Setup (if needed)
+    { content: "Create/verify feature branch", status: "pending", activeForm: "Setting up branch" },
+
+    // === Task {task-id-1} ===
+    { content: "Execute Task {task-id-1} with {implementation-agent-1}", status: "pending", activeForm: "Executing Task {task-id-1}" },
+    { content: "Validate Task {task-id-1} with {evaluation-agent-1}", status: "pending", activeForm: "Validating Task {task-id-1}" },
+    { content: "Update Task {task-id-1} status and checkbox", status: "pending", activeForm: "Updating Task {task-id-1} status" },
+    { content: "✓ QA: Task {task-id-1} complete", status: "pending", activeForm: "Verifying Task {task-id-1}" },
+
+    // === Task {task-id-2} ===
+    { content: "Execute Task {task-id-2} with {implementation-agent-2}", status: "pending", activeForm: "Executing Task {task-id-2}" },
+    { content: "Validate Task {task-id-2} with {evaluation-agent-2}", status: "pending", activeForm: "Validating Task {task-id-2}" },
+    { content: "Update Task {task-id-2} status and checkbox", status: "pending", activeForm: "Updating Task {task-id-2} status" },
+    { content: "✓ QA: Task {task-id-2} complete", status: "pending", activeForm: "Verifying Task {task-id-2}" },
+
+    // Phase 6: Post-Execution & Reporting
+    { content: "Check user story completion and update PRD status if complete", status: "pending", activeForm: "Checking story completion" },
+    { content: "✓ QA: PRD status updated if applicable", status: "pending", activeForm: "Verifying PRD update" },
+    { content: "Generate execution summary for all tasks", status: "pending", activeForm: "Generating summary" },
+    { content: "✓ QA: All tasks completed successfully", status: "pending", activeForm: "Final verification" }
+  ]
+})
+```
+
+**Key Principles:**
+- **Execution Todos**: Show actual work (agent launches, file updates) with specific task IDs and agent names from frontmatter
+- **QA Checkpoints**: Prefixed with "✓ QA:" to validate preceding work
+- **Dynamic Agents**: Use actual agent names from each task's frontmatter (not hardcoded)
+- **Skip Missing Agents**: If no evaluation-agent defined, skip validation phase entirely
+
+**Update Rules:**
+- Mark `in_progress` immediately before starting each step
+- Mark `completed` immediately after each step finishes successfully
+- Mark `failed` if any step encounters errors
+- QA checkpoints marked `completed` after verifying preceding work
+
+</todo-list-instructions>
+
+<error-handling-and-edge-cases>
 ## Error Handling & Edge Cases
 
 **If feature branch creation fails:**
@@ -285,7 +411,20 @@ Options:
 ⚠️ Warning: Could not find checkbox for Task {task-id} in user story "{story-title}". Task status updated in task file only.
 ```
 
-## Examples
+**If checkbox update Edit operation fails:**
+
+```text
+❌ Error: Failed to update checkbox for Task {task-id} in user story "{story-title}". Edit operation error: {error-message}
+Task status successfully updated in task file, but user story checkbox update failed.
+Options:
+1. Manually update the checkbox in the user story document
+2. Re-run the execute-tasks command with just this task
+3. Continue - task status in task file is accurate
+```
+
+</error-handling-and-edge-cases>
+
+<examples>
 
 ### Task File Frontmatter Structure
 
@@ -321,10 +460,30 @@ evaluation-agent: "application-tech-lead"
 **Expected Workflow:**
 1. Reads frontmatter → extracts story, task-id, and agent types
 2. **Creates feature branch**: `git checkout -b feature/us1.4a-migrate-test-suite`
-3. Creates todos: ["Execute Task 1.1 with code-developer-agent", "Validate Task 1.1 with application-tech-lead"]
+3. Creates unified todo list with execution steps and QA checkpoints interspersed
 4. Launches code-developer-agent with implementation prompt
 5. Launches application-tech-lead with validation prompt
-6. Reports: "✅ Task 1.1 - 2 agents executed successfully on branch feature/us1.4a-migrate-test-suite"
+6. Update task status in task file and mark checkbox in user story file
+7. Check if all user story tasks complete → update PRD status if needed
+8. Mark todos as completed throughout execution
+9. Reports: "✅ Task 1.1 - 2 agents executed successfully on branch feature/us1.4a-migrate-test-suite"
+
+**Example Todo List During Execution:**
+- ✅ Discover and validate task files
+- ✅ Parse frontmatter configuration
+- ✅ Create feature branch: feature/us1.4a-migrate-test-suite
+- ✅ ✓ QA: Branch creation successful
+- ✅ Execute Task 1.1 with code-developer
+- ✅ ✓ QA: Implementation agent completed successfully
+- ✅ Validate Task 1.1 with application-tech-lead
+- ✅ ✓ QA: Evaluation agent completed successfully
+- ✅ Update Task 1.1 status in task file
+- ✅ Mark Task 1.1 checkbox in user story
+- ✅ ✓ QA: Task status and checkbox updated
+- ✅ Check user story completion and update PRD status if complete
+- ✅ ✓ QA: PRD status updated if applicable
+- ⏳ Generate execution summary report
+- ☐ ✓ QA: All workflow steps completed
 
 ### Example 2: Execute Multiple Tasks (Branch Already Exists)
 
@@ -335,11 +494,28 @@ evaluation-agent: "application-tech-lead"
 **Expected Workflow:**
 1. Checks current branch → already on `feature/us1.4a-migrate-test-suite` (created from previous task execution)
 2. Skips branch creation (already on correct feature branch)
-3. Processes both files sequentially
-4. Reads frontmatter for each → finds `implementation-agent: "test-writer"`, `evaluation-agent: "application-tech-lead"`
-5. Executes Task 2.1 (implement + validate)
-6. Executes Task 2.2 (implement + validate)
+3. Creates unified todo list for both tasks
+4. Processes both files sequentially (implement + validate for each)
+5. Updates task status and checkbox after each task completes
+6. Checks if all user story tasks complete → updates PRD status if needed
 7. Reports summary for both tasks
+
+**Example Todo List:**
+- ✅ Discover and validate all task files
+- ✅ Parse frontmatter for all tasks
+- ✅ Create/verify feature branch (skipped - already on correct branch)
+- ✅ Execute Task 2.1 with test-writer
+- ✅ Validate Task 2.1 with application-tech-lead
+- ✅ Update Task 2.1 status and checkbox
+- ✅ ✓ QA: Task 2.1 complete
+- ⏳ Execute Task 2.2 with test-writer
+- ☐ Validate Task 2.2 with application-tech-lead
+- ☐ Update Task 2.2 status and checkbox
+- ☐ ✓ QA: Task 2.2 complete
+- ☐ Check user story completion and update PRD status if complete
+- ☐ ✓ QA: PRD status updated if applicable
+- ☐ Generate execution summary for all tasks
+- ☐ ✓ QA: All tasks completed successfully
 
 ### Example 3: Execute All Tasks in Folder
 
@@ -351,19 +527,10 @@ evaluation-agent: "application-tech-lead"
 1. Globs for all .md files in tasks/ folder
 2. Filters to only files with agent frontmatter
 3. **Before first task**: Creates feature branch from story frontmatter
-4. Executes each task sequentially (implementation + validation for each)
-5. Reports comprehensive summary with branch name
+4. Creates unified todo list with all tasks
+5. Executes each task sequentially (implementation + validation for each)
+6. Updates task status and checkbox after each task
+7. Checks if all user story tasks complete → updates PRD status if needed
+8. Reports comprehensive summary with branch name
 
-## Quality Assurance
-
-**Before completing, verify:**
-- [ ] Feature branch created for first task (if needed)
-- [ ] All task files discovered and processed
-- [ ] Frontmatter correctly parsed for each file
-- [ ] Agents launched only if defined in frontmatter
-- [ ] Todo list reflects actual execution status
-- [ ] Task file frontmatter status updated to reflect completion state
-- [ ] User story task checkboxes marked when status = "Done"
-- [ ] Final report includes all tasks with accurate status and branch name
-- [ ] Error messages clear and actionable
-- [ ] Implementation and validation notes populated in task files
+</examples>
