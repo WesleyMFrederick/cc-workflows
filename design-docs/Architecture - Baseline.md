@@ -572,6 +572,21 @@ describe('Citation Manager Integration Tests', () => {
 
 **When to use:** Testing user-facing behavior and acceptance criteria.
 
+###### Technical Debt: CLI Subprocess Testing Buffer Limits
+
+**Issue**: The current CLI integration testing pattern using `execSync()` to spawn subprocesses creates a 64KB stdio pipe buffer limit on macOS. When CLI output exceeds this limit (e.g., large JSON validation results with 100+ citations producing 92KB+ output), the data gets truncated, resulting in malformed JSON and test failures.
+
+**Root Cause**: Node.js `child_process` stdio pipes have OS-level buffer limits (~64KB on macOS). Tests that spawn the CLI as a subprocess are subject to these limits, while production CLI usage (writing directly to terminal stdout) is not affected.
+
+**Current Workaround**: Shell redirection to temporary files bypasses pipe buffers but adds complexity to test infrastructure.
+
+**Recommended Mitigation**: Refactor tests to import CLI functions directly instead of spawning subprocesses:
+- Import `validateFile()`, `formatAsJSON()` from CLI Orchestrator component
+- Reserve subprocess testing for true E2E scenarios (argument parsing, exit codes)
+- Aligns test architecture with production architecture (both use same code path)
+
+**Reference**: [Bug 3: Buffer Limit Resolution](../../../tools/citation-manager/design-docs/features/20251003-content-aggregation/user-stories/us1.8-implement-validation-enrichment-pattern/bug3-buffer-limit-resolution.md)
+
 ##### Component Integration Testing (DI Required)
 
 When testing component collaboration, use constructor dependency injection to pass in real dependencies (not mocks).
