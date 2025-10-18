@@ -345,6 +345,83 @@ cd tools/mock-tool
 npm start
 ```
 
+## Quick Reference: Tests and Tools
+
+### Testing
+
+```bash
+# Run all tests
+npm test
+
+# Run tests in watch mode
+npm run test:watch
+
+# Run tests with UI
+npm run test:ui
+
+# Run tests with coverage
+npm run test:coverage
+
+# Run only unit tests
+npm run test:unit
+
+# Run only integration tests
+npm run test:integration
+```
+
+### Linting and Formatting
+
+```bash
+# Check all files with Biome
+npx biome check .
+
+# Auto-fix Biome issues
+npx biome check --write .
+
+# Check markdown files
+markdownlint "**/*.md"
+
+# Fix markdown issues
+markdownlint "**/*.md" --fix
+```
+
+### Citation Manager
+
+```bash
+# Validate citations in a file (skip *-repo.md files)
+npm run citation:validate <file-path>
+
+# Validate with scope for smart filename resolution
+npm run citation:validate <file-path> -- --scope /path/to/docs
+
+# Parse and display AST
+npm run citation:ast <file-path>
+
+# Get base paths from a file
+npm run citation:base-paths <file-path>
+
+# Get base paths in JSON format
+npm run citation:base-paths <file-path> -- --format json
+
+# Auto-fix citation issues
+npm run citation:fix <file-path>
+
+# Auto-fix with scope
+npm run citation:fix <file-path> -- --scope /path/to/docs
+```
+
+**Note:** Skip validation of `*-repo.md` files (aggregated repository files).
+
+### Mock Tool
+
+```bash
+# Run mock tool with default argument
+npm run mock:run
+
+# Run with custom argument
+npm run mock:run -- <argument>
+```
+
 ## Common Operations
 
 ### Install Dependencies

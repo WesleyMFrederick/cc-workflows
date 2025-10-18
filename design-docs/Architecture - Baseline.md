@@ -269,10 +269,45 @@ tools/citation-manager/
 
 #### File Naming Patterns
 
-- **Tool Scripts**: Executable entry points for tools must use **`kebab-case.js`** (e.g., `citation-manager.js`).
-- **Source Modules/Classes**: Internal source files, particularly those defining classes, should use **`PascalCase.js`** (e.g., `CitationValidator.js`) to distinguish them from executable scripts.
-- **Test Files**: Test files must mirror the name of the module they are testing, using the suffix **`.test.js`** (e.g., `CitationValidator.test.js`).
-- **Configuration Files**: Workspace-level configuration files will use their standard names (`package.json`, `biome.json`, `vitest.config.js`).
+**Action-Based Organization:** Following our [Action-Based File Organization](<Architecture Principles.md#^action-based-file-organization-definition>) principle, files should be named by their primary transformation or operation on data.
+
+##### Core File Types
+
+- **Tool Scripts**: Executable entry points for tools must use **`kebab-case.js`** (e.g., `citation-manager.js`)
+- **Source Modules**: Implementation files should use **`camelCase.js`** following transformation naming (e.g., `parseMarkdown.js`, `validateCitations.js`, `generateReport.js`)
+- **Data Contracts**: Type definition files use **`camelCase.js`** with `Types` suffix (e.g., `citationTypes.js`, `validationTypes.js`)
+- **Test Files**: Test files mirror the module name with **`.test.js`** suffix (e.g., `parseMarkdown.test.js`)
+- **Configuration Files**: Standard names (`package.json`, `biome.json`, `vitest.config.js`)
+
+##### Action-Based Naming Patterns
+
+- **Transformation Naming**: Name files by their primary operation using verb-noun or noun-verb patterns:
+  - `parseMarkdown.js` - parses markdown to AST
+  - `validateCitations.js` - validates citation references
+  - `extractContent.js` - extracts content from documents
+  - `calculateMetrics.js` - calculates metrics from data
+
+- **Primary Export Pattern**: Each file exports one main function matching (or closely related to) the file name:
+  - `parseMarkdown.js` → `export function parseMarkdown()`
+  - `validateCitations.js` → `export function validateCitations()`
+
+- **Helper Co-location**: Supporting functions stay in the same file as their primary operation:
+  - `parseMarkdown.js` contains helper functions like `normalizeWhitespace()`, `tokenizeLine()`
+
+- **Type Separation**: Extract shared types to dedicated `*Types.js` files to prevent circular dependencies:
+  - `citationTypes.js` - types used across citation validation, parsing, and reporting
+  - `validationTypes.js` - types used across multiple validation modules
+
+##### Structural Patterns
+
+- **Component Folders**: Group related operations by level 3 component:
+  - `src/core/MarkdownParser/` - all parsing operations
+  - `src/core/CitationValidator/` - all validation operations
+  - `src/service/Logger/` - all logging operations. IN `service/` since it is cross-cutting
+
+- **Strategy Subfolders**: Extract variants when using strategy patterns:
+  - `src/parsing/strategies/` - markdown, html, json parsers
+  - `src/validation/rules/` - different validation rule implementations
 
 ---
 ## Development Workflow
@@ -360,12 +395,25 @@ This project follows JavaScript/TypeScript naming conventions with one strategic
 
 ### JavaScript Naming Conventions
 
-- **Files**: Use **kebab-case** for all JavaScript files (e.g., `ask-enhanced.js`, `citation-manager.js`)
-- **Functions & Variables**: Use **camelCase** for all functions and variables (e.g., `executePrompt`, `binaryPath`, `userAccount`)
-- **Constants**: Use **UPPER_SNAKE_CASE** for constants (e.g., `CHUNK_THRESHOLD`, `MAX_RETRY_COUNT`)
-- **Classes**: Use **TitleCase** for class names (e.g., `PaymentProcessor`, `TestWorkspaceManager`)
-- **Test Descriptions**: Use **natural language with spaces** for test descriptions in `it()` methods (e.g., `it('should authenticate user with valid credentials', () => {...})`)
-  - **Rationale**: Test descriptions in `it()` methods are string literals that benefit from natural language readability. They serve as executable specifications requiring maximum clarity per our **"Names as Contracts"** philosophy. Natural language with spaces provides superior readability for self-contained test descriptions.
+This project follows JavaScript/TypeScript naming conventions aligned with our [Action-Based File Organization](<Architecture Principles.md#^action-based-file-organization-definition>) principle.
+
+- **Files**: File naming depends on purpose:
+  - **Tool Scripts** (executable entry points): Use **kebab-case** (e.g., `citation-manager.js`, `ask-enhanced.js`)
+  - **Implementation Modules** (transformation operations): Use **camelCase** named by their primary transformation (e.g., `parseMarkdown.js`, `validateCitations.js`, `extractContent.js`)
+  - **Rationale**: File names describe operations that transform data, following [Transformation Naming](<Architecture Principles.md#^transformation-naming>)
+
+- **Functions & Variables**: Use **camelCase** for all functions and variables (e.g., `parseMarkdown`, `extractContent`, `validationResult`)
+  - **Primary Exports**: Each file's main export should match or closely relate to the file name ([Primary Export Pattern](<Architecture Principles.md#^primary-export-pattern>))
+
+- **Constants**: Use **UPPER_SNAKE_CASE** for constants (e.g., `MAX_DEPTH`, `DEFAULT_ENCODING`)
+
+- **Classes**: Use **TitleCase** for class names (e.g., `CitationValidator`, `MarkdownParser`)
+
+- **Type Files**: Use **camelCase** with `Types` suffix for shared type definitions (e.g., `citationTypes.js`, `validationTypes.js`)
+  - **Rationale**: Separates data contracts (WHAT) from operations (HOW) per [Data Contracts Separate](<Architecture Principles.md#^data-contracts-separate>)
+
+- **Test Descriptions**: Use **natural language with spaces** for test descriptions in `it()` methods (e.g., `it('should validate citations with valid references', () => {...})`)
+  - **Rationale**: Test descriptions serve as executable specifications requiring maximum clarity per our **"Names as Contracts"** philosophy
 
 ### Formatting Conventions
 

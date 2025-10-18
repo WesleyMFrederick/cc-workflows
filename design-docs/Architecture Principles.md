@@ -37,6 +37,27 @@
 - **Measure, Then Model**: Base structures on observed patterns and error modes, not assumptions. ^measure-then-model
 
 ---
+## Action-Based File Organization
+**Operations Transform Data**: While data shapes the system (Data-First), organize implementation files around the operations that transform that data. Name files by their primary transformation or action, creating a clear map from data state to processing step. This separates "what the system is" (data contracts) from "what the code does" (operations). ^action-based-file-organization-definition
+
+### File Naming & Organization
+- **Transformation Naming**: Name files by the primary operation they perform on data: `fileSearch`, `calculateMetrics`, `outputGenerate`. The data types tell you WHAT flows through; the file names tell you HOW it transforms. ^transformation-naming
+- **Primary Export Pattern**: Each file exports one main function matching the file name, operating on well-defined data contracts. ^primary-export-pattern
+- **Data Contracts Separate**: Extract shared types to `*Types.ts` files—these define WHAT (data structures), while sibling files define HOW (operations). ^data-contracts-separate
+- **Co-located Helpers**: Keep supporting functions and local types in the same file as the operation they serve. ^co-located-helpers
+
+### Composition Strategy
+- **Data Defines Interface**: Types like `RawFile`, `ProcessedFile` are defined first and drive the operation signatures. ^data-defines-interface
+- **Files Transform States**: Each file moves data through pipeline states: `collectFiles()` creates `RawFile[]`, `processFiles()` transforms to `ProcessedFile[]`. ^files-transform-states
+- **Orchestrators Compose Pipeline**: Orchestrator modules sequence operations following the data flow. ^orchestrators-compose-pipeline
+- **Lightweight Dependency Injection**: Accept optional `deps` objects for testability without heavyweight DI frameworks. ^lightweight-dependency-injection
+
+### Structural Organization
+- **Component-Level Folders**: Group related operations by domain responsibility: `file/` for file operations, `output/` for output generation, `metrics/` for metric calculation. ^component-level-folders
+- **Strategy Subfolders**: Extract variants into subfolders when using strategy/plugin patterns: `outputStyles/` for format-specific templates, `parseStrategies/` for language-specific parsers. ^strategy-subfolders
+- **Utility Extraction**: Create dedicated files for focused utilities that serve multiple operations. These are specific enough to warrant separation but general enough to be reused. ^utility-extraction
+
+---
 ## Format/Interface Design
 **Clarity Before Flexibility:** Interfaces are the touchpoints where systems and people connect. Good ones reduce errors, lower cognitive load, and make the system easier to extend. Keep them simple, focused, and role-specific to prevent bloat and confusion. ^format-interface-design-definition
 
