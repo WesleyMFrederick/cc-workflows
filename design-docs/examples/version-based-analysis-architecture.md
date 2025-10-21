@@ -985,7 +985,7 @@ This section documents key architectural decisions, the context in which they we
 - [Architecture Whiteboard](design-docs/whiteboards/architecture-whiteboard.md): Whiteboard to capture iterative work that will be used in this document
 - [CLAUDE.md](CLAUDE.md): Technical project overview with development commands, architecture components, and troubleshooting guidance
 - [README](README.md): Project overview, setup instructions, and usage guide
-- [Pseudocode Style Guide](design-docs/Psuedocode%20Style%20Guide.md): Guidelines for writing clear and consistent pseudocode in design documents
+- [Pseudocode Style Guide](../../../resume-coach/design-docs/Psuedocode%20Style%20Guide.md): Guidelines for writing clear and consistent pseudocode in design documents
 - [Design Principles](design-docs/Design%20Principles.md): Core principles governing the design and architecture of the Claude Code Knowledgebase project
 
 ### Architecture Change Log

@@ -7,9 +7,6 @@
 		{
 			"name": ".claude",
 			"path": "../../../../.claude"
-		},
-		{
-			"path": "../markdownlint"
 		}
 	],
 	"settings": {}

@@ -805,7 +805,7 @@ For example, the `CitationValidator` should receive its `MarkdownParser` depende
 - [CC Workflows PRD](cc-workflows-workspace-prd.md): Product requirements and epic breakdown for MVP implementation
 - [Content Aggregation Research](research/content-aggregation-research.md): Industry patterns and technical recommendations for workspace management
 - [C4 Model Framework Overview](/Users/wesleyfrederick/Documents/ObsidianVaultNew/Technical KnowledgeBase/AI Coding Assistants/Concepts/C4 Framework Overview.md): Architectural documentation methodology used in this document
-- [Psuedocode Style Guide](<../../../agentic-workflows/patterns/Psuedocode Style Guide.md>): Pseudocode syntax reference used in this document
+- [Psuedocode Style Guide](<Psuedocode Style Guide.md>): Pseudocode syntax reference used in this document
 - [citation-guidelines](../../../agentic-workflows/rules/citation-guidelines.md): Citation and reference formatting standards used in this document
 - [WORKSPACE-SETUP](../../../WORKSPACE-SETUP.md): Validated workspace patterns for workspace configuration and development
 

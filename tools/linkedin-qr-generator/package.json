@@ -1,0 +1,22 @@
+{
+	"name": "@cc-workflows/linkedin-qr-generator",
+	"version": "1.0.0",
+	"type": "module",
+	"description": "Generate branded QR codes with custom logo embedding for any URL",
+	"main": "src/linkedin-qr-generator.js",
+	"scripts": {
+		"test": "vitest run",
+		"test:watch": "vitest"
+	},
+	"dependencies": {
+		"commander": "^12.0.0",
+		"qrcode": "^1.5.0",
+		"sharp": "^0.33.0"
+	},
+	"devDependencies": {
+		"vitest": "*"
+	},
+	"keywords": ["qr-code", "branding", "linkedin", "url-shortener"],
+	"author": "",
+	"license": "ISC"
+}

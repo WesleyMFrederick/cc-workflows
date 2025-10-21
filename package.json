@@ -18,7 +18,8 @@
 		"citation:ast": "node tools/citation-manager/src/citation-manager.js ast",
 		"citation:base-paths": "node tools/citation-manager/src/citation-manager.js base-paths",
 		"citation:fix": "node tools/citation-manager/src/citation-manager.js validate --fix",
-		"mock:run": "node tools/mock-tool/src/mock-tool.js"
+		"mock:run": "node tools/mock-tool/src/mock-tool.js",
+		"qr-gen": "node tools/linkedin-qr-generator/src/linkedin-qr-generator.js"
 	},
 	"keywords": [],
 	"author": "",
