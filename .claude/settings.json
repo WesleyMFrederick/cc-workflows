@@ -77,6 +77,17 @@
 					}
 				]
 			}
-		]
+		],
+		"SessionStart": [
+      {
+        "matcher": "startup|resume|clear|compact",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo 'Session started'"
+          }
+        ]
+      }
+    ]
 	}
 }

@@ -440,7 +440,13 @@ This project follows JavaScript/TypeScript naming conventions aligned with our [
 
 - **MVP-Focused Testing**: We will maintain a lean **target test-to-code ratio of 0.3:1 to 0.5:1**. The primary goal is to **prove that functionality works** as specified in the user story's acceptance criteria, not to achieve 100% test coverage.
 - **Integration-Driven Development**: We start by writing a **failing integration test** that validates a user story, then build the minimum code required to make it pass.
-- **Real Systems, Fake Fixtures**: Tests will run against the **real file system** and execute **real shell commands**. We have a zero-tolerance policy for mocking.
+- **Real Systems, Fake Fixtures**: 
+	- *Real Systems:*
+		- Tests will run against the **real file system**, execute **real shell commands**, and inject real **Components**
+	- *Fake Fixtures:* 
+		- Test fixture files (not production documents). You can copy a production document into the fixture folders
+		- We have a zero-tolerance policy for mocking.
+		- Static, Not Dynamic: Fixtures created once and checked into repo
 
 ### Workspace Testing Approach
 
