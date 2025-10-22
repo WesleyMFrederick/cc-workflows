@@ -35,8 +35,6 @@ Thumbs.db
 # Claude-trace specific
 .claude-trace/
 *.jsonl
-.claude/
-.claude/settings.local.json
 
 # Keep .claude/ directory but ignore .jsonl files within it
 !.claude/
@@ -100,3 +98,6 @@ citation-manager-repo.md
 # Git worktrees
 .worktrees/
 _worktrees/
+
+# claude-trace logs
+.claude-trace/

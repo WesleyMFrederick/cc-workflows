@@ -49,11 +49,9 @@
 			"/Users/wesleyfrederick/Documents/ObsidianVaultNew/Technical KnowledgeBase"
 		]
 	},
-	"enableAllProjectMcpServers": true,
+	"enableAllProjectMcpServers": false,
 	"enabledMcpjsonServers": [
-		"Context7",
-		"perplexity-mcp",
-		"deepwiki"
+		"Context7"
 	],
 	"hooks": {
 		"PostToolUse": [
@@ -84,7 +82,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "echo 'Session started'"
+            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/session-start.sh"
           }
         ]
       }
