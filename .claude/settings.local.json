@@ -66,13 +66,17 @@
       "Bash(bash:*)",
       "Skill(using-superpowers)",
       "Skill(writing-plans)",
-      "Skill(using-git-worktrees)"
+      "Skill(using-git-worktrees)",
+      "Skill(subagent-driven-development)"
     ],
     "deny": [],
     "ask": []
   },
-  "enableAllProjectMcpServers": false,
-  "enabledMcpjsonServers": [],
+  "enableAllProjectMcpServers": true,
+  "enabledMcpjsonServers": [
+    "Context7",
+    "deepwiki"
+  ],
   "disabledMcpjsonServers": [
     "deepwiki"
   ],
