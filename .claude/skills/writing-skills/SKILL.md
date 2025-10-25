@@ -9,23 +9,23 @@ description: Use when creating new skills, editing existing skills, or verifying
 
 **Writing skills IS Test-Driven Development applied to process documentation.**
 
-**Personal skills are written to `~/.claude/skills`** 
+**Skills can be saved in two scopes:**
+- **User scope** (`~/.claude/skills/`) - Available across all projects, personal
+- **Project scope** (`.claude/skills/`) - Only this project, can be committed to git and shared with team
 
 You write test cases (pressure scenarios with subagents), watch them fail (baseline behavior), write the skill (documentation), watch tests pass (agents comply), and refactor (close loopholes).
 
 **Core principle:** If you didn't watch an agent fail without the skill, you don't know if the skill teaches the right thing.
 
-**REQUIRED BACKGROUND:** You MUST understand superpowers:test-driven-development before using this skill. That skill defines the fundamental RED-GREEN-REFACTOR cycle. This skill adapts TDD to documentation.
+**REQUIRED BACKGROUND:** You MUST understand [**`test-driven-development`**](../test-driven-development/SKILL.md) skill before using this skill. That skill defines the fundamental RED-GREEN-REFACTOR cycle. This skill adapts TDD to documentation.`
 
-**Official guidance:** For Anthropic's official skill authoring best practices, see anthropic-best-practices.md. This document provides additional patterns and guidelines that complement the TDD-focused approach in this skill.
+**Official guidance:** For Anthropic's official skill authoring best practices, see [anthropic-best-practices](anthropic-best-practices.md). This document provides additional patterns and guidelines that complement the TDD-focused approach in this skill.
 
 ## What is a Skill?
 
-A **skill** is a reference guide for proven techniques, patterns, or tools. Skills help future Claude instances find and apply effective approaches.
-
-**Skills are:** Reusable techniques, patterns, tools, reference guides
-
-**Skills are NOT:** Narratives about how you solved a problem once
+- A **skill** is a reference guide for proven techniques, patterns, or tools. Skills help future Claude instances find and apply effective approaches.
+- **Skills are:** Reusable techniques, patterns, tools, reference guides
+- **Skills are NOT:** Narratives about how you solved a problem once
 
 ## TDD Mapping for Skills
 
@@ -57,6 +57,90 @@ The entire skill creation process follows RED-GREEN-REFACTOR.
 - Standard practices well-documented elsewhere
 - Project-specific conventions (put in CLAUDE.md)
 
+## Choosing Skill Scope
+
+**BEFORE starting skill creation, choose where to save it.**
+
+### When Creating New Skills
+
+Use `AskUserQuestion` tool to ask:
+
+```typescript
+AskUserQuestion({
+  questions: [{
+    question: "Where should this skill be saved?",
+    header: "Skill scope",
+    multiSelect: false,
+    options: [
+      {
+        label: "User scope (~/.claude/skills/)",
+        description: "Available across all projects. Not in version control."
+      },
+      {
+        label: "Project scope (.claude/skills/)",
+        description: "Only this project. Can be committed to git and shared with team."
+      }
+    ]
+  }]
+})
+```
+
+### When Editing Existing Skills
+
+If skill already exists, ask whether to keep or move it:
+
+```typescript
+AskUserQuestion({
+  questions: [{
+    question: "This skill exists in [current-scope]. Where should it be saved?",
+    header: "Skill scope",
+    multiSelect: false,
+    options: [
+      {
+        label: "Keep in [current-scope]",
+        description: "[description based on current scope]"
+      },
+      {
+        label: "Move to [other-scope]",
+        description: "[description based on other scope]"
+      }
+    ]
+  }]
+})
+```
+
+### ALWAYS Ask - No Exceptions
+
+**You must use AskUserQuestion even when:**
+
+| Rationalization | Reality |
+|----------------|---------|
+| "User already told me the scope" | User said "team skill" ≠ explicit scope choice. Ask anyway. |
+| "It's obvious which scope to use" | Obvious to you ≠ user's intent. Confirm explicitly. |
+| "Time pressure means skip asking" | Asking takes 5 seconds. Wrong scope costs hours fixing. Ask. |
+| "Asking seems redundant/pedantic" | Professional = confirming critical decisions. Ask. |
+| "I can fix it later if wrong" | Moving skills, updating paths, fixing imports is costly. Get it right now. Ask. |
+
+**BEFORE starting means BEFORE starting. No exceptions for:**
+- Time pressure
+- "Clear" user intent
+- "Obvious" choices
+- Efficiency concerns
+
+**Wrong scope = wrong location = team can't find it OR personal skills pollute project. Always ask.**
+
+### Choosing the Right Scope
+
+**User scope** (`~/.claude/skills/`):
+- Personal techniques you use across projects
+- Cross-project patterns and workflows
+- Tools and patterns not specific to one codebase
+
+**Project scope** (`.claude/skills/`):
+- Team-shared patterns specific to this project
+- Project-specific workflows and conventions
+- Skills that should be version-controlled with the project
+
 ## Skill Types
 
 ### Technique
@@ -70,15 +154,25 @@ API docs, syntax guides, tool documentation (office docs)
 
 ## Directory Structure
 
+**User scope** (`~/.claude/skills/`):
 
-```
-skills/
+```text
+~/.claude/skills/
   skill-name/
     SKILL.md              # Main reference (required)
     supporting-file.*     # Only if needed
 ```
 
-**Flat namespace** - all skills in one searchable namespace
+**Project scope** (`.claude/skills/`):
+
+```text
+.claude/skills/
+  skill-name/
+    SKILL.md              # Main reference (required)
+    supporting-file.*     # Only if needed
+```
+
+**Flat namespace** - all skills in one searchable namespace within each scope
 
 **Separate files for:**
 1. **Heavy reference** (100+ lines) - API docs, comprehensive syntax
@@ -134,7 +228,6 @@ What goes wrong + fixes
 Concrete results
 ```
 
-
 ## Claude Search Optimization (CSO)
 
 **Critical for discovery:** Future Claude needs to FIND your skill
@@ -147,7 +240,7 @@ Concrete results
 
 **Content:**
 - Use concrete triggers, symptoms, and situations that signal this skill applies
-- Describe the *problem* (race conditions, inconsistent behavior) not *language-specific symptoms* (setTimeout, sleep)
+- Describe the _problem_ (race conditions, inconsistent behavior) not _language-specific symptoms_ (setTimeout, sleep)
 - Keep triggers technology-agnostic unless the skill itself is technology-specific
 - If skill is technology-specific, make that explicit in the trigger
 - Write in third person (injected into system prompt)
@@ -195,6 +288,7 @@ Use words Claude would search for:
 **Techniques:**
 
 **Move details to tool help:**
+
 ```bash
 # ❌ BAD: Document all flags in SKILL.md
 search-conversations supports --text, --both, --after DATE, --before DATE, --limit N
@@ -204,6 +298,7 @@ search-conversations supports multiple modes and filters. Run --help for details
 ```
 
 **Use cross-references:**
+
 ```markdown
 # ❌ BAD: Repeat workflow details
 When searching, dispatch subagent with template...
@@ -214,6 +309,7 @@ Always use subagents (50-100x context savings). REQUIRED: Use [other-skill-name]
 ```
 
 **Compress examples:**
+
 ```markdown
 # ❌ BAD: Verbose example (42 words)
 your human partner: "How did we handle authentication errors in React Router before?"
@@ -232,6 +328,7 @@ You: Searching...
 - Don't include multiple examples of same pattern
 
 **Verification:**
+
 ```bash
 wc -w skills/path/SKILL.md
 # getting-started workflows: aim for <150 each
@@ -290,7 +387,7 @@ See @graphviz-conventions.dot for graphviz style rules.
 
 ## Code Examples
 
-**One excellent example beats many mediocre ones**
+### One excellent example beats many mediocre ones
 
 Choose most relevant language:
 - Testing techniques → TypeScript/JavaScript
@@ -314,33 +411,39 @@ You're good at porting - one great example is enough.
 ## File Organization
 
 ### Self-Contained Skill
-```
+
+```text
 defense-in-depth/
   SKILL.md    # Everything inline
 ```
+
 When: All content fits, no heavy reference needed
 
 ### Skill with Reusable Tool
-```
+
+```text
 condition-based-waiting/
   SKILL.md    # Overview + patterns
   example.ts  # Working helpers to adapt
 ```
+
 When: Tool is reusable code, not just narrative
 
 ### Skill with Heavy Reference
-```
+
+```text
 pptx/
   SKILL.md       # Overview + workflows
   pptxgenjs.md   # 600 lines API reference
   ooxml.md       # 500 lines XML structure
   scripts/       # Executable tools
 ```
+
 When: Reference material too large for inline
 
 ## The Iron Law (Same as TDD)
 
-```
+```text
 NO SKILL WITHOUT A FAILING TEST FIRST
 ```
 
@@ -448,14 +551,15 @@ Write code before test? Delete it. Start over.
 - Don't "adapt" it while writing tests
 - Don't look at it
 - Delete means delete
-```
+
+```text
 </Good>
 
 ### Address "Spirit vs Letter" Arguments
 
 Add foundational principle early:
 
-```markdown
+```text
 **Violating the letter of the rules is violating the spirit of the rules.**
 ```
 
@@ -537,10 +641,12 @@ example-js.js, example-py.py, example-go.go
 **Why bad:** Mediocre quality, maintenance burden
 
 ### ❌ Code in Flowcharts
+
 ```dot
 step1 [label="import fs"];
 step2 [label="read file"];
 ```
+
 **Why bad:** Can't copy-paste, hard to read
 
 ### ❌ Generic Labels
@@ -563,6 +669,10 @@ Deploying untested skills = deploying untested code. It's a violation of quality
 ## Skill Creation Checklist (TDD Adapted)
 
 **IMPORTANT: Use TodoWrite to create todos for EACH checklist item below.**
+
+**BEFORE Starting - Choose Scope:**
+- [ ] Use AskUserQuestion tool to ask user where to save skill (user scope or project scope)
+- [ ] Document chosen scope for deployment
 
 **RED Phase - Write Failing Test:**
 - [ ] Create pressure scenarios (3+ combined pressures for discipline skills)
@@ -604,10 +714,10 @@ Deploying untested skills = deploying untested code. It's a violation of quality
 How future Claude finds your skill:
 
 1. **Encounters problem** ("tests are flaky")
-3. **Finds SKILL** (description matches)
-4. **Scans overview** (is this relevant?)
-5. **Reads patterns** (quick reference table)
-6. **Loads example** (only when implementing)
+2. **Finds SKILL** (description matches)
+3. **Scans overview** (is this relevant?)
+4. **Reads patterns** (quick reference table)
+5. **Loads example** (only when implementing)
 
 **Optimize for this flow** - put searchable terms early and often.
 
