@@ -67,7 +67,11 @@
       "Skill(using-superpowers)",
       "Skill(writing-plans)",
       "Skill(using-git-worktrees)",
-      "Skill(subagent-driven-development)"
+      "Skill(subagent-driven-development)",
+      "Bash(GIT_SEQUENCE_EDITOR='cp /tmp/git-rebase-todo' git rebase -i --root)",
+      "Skill(elements-of-style:writing-clearly-and-concisely)",
+      "SlashCommand(/git-and-github:create-git-commit)",
+      "Skill(brainstorming)"
     ],
     "deny": [],
     "ask": []

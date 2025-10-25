@@ -46,27 +46,7 @@ Implement fresh from tests. Period.
 
 ## Red-Green-Refactor
 
-```dot
-digraph tdd_cycle {
-    rankdir=LR;
-    red [label="RED\nWrite failing test", shape=box, style=filled, fillcolor="#ffcccc"];
-    verify_red [label="Verify fails\ncorrectly", shape=diamond];
-    green [label="GREEN\nMinimal code", shape=box, style=filled, fillcolor="#ccffcc"];
-    verify_green [label="Verify passes\nAll green", shape=diamond];
-    refactor [label="REFACTOR\nClean up", shape=box, style=filled, fillcolor="#ccccff"];
-    next [label="Next", shape=ellipse];
-
-    red -> verify_red;
-    verify_red -> green [label="yes"];
-    verify_red -> red [label="wrong\nfailure"];
-    green -> verify_green;
-    verify_green -> refactor [label="yes"];
-    verify_green -> green [label="no"];
-    refactor -> verify_green [label="stay\ngreen"];
-    verify_green -> next;
-    next -> red;
-}
-```
+/cle
 
 ### RED - Write Failing Test
 
@@ -87,6 +67,7 @@ test('retries failed operations 3 times', async () => {
   expect(result).toBe('success');
   expect(attempts).toBe(3);
 });
+
 ```
 Clear name, tests real behavior, one thing
 </Good>
@@ -102,6 +83,7 @@ test('retry works', async () => {
   expect(mock).toHaveBeenCalledTimes(3);
 });
 ```
+
 Vague name, tests mock not code
 </Bad>
 
@@ -292,6 +274,7 @@ Tests-first force edge case discovery before implementing. Tests-after verify yo
 **Bug:** Empty email accepted
 
 **RED**
+
 ```typescript
 test('rejects empty email', async () => {
   const result = await submitForm({ email: '' });
@@ -300,12 +283,14 @@ test('rejects empty email', async () => {
 ```
 
 **Verify RED**
+
 ```bash
 $ npm test
 FAIL: expected 'Email required', got undefined
 ```
 
 **GREEN**
+
 ```typescript
 function submitForm(data: FormData) {
   if (!data.email?.trim()) {
@@ -316,6 +301,7 @@ function submitForm(data: FormData) {
 ```
 
 **Verify GREEN**
+
 ```bash
 $ npm test
 PASS
