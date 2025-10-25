@@ -1,9 +1,9 @@
 ---
-name: conventional-commits
+name: create-git-commit
 description: Use when creating git commits - mandates Conventional Commits format with required scopes for all new commits, provides scope discovery from codebase structure, and prevents rationalization under pressure (emergency, fatigue, ambiguity)
 ---
 
-# Conventional Commits
+# Git Commits
 
 ## Overview
 

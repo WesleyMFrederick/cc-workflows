@@ -8,13 +8,11 @@ description: Use when starting any conversation - establishes mandatory workflow
 ## Critical Rules
 
 1. **Follow mandatory workflows.** Brainstorming before coding. Check for relevant skills before ANY task.
-
 2. Execute skills with the Skill tool
 
 ## Mandatory: Before ANY Task
 
 **1. If a relevant skill exists, YOU MUST use it:**
-
 - Announce: "I've read [Skill Name] skill and I'm using it to [purpose]"
 - Follow it exactly
 
@@ -22,9 +20,7 @@ description: Use when starting any conversation - establishes mandatory workflow
 - "I remember this skill" - Skills evolve. Read the current version.
 - "This doesn't count as a task" - It counts. Find and read skills.
 
-**Why:** Skills document proven techniques that save time and prevent mistakes. Not using available skills means repeating solved problems and making known errors.
-
-If a skill for your task exists, you must use it or you will fail at your task.
+**Why:** Skills document proven techniques that save time and prevent mistakes. Not using available skills means repeating solved problems and making known errors. If a skill for your task exists, you must use it or you will fail at your task.
 
 ## Skills with Checklists
 
@@ -55,17 +51,14 @@ Before using a skill, announce that you are using it.
 
 **Some skills are flexible patterns (architecture, naming).** Adapt core principles to your context.
 
-The skill itself tells you which type it is.
+**Rule**: The skill itself tells you which type it is.
 
 ## Instructions ≠ Permission to Skip Workflows
 
-Your human partner's specific instructions describe WHAT to do, not HOW.
-
-"Add X", "Fix Y" = the goal, NOT permission to skip brainstorming, TDD, or RED-GREEN-REFACTOR.
-
-**Red flags:** "Instruction was specific" • "Seems simple" • "Workflow is overkill"
-
-**Why:** Specific instructions mean clear requirements, which is when workflows matter MOST. Skipping process on "simple" tasks is how simple tasks become complex problems.
+- Your human partner's specific instructions describe WHAT to do, not HOW.
+- "Add X", "Fix Y" = the goal, NOT permission to skip brainstorming, TDD, or RED-GREEN-REFACTOR.
+- **Red flags:** "Instruction was specific" • "Seems simple" • "Workflow is overkill"
+- **Why:** Specific instructions mean clear requirements, which is when workflows matter MOST. Skipping process on "simple" tasks is how simple tasks become complex problems.
 
 ## Summary
 

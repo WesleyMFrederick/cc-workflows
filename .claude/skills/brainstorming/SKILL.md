@@ -28,7 +28,7 @@ Transform rough ideas into fully-formed designs through structured questioning a
 
 Copy this checklist to track progress:
 
-```
+```markdown
 Brainstorming Progress:
 - [ ] Phase 1: Understanding (purpose, constraints, criteria gathered)
 - [ ] Phase 2: Exploration (2-3 approaches proposed and evaluated)
@@ -45,7 +45,8 @@ Brainstorming Progress:
 - Gather: Purpose, constraints, success criteria
 
 **Example using AskUserQuestion:**
-```
+
+```yaml
 Question: "Where should the authentication data be stored?"
 Options:
   - "Session storage" (clears on tab close, more secure)
@@ -60,7 +61,8 @@ Options:
 - Ask your human partner which approach resonates
 
 **Example using AskUserQuestion:**
-```
+
+```yaml
 Question: "Which architectural approach should we use?"
 Options:
   - "Event-driven with message queue" (scalable, complex setup, eventual consistency)
@@ -101,7 +103,6 @@ When your human partner confirms (any affirmative response):
 - **REQUIRED SUB-SKILL:** Use superpowers:writing-plans
 - Create detailed plan in the worktree
 
-
 ## Question Patterns
 
 ### When to Use AskUserQuestion Tool
@@ -131,23 +132,31 @@ When your human partner confirms (any affirmative response):
 
 ## When to Revisit Earlier Phases
 
-```dot
-digraph revisit_phases {
-    rankdir=LR;
-    "New constraint revealed?" [shape=diamond];
-    "Partner questions approach?" [shape=diamond];
-    "Requirements unclear?" [shape=diamond];
-    "Return to Phase 1" [shape=box, style=filled, fillcolor="#ffcccc"];
-    "Return to Phase 2" [shape=box, style=filled, fillcolor="#ffffcc"];
-    "Continue forward" [shape=box, style=filled, fillcolor="#ccffcc"];
+```mermaid
+graph LR
+    a@{ shape: diam, label: "New constraint revealed?" }
+    b@{ shape: diam, label: "Partner questions approach?" }
+    c@{ shape: diam, label: "Requirements unclear?" }
+    d@{ shape: rect, label: "Return to Phase 1: Understanding" }
+    e@{ shape: rect, label: "Return to Phase 2: Exploration" }
+    f@{ shape: rect, label: "Continue forward" }
 
-    "New constraint revealed?" -> "Return to Phase 1" [label="yes"];
-    "New constraint revealed?" -> "Partner questions approach?" [label="no"];
-    "Partner questions approach?" -> "Return to Phase 2" [label="yes"];
-    "Partner questions approach?" -> "Requirements unclear?" [label="no"];
-    "Requirements unclear?" -> "Return to Phase 1" [label="yes"];
-    "Requirements unclear?" -> "Continue forward" [label="no"];
-}
+    a -->|yes| d
+    a -->|no| b
+    b -->|yes| e
+    b -->|no| c
+    c -->|yes| d
+    c -->|no| f
+
+    classDef phase1 fill:#ffcccc
+    classDef phase2 fill:#ffffcc
+    classDef continue fill:#ccffcc
+    classDef node fill:transparent
+
+    a:::node
+    d:::phase1
+    e:::phase2
+    f:::continue
 ```
 
 **You can and should go backward when:**
