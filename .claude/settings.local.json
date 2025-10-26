@@ -71,7 +71,8 @@
       "Bash(GIT_SEQUENCE_EDITOR='cp /tmp/git-rebase-todo' git rebase -i --root)",
       "Skill(elements-of-style:writing-clearly-and-concisely)",
       "SlashCommand(/git-and-github:create-git-commit)",
-      "Skill(brainstorming)"
+      "Skill(brainstorming)",
+      "Skill(create-git-commit)"
     ],
     "deny": [],
     "ask": []

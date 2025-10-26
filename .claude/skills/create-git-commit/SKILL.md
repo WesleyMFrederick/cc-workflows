@@ -1,21 +1,20 @@
 ---
 name: create-git-commit
-description: Use when creating git commits - mandates Conventional Commits format with required scopes for all new commits, provides scope discovery from codebase structure, and prevents rationalization under pressure (emergency, fatigue, ambiguity)
+description: Use when creating git commits - mandates commits format with required scopes for all new commits, provides scope discovery from codebase structure, and prevents rationalization under pressure (emergency, fatigue, ambiguity)
 ---
 
 # Git Commits
 
 ## Overview
 
-**Mandatory discipline for ALL new git commits.** Every commit MUST follow Conventional Commits format with a required scope, discovered from codebase structure.
+**Mandatory discipline for ALL new git commits.** Every commit MUST follow commits format with a required scope, discovered from codebase structure.
 
 **Core Principle:** Consistent, machine-parsable commit messages enable automated changelog generation, semantic versioning, and clear project history. Commit messages are **names for changes** and follow the same self-contained naming principles as code identifiers.
 
 **The Iron Law:**
 
 ```text
-NO COMMIT WITHOUT CONVENTIONAL FORMAT
-NO CONVENTIONAL FORMAT WITHOUT SCOPE
+NO COMMIT WITHOUT TYPE, SCOPE, DESCRIPTION
 ```
 
 This applies to ALL commits: simple fixes, typos, documentation, emergencies - everything. No exceptions.
