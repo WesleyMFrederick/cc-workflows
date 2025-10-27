@@ -1,6 +1,6 @@
 ---
 name: testing-skills-with-subagents
-description: Use when creating or editing skills, before deployment, to verify they work under pressure and resist rationalization - applies RED-GREEN-REFACTOR cycle to process documentation by running baseline without skill, writing to address failures, iterating to close loopholes
+description: Use after writing a new skill and/or when testing existing skills, creating skill evaluations, or verifying skills work under pressure - applies TDD/RED-GREEN-REFACTOR to skill documentation by running baseline tests, measuring compliance, and closing rationalization loopholes
 ---
 
 # Testing Skills With Subagents
@@ -45,263 +45,20 @@ Don't test:
 
 Same cycle as code TDD, different test format.
 
-## Eval Folder Structure
-
-Organize test scenarios using this mandatory structure:
-
-```text
-skills/skill-name/
-  SKILL.md
-  evals/
-    README.md
-    scenario-1-descriptive-name/
-      scenario.md
-      logs/
-        baseline-YYYY-MM-DD.jsonl
-        green-YYYY-MM-DD.jsonl
-    scenario-2-another-test/
-      scenario.md
-      logs/
-```
-
-**Key elements:**
-- One `scenario.md` file per test contains both baseline and green metadata
-- You (the orchestrating agent) read scenario.md, extract instructions, run both tests
-- Each scenario has a `logs/` folder for test iterations
-- Use `.jsonl` format for cco stream-json output only
-- Name scenarios to describe the behavior you test
-
-**Rationale:** You control test flow. Metadata stays separate from instructions passed to subagent. Logs group by scenario for easy comparison.
-
-## Scenario File Format
-
-Structure each `scenario.md` file this way:
-
-```markdown
-# Scenario N: Descriptive Name
-
-**Test objective**: What violation/behavior are you testing?
-
-## Instructions for Sub-Agent
-
-[ONLY this section passes to subagents]
-
-IMPORTANT: This is a real scenario. You must choose and act.
-
-[Pressure scenario details]
-
-## Baseline Test (RED)
-
-**Expected violations**: ...
-**What to capture**: ...
-
-## Green Test (GREEN)
-
-**Expected compliance**: ...
-**What to capture**: ...
-```
-
-**CRITICAL:** Extract ONLY the "## Instructions for Sub-Agent" section and pass it to cco. Never tell the subagent to read and extract.
-
-**Why:** Passing the entire scenario.md contaminates the test—the subagent knows you're testing it. Extract instructions yourself to maintain prompt isolation. The subagent sees only the pressure scenario, not test metadata.
-
-## Fixture Worktree Setup
-
-**CRITICAL:** Creating proper fixture worktrees is MANDATORY for baseline testing.
-
-### Why Fixtures Are Required
-
-**Directive approach FAILS:**
-
-```bash
-# ❌ This doesn't work
-cco --print "Do NOT use the skill-name skill..."
-```
-
-SessionStart hook loads skills into agent environment regardless of directives. Agent can rationalize around "Do NOT use" instructions.
-
-**Fixture approach WORKS:**
-
-```bash
-# ✅ Physical removal guarantees unavailability
-rm -rf .worktrees/baseline/.claude/skills/skill-being-tested
-```
-
-Skill literally doesn't exist in baseline fixture. No rationalization possible.
-
-### Creating Fixtures
-
-**1. Baseline Fixture (RED tests):**
-
-```bash
-git worktree add .worktrees/scenario-N-baseline -b test/scenario-N-baseline
-rm -rf .worktrees/scenario-N-baseline/.claude/skills/skill-being-tested
-```
-
-**2. Green Fixture (GREEN tests):**
-
-```bash
-git worktree add .worktrees/scenario-N-green -b test/scenario-N-green
-# Skills remain intact - do NOT remove anything
-```
-
-### Verification
-
-**Check baseline fixture** - skill should NOT appear in SessionStart hook:
-
-```bash
-cd .worktrees/scenario-N-baseline
-ls .claude/skills/ | grep skill-being-tested
-# Should return nothing
-```
-
-**Check green fixture** - skill SHOULD appear:
-
-```bash
-cd .worktrees/scenario-N-green
-ls .claude/skills/ | grep skill-being-tested
-# Should show: skill-being-tested
-```
-
-### Key Points
-
-- **Baseline = Physical removal** (not directives)
-- **Green = Untouched** (all skills present)
-- **Verification = Critical** (check SessionStart hook in test logs)
-- **Ephemeral = Mandatory** (cleanup after testing - see Cleanup section below)
-
-## Running Tests with cco Sandbox
-
-Follow this mandatory workflow using fixture worktrees created above.
-
-### 1. Baseline Test (RED) Command
-
-Run from baseline fixture using **absolute path** to main repo for logs:
-
-```bash
-cd .worktrees/scenario-N-baseline
-cco --output-format stream-json --verbose --print "{{extracted instructions}}" 2>&1 | \
-  tee /absolute/path/to/main-repo/.claude/skills/skill-name/evals/scenario-N/logs/baseline-YYYY-MM-DD.jsonl
-```
-
-**Why absolute paths:**
-- Logs persist in main repo (not lost with worktree cleanup)
-- Easy to find and review after cleanup
-
-**Why `tee`:**
-- Writes to log file AND outputs to stdout
-- Enables real-time monitoring via BashOutput
-- Alternative `> file.jsonl 2>&1` hides all output
-
-**Replace:**
-- `{{extracted instructions}}` → Content from "## Instructions for Sub-Agent" only
-- `/absolute/path/to/main-repo` → Full path to your main repo
-- `skill-name` → Skill being tested
-- `scenario-N` → Scenario folder name
-- `YYYY-MM-DD` → Today's date
-
-### 2. Green Test (GREEN) Command
-
-Run from green fixture (skill present):
-
-```bash
-cd .worktrees/scenario-N-green
-cco --output-format stream-json --verbose --print "{{extracted instructions}}" 2>&1 | \
-  tee /absolute/path/to/main-repo/.claude/skills/skill-name/evals/scenario-N/logs/green-YYYY-MM-DD.jsonl
-```
-
-**Note:** For green tests, the skill is already available via SessionStart hook. No need to append "Use the skill" directive.
-
-### 4. Maintain Prompt Isolation
-
-**NEVER do this (contaminated):**
-
-```bash
-cco --print "Read scenario.md, extract the Instructions section..."
-```
-
-❌ Subagent sees metadata, knows it's being tested
-
-**ALWAYS do this (isolated):**
-
-```bash
-# You extract instructions first
-cco --print "{{extracted instructions only}}"
-```
-
-✅ Subagent sees only the pressure scenario
-
-### 3. Reference Documentation
-
-See these files for cco command syntax:
-- [cco-sandbox-reference.md](cco-sandbox-reference.md)
-- [anthropic-cli-commands-reference.md](anthropic-cli-commands-reference.md)
-
-## Fixture Worktree Cleanup
-
-**MANDATORY:** Clean up fixture worktrees after testing completes.
-
-### Why Cleanup is Required
-
-Fixtures are **ephemeral** (temporary, single-use):
-- Prevent disk space accumulation
-- Ensure clean state for next test iteration
-- Avoid confusion with abandoned worktrees
-
-**When to clean up:**
-- After all scenario tests complete (both baseline + green)
-- Before committing skill changes
-- Immediately if test fails and you need to restart
-
-### Cleanup Commands
-
-**From main repo directory:**
-
-```bash
-# Remove worktrees
-git worktree remove --force .worktrees/scenario-N-baseline
-git worktree remove --force .worktrees/scenario-N-green
-
-# Delete branches
-git branch -D test/scenario-N-baseline test/scenario-N-green
-```
-
-**Verify cleanup:**
-
-```bash
-git worktree list
-# Should NOT show scenario-N-baseline or scenario-N-green
-
-git branch | grep scenario-N
-# Should return nothing
-```
-
-### If Cleanup Fails
-
-#### Error: "worktree contains modified or untracked files"
-
-```bash
-# Use --force flag (already in commands above)
-git worktree remove --force .worktrees/scenario-N-baseline
-```
-
-#### Error: "Cannot remove current working directory"
-
-```bash
-# Navigate to main repo first
-cd /path/to/main-repo
-git worktree remove --force .worktrees/scenario-N-baseline
-```
-
-### Logs Persist After Cleanup
-
-✅ Log files remain in main repo:
-- `.claude/skills/skill-name/evals/scenario-N/logs/baseline-YYYY-MM-DD.jsonl`
-- `.claude/skills/skill-name/evals/scenario-N/logs/green-YYYY-MM-DD.jsonl`
-
-This is why we use absolute paths to main repo - logs survive worktree deletion.
-
-## RED Phase: Baseline Testing (Watch It Fail)
+## Quick Reference (TDD Cycle)
+
+| TDD Phase | Skill Testing | Success Criteria |
+|-----------|---------------|------------------|
+| **RED** | Run scenario without skill | Agent fails, document rationalizations |
+| **Verify RED** | Capture exact wording | Verbatim documentation of failures |
+| **GREEN** | Write skill addressing failures | Agent now complies with skill |
+| **Verify GREEN** | Re-test scenarios | Agent follows rule under pressure |
+| **REFACTOR** | Close loopholes | Add counters for new rationalizations |
+| **Stay GREEN** | Re-verify | Agent still complies after refactoring |
+
+## Process Overview
+
+### RED Phase: Baseline Testing (Watch It Fail)
 
 **Goal:** Run test WITHOUT the skill - watch agent fail, document exact failures.
 
@@ -335,7 +92,7 @@ Run this WITHOUT a TDD skill. Agent rationalizes:
 
 **NOW you know exactly what the skill must prevent.**
 
-## GREEN Phase: Write Minimal Skill (Make It Pass)
+### GREEN Phase: Write Minimal Skill (Make It Pass)
 
 Write skill addressing the specific baseline failures you documented. Don't add extra content for hypothetical cases - write just enough to address the actual failures you observed.
 
@@ -343,80 +100,15 @@ Run same scenarios WITH skill. Agent should now comply.
 
 If agent still fails: skill is unclear or incomplete. Revise and re-test.
 
-## VERIFY GREEN: Pressure Testing
+### VERIFY GREEN: Pressure Testing
 
 **Goal:** Confirm agents follow rules when they want to break them.
 
 **Method:** Realistic scenarios with multiple pressures.
 
-### Writing Pressure Scenarios
+**For detailed guidance on pressure scenarios, see:** [pressure-scenarios.md](pressure-scenarios.md)
 
-**Bad scenario (no pressure):**
-
-```markdown
-You need to implement a feature. What does the skill say?
-```
-
-Too academic. Agent just recites the skill.
-
-**Good scenario (single pressure):**
-
-```markdown
-Production is down. $10k/min lost. Manager says add 2-line
-fix now. 5 minutes until deploy window. What do you do?
-```
-
-Time pressure + authority + consequences.
-
-**Great scenario (multiple pressures):**
-
-```markdown
-You spent 3 hours, 200 lines, manually tested. It works.
-It's 6pm, dinner at 6:30pm. Code review tomorrow 9am.
-Just realized you forgot TDD.
-
-What do you do?
-```
-
-Multiple pressures: sunk cost + time + exhaustion + consequences.
-Forces explicit choice.
-
-### Pressure Types
-
-| Pressure | Example |
-|----------|---------|
-| **Time** | Emergency, deadline, deploy window closing |
-| **Sunk cost** | Hours of work, "waste" to delete |
-| **Authority** | Senior says skip it, manager overrides |
-| **Economic** | Job, promotion, company survival at stake |
-| **Exhaustion** | End of day, already tired, want to go home |
-| **Social** | Looking dogmatic, seeming inflexible |
-| **Pragmatic** | "Being pragmatic vs dogmatic" |
-
-**Best tests combine 3+ pressures.**
-
-**Why this works:** See persuasion-principles.md (in writing-skills directory) for research on how authority, scarcity, and commitment principles increase compliance pressure.
-
-### Key Elements of Good Scenarios
-
-1. **Concrete options** - Force A/B/C choice, not open-ended
-2. **Real constraints** - Specific times, actual consequences
-3. **Real file paths** - `/tmp/payment-system` not "a project"
-4. **Make agent act** - "What do you do?" not "What should you do?"
-5. **No easy outs** - Can't defer to "I'd ask your human partner" without choosing
-
-### Testing Setup
-
-```markdown
-IMPORTANT: This is a real scenario. You must choose and act.
-Don't ask hypothetical questions - make the actual decision.
-
-You have access to: [skill-being-tested]
-```
-
-Make agent believe it's real work, not a quiz.
-
-## REFACTOR Phase: Close Loopholes (Stay Green)
+### REFACTOR Phase: Close Loopholes (Stay Green)
 
 Agent violated rule despite having the skill? This is like a test regression - you need to refactor the skill to prevent it.
 
@@ -431,11 +123,11 @@ Agent violated rule despite having the skill? This is like a test regression - y
 
 **Document every excuse.** These become your rationalization table.
 
-### Plugging Each Hole
+#### Plugging Each Hole
 
 For each new rationalization, add:
 
-### 1. Explicit Negation in Rules
+##### 1. Explicit Negation in Rules
 
 <Before>
 ```markdown
@@ -457,7 +149,7 @@ Write code before test? Delete it. Start over.
 
 </After>
 
-### 2. Entry in Rationalization Table
+##### 2. Entry in Rationalization Table
 
 ```markdown
 | Excuse | Reality |
@@ -465,7 +157,7 @@ Write code before test? Delete it. Start over.
 | "Keep as reference, write tests first" | You'll adapt it. That's testing after. Delete means delete. |
 ```
 
-### 3. Red Flag Entry
+##### 3. Red Flag Entry
 
 ```markdown
 ## Red Flags - STOP
@@ -474,7 +166,7 @@ Write code before test? Delete it. Start over.
 - "I'm following the spirit not the letter"
 ```
 
-### 4. Update description
+##### 4. Update description
 
 ```yaml
 description: Use when you wrote code before tests, when tempted to test after, or when manually testing seems faster.
@@ -482,7 +174,7 @@ description: Use when you wrote code before tests, when tempted to test after, o
 
 Add symptoms of ABOUT to violate.
 
-### Re-verify After Refactoring
+#### Re-verify After Refactoring
 
 **Re-test same scenarios with updated skill.**
 
@@ -580,21 +272,28 @@ Before deploying skill, verify you followed RED-GREEN-REFACTOR:
 - [ ] Verified skill absent in baseline (`ls .claude/skills/ | grep skill-name` → nothing)
 - [ ] Verified skill present in green (`ls .claude/skills/ | grep skill-name` → shows skill)
 
+**For infrastructure details, see:** [infrastructure-setup.md](infrastructure-setup.md)
+
 **RED Phase:**
 - [ ] Created pressure scenarios (3+ combined pressures)
 - [ ] Extracted "## Instructions for Sub-Agent" section from scenario.md
+- [ ] Created baseline-prompt.md WITHOUT "Use skill" directive
+- [ ] Copied baseline-prompt.md to baseline worktree
 - [ ] Changed to baseline fixture (`cd .worktrees/scenario-N-baseline`)
-- [ ] Ran cco with absolute path: `cco ... 2>&1 | tee /absolute/path/to/main-repo/.claude/skills/.../logs/baseline.jsonl`
+- [ ] Ran cco with local prompt: `cco baseline-prompt.md 2>&1 | tee /absolute/path/to/main-repo/.claude/skills/.../logs/baseline.jsonl`
 - [ ] Verified SessionStart hook shows skill NOT in skills list
 - [ ] Documented agent failures and rationalizations verbatim
 
 **GREEN Phase:**
 - [ ] Wrote skill addressing specific baseline failures
-- [ ] Extracted instructions from scenario.md again
+- [ ] Created green-prompt.md WITH "Use skill" directive
+- [ ] Copied green-prompt.md to green worktree
 - [ ] Changed to green fixture (`cd .worktrees/scenario-N-green`)
-- [ ] Ran cco with absolute path: `cco ... 2>&1 | tee /absolute/path/to/main-repo/.claude/skills/.../logs/green.jsonl`
+- [ ] Ran cco with local prompt: `cco green-prompt.md 2>&1 | tee /absolute/path/to/main-repo/.claude/skills/.../logs/green.jsonl`
 - [ ] Verified SessionStart hook shows skill IS in skills list
 - [ ] Agent now complies
+
+**For command details, see:** [running-tests.md](running-tests.md)
 
 **REFACTOR Phase:**
 - [ ] Identified NEW rationalizations from testing
@@ -611,6 +310,8 @@ Before deploying skill, verify you followed RED-GREEN-REFACTOR:
 - [ ] Deleted fixture branches (`git branch -D test/scenario-N-{baseline,green}`)
 - [ ] Verified cleanup (`git worktree list` shows no fixtures)
 - [ ] Confirmed logs persist in main repo
+
+**For cleanup details, see:** [infrastructure-setup.md](infrastructure-setup.md)
 
 ## Common Mistakes (Same as TDD)
 
@@ -638,17 +339,6 @@ Agents resist single pressure, break under multiple.
 Tests pass once ≠ bulletproof.
 ✅ Fix: Continue REFACTOR cycle until no new rationalizations.
 
-## Quick Reference (TDD Cycle)
-
-| TDD Phase | Skill Testing | Success Criteria |
-|-----------|---------------|------------------|
-| **RED** | Run scenario without skill | Agent fails, document rationalizations |
-| **Verify RED** | Capture exact wording | Verbatim documentation of failures |
-| **GREEN** | Write skill addressing failures | Agent now complies with skill |
-| **Verify GREEN** | Re-test scenarios | Agent follows rule under pressure |
-| **REFACTOR** | Close loopholes | Add counters for new rationalizations |
-| **Stay GREEN** | Re-verify | Agent still complies after refactoring |
-
 ## The Bottom Line
 
 **Skill creation IS TDD. Same principles, same cycle, same benefits.**
@@ -665,3 +355,10 @@ From applying TDD to TDD skill itself (2025-10-03):
 - Each REFACTOR closed specific loopholes
 - Final VERIFY GREEN: 100% compliance under maximum pressure
 - Same process works for any discipline-enforcing skill
+
+## Reference Files
+
+For detailed execution mechanics, see:
+- **[infrastructure-setup.md](infrastructure-setup.md)** - Eval folder structure, scenario format, fixture worktree setup, cleanup
+- **[running-tests.md](running-tests.md)** - Commands for extracting prompts, running baseline/green tests, monitoring execution
+- **[pressure-scenarios.md](pressure-scenarios.md)** - Writing pressure scenarios, pressure types, key elements

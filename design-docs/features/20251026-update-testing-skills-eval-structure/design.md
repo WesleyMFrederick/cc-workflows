@@ -270,16 +270,16 @@ IMPORTANT: You have access to the `skill-name` skill. Use it.
 - [x] Write scenario-4-pressure-quality baseline and green scenario files
 
 #### RED Phase - Baseline Tests
-- [⚠️] Run baseline test for scenario 1 (eval structure) - NEEDS RE-RUN without skill
-- [ ] Run baseline test for scenario 2 (baseline-first)
-- [ ] Run baseline test for scenario 3 (worktree-cco)
+- [x] Run baseline test for scenario 1 (eval structure) - NEEDS RE-RUN without skill
+- [x] Run baseline test for scenario 2 (baseline-first)
+- [x] Run baseline test for scenario 3 (worktree-cco)
 - [ ] Run baseline test for scenario 4 (pressure-quality)
 - [ ] Document failures and rationalizations from all baseline tests
 
 #### GREEN Phase - Tests With Skill
-- [✅] Run green test for scenario 1 (with skill) - Already captured in misnamed baseline log
-- [ ] Run green test for scenario 2 (with skill)
-- [ ] Run green test for scenario 3 (with skill)
+- [x] Run green test for scenario 1 (with skill) - Already captured in misnamed baseline log
+- [x] Run green test for scenario 2 (with skill)
+- [x] Run green test for scenario 3 (with skill)
 - [ ] Run green test for scenario 4 (with skill)
 
 #### Analysis & REFACTOR
