@@ -7,15 +7,12 @@ description: Use when creating git commits - mandates commits format with requir
 
 ## Overview
 
-**Mandatory discipline for ALL new git commits.** Every commit MUST follow commits format with a required scope, discovered from codebase structure.
+**Mandatory discipline for ALL new git commits.** Every commit MUST follow commit format with a required scope, discovered from codebase structure.
 
-**Core Principle:** Consistent, machine-parsable commit messages enable automated changelog generation, semantic versioning, and clear project history. Commit messages are **names for changes** and follow the same self-contained naming principles as code identifiers.
+**Core Principle:** Consistent, machine-parsable commit messages enable automated change-log generation, semantic versioning, and clear project history. Commit messages are **names for changes** and follow the same self-contained naming principles as code identifiers.
 
-**The Iron Law:**
-
-```text
-NO COMMIT WITHOUT TYPE, SCOPE, DESCRIPTION
-```
+> [!attention] **The Iron Law**
+> NO COMMIT WITHOUT TYPE, SCOPE, DESCRIPTION
 
 This applies to ALL commits: simple fixes, typos, documentation, emergencies - everything. No exceptions.
 
@@ -68,7 +65,7 @@ This applies to ALL commits: simple fixes, typos, documentation, emergencies - e
 
 ### The Mandatory Scope Rule
 
-**Every commit MUST include a scope.** This is stricter than the Conventional Commits spec.
+> [!attention] **Every commit MUST include a scope.**
 
 ### How to Discover Scope
 
@@ -121,7 +118,6 @@ Commit descriptions follow the project's **Self-Contained Naming Principles** - 
 1. **Descriptive Labels:** The `<type>(<scope>): <description>` format distinguishes operation type, system scope, and outcome
 2. **Immediate Understanding:** Anyone should understand what the commit does without reading the diff
 3. **Confusion Prevention:** Be specific enough to eliminate ambiguity
-4. **Follow Conventions:** Conventional Commits IS the convention
 
 ### Description Guidelines
 
@@ -146,7 +142,7 @@ One blank line after body (or description if no body), then footers.
 
 ### Required Footer Types
 
-**1. Claude Code Attribution (ALWAYS include):**
+**1. AI Coding Assistant Attribution (ALWAYS include):**
 
 ```text
 🤖 Generated with [Claude Code](https://claude.com/claude-code)
@@ -201,9 +197,7 @@ Co-Authored-By: Claude <noreply@anthropic.com>
 
 ## The Iron Law - Enforcement
 
-```text
-ALL NEW COMMITS MUST FOLLOW CONVENTIONAL FORMAT
-```
+> [!attention] ALL NEW COMMITS MUST FOLLOW COMMIT FORMAT
 
 **This applies to:**
 - "Simple" commits (typos, formatting)
@@ -243,7 +237,7 @@ These are captured from real baseline testing - agents use these exact rationali
 
 | Rationalization | Reality |
 |----------------|---------|
-| "Too simple for conventional format" | Simple commits still need clear history. Takes 5 seconds. |
+| "Too simple for commit format" | Simple commits still need clear history. Takes 5 seconds. |
 | "I'll clean it up later" | Later never comes. Do it now. |
 | "Scope doesn't matter for docs" | Docs have structure too. Use appropriate scope (readme, api-docs, guides). |
 | "Emergency hotfix, no time" | Hotfixes especially need clear documentation. 10 seconds won't delay deployment. |
@@ -326,7 +320,7 @@ The Bash tool's git commit workflow references this skill:
 
 **Before creating commit:**
 
-1. Announce: "I'm using the conventional-commits skill to format this commit message."
+1. Announce: "I'm using the create-git-commit skill to format this commit message."
 2. Run scope discovery: `git status` and `git diff --name-only`
 3. Select type based on changes
 4. Apply Primary Scope Rule to pick scope
@@ -367,7 +361,7 @@ EOF
 
 ## The Bottom Line
 
-**Conventional Commits is a discipline, not a suggestion.**
+> [!attention] **Commit format is a discipline, not a suggestion.**
 
 Like test-driven development, it feels like overhead until you experience the benefits: automated changelogs, semantic versioning, clear history, easy filtering, tool compatibility.
 

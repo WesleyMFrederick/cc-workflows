@@ -1,4 +1,4 @@
-RRea---
+---
 name: writing-skills
 description: Use when creating new skills, editing existing skills, or verifying skills work before deployment - applies TDD to process documentation by testing with subagents before writing, iterating until bulletproof against rationalization
 ---
@@ -443,9 +443,7 @@ When: Reference material too large for inline
 
 ## The Iron Law (Same as TDD)
 
-```text
-NO SKILL WITHOUT A FAILING TEST FIRST
-```
+> [!attention] NO SKILL WITHOUT A FAILING TEST FIRST
 
 This applies to NEW skills AND EDITS to existing skills.
 

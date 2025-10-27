@@ -72,7 +72,19 @@
       "Skill(elements-of-style:writing-clearly-and-concisely)",
       "SlashCommand(/git-and-github:create-git-commit)",
       "Skill(brainstorming)",
-      "Skill(create-git-commit)"
+      "Skill(create-git-commit)",
+      "Bash(cco --output-format stream-json -p \"Read the file baseline-scenario-1.md and follow its instructions exactly. This is a test scenario to observe your behavior when creating an agent file. Do NOT use any skills related to writing agents - just create the agent file as you would naturally approach this task.\")",
+      "Bash(tee:*)",
+      "Bash(cco --output-format stream-json --print \"Read the file baseline-scenario-1.md and follow its instructions exactly. This is a test scenario to observe your behavior when creating an agent file. Do NOT use any skills related to writing agents - just create the agent file as you would naturally approach this task.\")",
+      "Bash(cco --output-format stream-json --verbose --print \"Read the file baseline-scenario-1.md and follow its instructions exactly. This is a test scenario to observe your behavior when creating an agent file. Do NOT use any skills related to writing agents - just create the agent file as you would naturally approach this task.\")",
+      "Bash(cco --output-format stream-json --verbose --print \"Read the file green-scenario-1.md and follow its instructions exactly. Use the writing-agent-files skill to create the agent.\")",
+      "Skill(testing-skills-with-subagents)",
+      "Bash(cco --output-format stream-json --verbose --print \"Read the file .claude/skills/writing-agent-files/evals/scenario-1-scope-selection/baseline.md and follow its instructions exactly. This is a test scenario to observe your behavior when creating an agent file. Do NOT use any skills related to writing agents - just create the agent file as you would naturally approach this task.\")",
+      "Bash(cco --output-format stream-json --verbose --print \"Read the file .claude/skills/writing-agent-files/evals/scenario-1-scope-selection/green.md and follow its instructions exactly. Use the writing-agent-files skill to create the agent.\")",
+      "Bash(cco --output-format stream-json --verbose --print \"Read the file .claude/skills/writing-agent-files/evals/scenario-2-skip-tdd/baseline.md and follow its instructions exactly. This is a test scenario. Do NOT use any skills related to writing agents - just create the agent file as you would naturally approach this task.\")",
+      "Bash(cco:*)",
+      "Read(//private/tmp/**)",
+      "SlashCommand(/git-and-github:create-git-commit:*)"
     ],
     "deny": [],
     "ask": []

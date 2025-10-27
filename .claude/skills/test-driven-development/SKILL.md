@@ -30,9 +30,7 @@ Thinking "skip TDD just this once"? Stop. That's rationalization.
 
 ## The Iron Law
 
-```
-NO PRODUCTION CODE WITHOUT A FAILING TEST FIRST
-```
+> [!attention] **NO PRODUCTION CODE WITHOUT A FAILING TEST FIRST**
 
 Write code before the test? Delete it. Start over.
 
@@ -45,8 +43,6 @@ Write code before the test? Delete it. Start over.
 Implement fresh from tests. Period.
 
 ## Red-Green-Refactor
-
-/cle
 
 ### RED - Write Failing Test
 
