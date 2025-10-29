@@ -103,13 +103,10 @@ _worktrees/
 # claude-trace logs
 .claude-trace/
 
-# temp gitignore
-evals/
-agentic-workflows/
-bamd-core/
-src/
-test/
 
 #vs-code
 *.code-workspace
 
+
+# Claude Local Settings
+.claude/settings.local.json

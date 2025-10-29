@@ -57,7 +57,7 @@ This applies to ALL commits: simple fixes, typos, documentation, emergencies - e
 | `build` | Build system changes | - |
 | `style` | Code formatting, whitespace | - |
 
-**Breaking Changes:** Add `!` after type/scope: `feat(auth)!:` OR include `BREAKING CHANGE:` footer (triggers MAJOR)
+**Breaking Changes:** Include `BREAKING CHANGE:` footer (triggers MAJOR)
 
 ## Scope Discovery Process
 
@@ -355,7 +355,7 @@ EOF
 | **Scope** | REQUIRED | `auth`, `api`, `readme` |
 | **Description** | REQUIRED, lowercase, <72 chars | `add email validation` |
 | **Body** | Optional | Explain why, not what |
-| **Breaking change** | When applicable | `!` or `BREAKING CHANGE:` footer |
+| **Breaking change** | When applicable | `BREAKING CHANGE:` footer |
 | **Issue refs** | When applicable | `Closes: #123` |
 | **Attribution** | ALWAYS | Claude Code footer |
 

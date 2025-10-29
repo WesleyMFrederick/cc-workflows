@@ -34,27 +34,16 @@ Don't test:
 
 ## TDD Mapping for Skill Testing
 
-| TDD Phase | Skill Testing | What You Do |
-|-----------|---------------|-------------|
-| **RED** | Baseline test | Run scenario WITHOUT skill, watch agent fail |
-| **Verify RED** | Capture rationalizations | Document exact failures verbatim |
-| **GREEN** | Write skill | Address specific baseline failures |
-| **Verify GREEN** | Pressure test | Run scenario WITH skill, verify compliance |
-| **REFACTOR** | Plug holes | Find new rationalizations, add counters |
-| **Stay GREEN** | Re-verify | Test again, ensure still compliant |
+| TDD Phase        | Skill Testing            | What You Do                                  | Success Criteria                       |
+| ---------------- | ------------------------ | -------------------------------------------- | -------------------------------------- |
+| **RED**          | Baseline test            | Run scenario WITHOUT skill, watch agent fail | Agent fails, document rationalizations |
+| **Verify RED**   | Capture rationalizations | Document exact failures verbatim             | Verbatim documentation of failures     |
+| **GREEN**        | Write skill              | Address specific baseline failures           | Agent now complies with skill          |
+| **Verify GREEN** | Pressure test            | Run scenario WITH skill, verify compliance   | Agent follows rule under pressure      |
+| **REFACTOR**     | Plug loopholes           | Find new rationalizations, add counters      | Add counters for new rationalizations  |
+| **Stay GREEN**   | Re-verify                | Test again, ensure still compliant           | Agent still complies after refactoring |
 
 Same cycle as code TDD, different test format.
-
-## Quick Reference (TDD Cycle)
-
-| TDD Phase | Skill Testing | Success Criteria |
-|-----------|---------------|------------------|
-| **RED** | Run scenario without skill | Agent fails, document rationalizations |
-| **Verify RED** | Capture exact wording | Verbatim documentation of failures |
-| **GREEN** | Write skill addressing failures | Agent now complies with skill |
-| **Verify GREEN** | Re-test scenarios | Agent follows rule under pressure |
-| **REFACTOR** | Close loopholes | Add counters for new rationalizations |
-| **Stay GREEN** | Re-verify | Agent still complies after refactoring |
 
 ## Process Overview
 

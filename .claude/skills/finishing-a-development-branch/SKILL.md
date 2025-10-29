@@ -25,7 +25,8 @@ npm test / cargo test / pytest / go test ./...
 ```
 
 **If tests fail:**
-```
+
+```text
 Tests failing (<N> failures). Must fix before completing:
 
 [Show failures]
@@ -50,7 +51,7 @@ Or ask: "This branch split from main - is that correct?"
 
 Present exactly these 4 options:
 
-```
+```text
 Implementation complete. What would you like to do?
 
 1. Merge back to <base-branch> locally
@@ -68,21 +69,23 @@ Which option?
 #### Option 1: Merge Locally
 
 ```bash
-# Switch to base branch
+# Switch to base branch (typically feature branch)
 git checkout <base-branch>
 
 # Pull latest
 git pull
 
-# Merge feature branch
-git merge <feature-branch>
+# Merge worktree branch (regular merge, NOT squash)
+git merge <worktree-branch>
 
 # Verify tests on merged result
 <test command>
 
 # If tests pass
-git branch -d <feature-branch>
+git branch -d <worktree-branch>
 ```
+
+**Note:** This is a regular merge (NOT squash) because you're merging worktree → feature branch. Use `merging-feature-branches-to-main` skill later to squash merge feature branch → main after human review.
 
 Then: Cleanup worktree (Step 5)
 
@@ -114,7 +117,8 @@ Report: "Keeping branch <name>. Worktree preserved at <path>."
 #### Option 4: Discard
 
 **Confirm first:**
-```
+
+```text
 This will permanently delete:
 - Branch <name>
 - All commits: <commit-list>
@@ -126,6 +130,7 @@ Type 'discard' to confirm.
 Wait for exact confirmation.
 
 If confirmed:
+
 ```bash
 git checkout <base-branch>
 git branch -D <feature-branch>
@@ -138,11 +143,13 @@ Then: Cleanup worktree (Step 5)
 **For Options 1, 2, 4:**
 
 Check if in worktree:
+
 ```bash
 git worktree list | grep $(git branch --show-current)
 ```
 
 If yes:
+
 ```bash
 git worktree remove <worktree-path>
 ```
@@ -160,19 +167,23 @@ git worktree remove <worktree-path>
 
 ## Common Mistakes
 
-**Skipping test verification**
+### Skipping test verification
+
 - **Problem:** Merge broken code, create failing PR
 - **Fix:** Always verify tests before offering options
 
-**Open-ended questions**
+### Open-ended questions
+
 - **Problem:** "What should I do next?" → ambiguous
 - **Fix:** Present exactly 4 structured options
 
-**Automatic worktree cleanup**
+### Automatic worktree cleanup
+
 - **Problem:** Remove worktree when might need it (Option 2, 3)
 - **Fix:** Only cleanup for Options 1 and 4
 
-**No confirmation for discard**
+### No confirmation for discard
+
 - **Problem:** Accidentally delete work
 - **Fix:** Require typed "discard" confirmation
 

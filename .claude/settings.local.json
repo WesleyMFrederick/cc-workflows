@@ -12,7 +12,20 @@
       "Bash(git tag:*)",
       "Skill(writing-skills)",
       "Skill(subagent-driven-development)",
-      "Bash(npm run citation:validate:*)"
+      "Bash(npm run citation:validate:*)",
+      "Skill(brainstorming)",
+      "Bash(npm run citation:base-paths:*)",
+      "Skill(writing-implementation-pseudocode)",
+      "Skill(writing-plans)",
+      "Skill(test-driven-development)",
+      "Bash(npm test:*)",
+      "Skill(writing-implementation-test-pseudocode)",
+      "Skill(using-git-worktrees)",
+      "WebFetch(domain:registry.npmjs.org)",
+      "WebFetch(domain:eu-central-1-1.aws.cloud2.influxdata.com)",
+      "Skill(create-git-commit)",
+      "SlashCommand(/git-and-github:create-git-commit content-extractor-documentation)",
+      "Skill(merging-feature-branches-to-main)"
     ],
     "deny": [],
     "ask": []
@@ -25,5 +38,9 @@
   "disabledMcpjsonServers": [
     "deepwiki"
   ],
-  "outputStyle": "application-tech-lead"
+  "outputStyle": "application-tech-lead",
+  "sandbox": {
+    "autoAllowBashIfSandboxed": false,
+    "enabled": false
+  }
 }

@@ -45,7 +45,9 @@ Task tool ({{agent}} | general-purpose):
   prompt: |
     You are implementing Task N from [plan-file].
 
-    Read that task carefully. Your job is to:
+    [Task N EXACT TEXT from plan-file]
+
+    Your job is to:
     1. Implement exactly what the task specifies
     2. Write tests (following TDD if task says to)
     3. Verify implementation works
