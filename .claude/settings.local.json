@@ -25,7 +25,8 @@
       "WebFetch(domain:eu-central-1-1.aws.cloud2.influxdata.com)",
       "Skill(create-git-commit)",
       "SlashCommand(/git-and-github:create-git-commit content-extractor-documentation)",
-      "Skill(merging-feature-branches-to-main)"
+      "Skill(merging-feature-branches-to-main)",
+      "Bash(git pull:*)"
     ],
     "deny": [],
     "ask": []
