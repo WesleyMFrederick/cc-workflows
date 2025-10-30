@@ -79,7 +79,7 @@ Options:
 
 ### Phase 4: Design Documentation
 After design is validated, write it to a permanent document:
-- **File location:** `docs/plans/YYYY-MM-DD-<topic>-design.md` (use actual date and descriptive topic)
+- **File location:**  [Directory and File Naming Conventions](../../../design-docs/Architecture%20-%20Baseline.md#Level%204%20-%20Code)  (use actual date and descriptive topic)
 - **RECOMMENDED SUB-SKILL:** Use elements-of-style:writing-clearly-and-concisely (if available) for documentation quality
 - **Content:** Capture the design as discussed and validated in Phase 3, organized into the sections that emerged from the conversation
 - Commit the design document to git before proceeding

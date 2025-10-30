@@ -89,7 +89,7 @@ The C4 model decomposes complex architecture by drilling down through four level
 - [ADR-001: NPM Workspaces for Monorepo Management](#ADR-001%20NPM%20Workspaces%20for%20Monorepo%20Management)
 
 ---
-## Level 1: System Context Diagram
+## Level 1 - System Context Diagram
 This diagram shows the **CC Workflows Workspace** as a central system used by developers to create and manage a toolkit of reusable components. These components are then consumed by external **Developer Projects** and automated **AI Coding Assistants**. The workspace itself relies on Git for version control and NPM for managing its internal dependencies.
 
 ### System Context Diagram
@@ -121,7 +121,7 @@ graph TD
 ```
 
 ---
-## Level 2: Containers
+## Level 2 - Containers
 
 ### Container Diagram
 
@@ -203,7 +203,7 @@ graph LR
 
 ---
 
-## Level 3: Components
+## Level 3 - Components
 
 Component-level architecture (C4 Level 3) is defined within each tool's own architecture documentation, not at the workspace level. This approach enforces our **Modular Design Principles** by treating each tool as a self-contained container, keeping the workspace architecture focused on system-level boundaries.
 
@@ -215,7 +215,7 @@ See the [content-aggregation-architecture](../../../tools/citation-manager/desig
 Component interfaces and data contracts are internal details of each tool container. To maintain a clean separation of concerns and treat each tool as a "black box," these specifications are defined within the respective tool's architecture document and are intentionally excluded from the parent workspace architecture.
 
 ---
-## Level 4: Code
+## Level 4 - Code
 
 This level details the initial organization of the workspace, its file structure, and the naming conventions that will ensure consistency as the project grows.
 

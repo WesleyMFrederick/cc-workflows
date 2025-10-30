@@ -38,26 +38,30 @@ Read plan file, create TodoWrite with all tasks.
 For each task:
 
 **Dispatch fresh subagent:**
-- Populate {{Insert Task N EXACT TEXT from plan-file}} EXACTLY, WORD FOR WORD, from the plan file so the subagent does not need to read a ~1500 line file.
+- Use `haiku` model for subagent to use a lightweight llm model
 
 ```plaintext
-Task tool ({{agent}} | general-purpose):
-  description: "Implement Task N: [task name]"
+Task tool (
+ subagent_type: {{agent}} | general-purpose
+  description: "Implement Task {{task-number}}: {{task name}}"
   prompt: |
-    You are implementing Task N from [plan-file].
+    You are implementing Task {{task-number}} from {{plan-file-path}}.
 
-    {{Insert Task N EXACT TEXT from plan-file}}
+    Use `citation extract header` tool to extract {{Task N}} context:
+    
+    ```bash
+    npm run citation:extract:header {{plan-file-path}} {{task-number-section-header}}
 
     Your job is to:
-    1. Implement exactly what the task specifies
-    2. Write tests (following TDD if task says to)
-    3. Verify implementation works
-    4. Commit your work
-    5. Report back
-
-    Work from: [directory]
+    1. Navigate to and work in {{worktree directory | feature-branch if worktree missing}}
+    2. Implement exactly what the task specifies
+    3. Write tests (following TDD if task says to)
+    4. Verify implementation works
+    5. Commit your work
+    6. Report back
 
     Report: What you implemented, what you tested, test results, files changed, any issues
+  model: haiku
 ```
 
 **Subagent reports back** with summary of work.
