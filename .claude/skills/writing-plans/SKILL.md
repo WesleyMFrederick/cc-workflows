@@ -12,10 +12,7 @@ Write comprehensive implementation plans assuming the engineer has zero context 
 Assume they are a skilled developer, but know almost nothing about our toolset or problem domain. Assume they don't know good test design very well.
 
 **Announce at start:** "I'm using the writing-plans skill to create the implementation plan."
-
-**Context:** This should be run in a dedicated worktree (created by brainstorming skill).
-
-**Save plans to:** `docs/plans/YYYY-MM-DD-<feature-name>.md`
+**Save plans to:** [Save to the same location as the design plan. Display location to user]
 
 ## Bite-Sized Task Granularity
 
@@ -25,6 +22,10 @@ Assume they are a skilled developer, but know almost nothing about our toolset o
 - "Implement the minimal code to make the test pass" - step
 - "Run the tests and make sure they pass" - step
 - "Commit" - step
+
+## Present Tasks To User
+1. Present the list of tasks to user, along with a 1 sentence description of the task
+2. Use the `AskUserTool` to your partner if they approve the tasks
 
 ## Plan Document Header
 
@@ -47,7 +48,7 @@ Assume they are a skilled developer, but know almost nothing about our toolset o
 ## Task Structure
 
 ~~~markdown
-## Task N: [Component Name]
+## Task {{task-number}} - {{task-name}}
 
 ### Files
 - `exact/path/to/file.py` (CREATE)
@@ -95,7 +96,7 @@ Use `create-git-commit` skill to commit
 
 After saving the plan, offer execution choice:
 
-**"Plan complete and saved to `docs/plans/<filename>.md`. Two execution options:**
+**"Plan complete and saved to `{{implement-plan-path}}`. Two execution options:**
 
 **1. Subagent-Driven (this session)** - I dispatch fresh subagent per task, review between tasks, fast iteration
 

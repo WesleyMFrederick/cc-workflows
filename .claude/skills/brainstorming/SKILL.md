@@ -9,20 +9,21 @@ description: Use when creating or developing anything, before writing code or im
 
 Transform rough ideas into fully-formed designs through structured questioning and alternative exploration.
 
-**Core principle:** Ask questions to understand, explore alternatives, present design incrementally for validation.
+**Core principle:** Research first, ask targeted questions to fill gaps, explore alternatives, present design incrementally for validation.
 
 **Announce at start:** "I'm using the brainstorming skill to refine your idea into a design."
 
 ## Quick Reference
 
-| Phase                       | Key Activities                   | Tool Usage                                                                                                                                                 | Output                               |
-| --------------------------- | -------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------ |
-| **1. Understanding**        | Ask questions (one at a time)    | `AskUserQuestion` for choices                                                                                                                              | Purpose, constraints, criteria       |
-| **2. Exploration**          | Propose 2-3 approaches           | `AskUserQuestion` for approach selection                                                                                                                   | Architecture options with trade-offs |
-| **3. Design Presentation**  | Present in 200-300 word sections | Open-ended questions                                                                                                                                       | Complete design with validation      |
-| **4. Design Documentation** | Write design document            | `writing-clearly-and-concisely` skill <mark class="user-highlight" data-user-name="Wesley" data-created="2025-10-22 13:41">Skill does not exist yet</mark> | Design doc in docs/plans/            |
-| **5. Worktree Setup**       | Set up isolated workspace        | `using-git-worktrees` skill                                                                                                                                | Ready development environment        |
-| **6. Planning Handoff**     | Create implementation plan       | `writing-plans` skill                                                                                                                                      | Detailed task breakdown              |
+| Phase                       | Key Activities                   | Tool Usage                               | Output                               |
+| --------------------------- | -------------------------------- | ---------------------------------------- | ------------------------------------ |
+| **Prep: Autonomous Recon** | Inspect repo/docs/commits, form initial model | Native tools (ls, cat, git log, etc.) | Draft understanding to confirm |
+| **1. Understanding**        | Ask questions (one at a time)    | `AskUserQuestion` for choices            | Purpose, constraints, criteria       |
+| **2. Exploration**          | Propose 2-3 approaches           | `AskUserQuestion` for approach selection | Architecture options with trade-offs |
+| **3. Design Presentation**  | Present in 200-300 word sections | Open-ended questions                     | Complete design with validation      |
+| **4. Design Documentation** | Write design document            | `writing-clearly-and-concisely` skill    | Design doc in docs/plans/            |
+| **5. Worktree Setup**       | Set up isolated workspace        | `using-git-worktrees` skill              | Ready development environment        |
+| **6. Planning Handoff**     | Create implementation plan       | `writing-plans` skill                    | Detailed task breakdown              |
 
 ## The Process
 
@@ -30,6 +31,7 @@ Copy this checklist to track progress:
 
 ```markdown
 Brainstorming Progress:
+- [ ] Prep: Autonomous Recon (repo/docs/commits reviewed, initial model shared)
 - [ ] Phase 1: Understanding (purpose, constraints, criteria gathered)
 - [ ] Phase 2: Exploration (2-3 approaches proposed and evaluated)
 - [ ] Phase 3: Design Presentation (design validated in sections)
@@ -38,11 +40,22 @@ Brainstorming Progress:
 - [ ] Phase 6: Planning Handoff (if implementing)
 ```
 
+### Prep: Autonomous Recon
+- Use existing tools (file browsing, docs, git history, tests) to understand current project state before asking anything.
+- Form your draft model: what problem you're solving, what artifacts exist, and what questions remain.
+- Start the conversation by sharing that model: "Based on exploring the project state, docs, working copy, and recent commits, here's how I think this should work…"
+- Ask follow-up questions only for information you cannot infer from available materials.
+  
 ### Phase 1: Understanding
-- Check current project state in working directory <mark class="user-highlight" data-user-name="Wesley" data-created="2025-10-22 14:07">Sometimes we will be passing a document that will act as an anchor, like an arch doc or a user story. How will this directive work in that situation?</mark>
-- Ask ONE question at a time to refine the idea
-- **Use AskUserQuestion tool** when you have multiple choice options
-- Gather: Purpose, constraints, success criteria
+- Share your synthesized understanding first, then invite corrections or additions.
+- Ask one focused question at a time, only for gaps you cannot close yourself.
+- **Use AskUserQuestion tool** only when you need the human to make a decision among real alternatives.
+- Gather: Purpose, constraints, success criteria (confirmed or amended by your partner)
+
+**Example summary + targeted question:**
+```text
+Based on the README and yesterday's commit, we're expanding localization to dashboard and billing emails; admin console is still untouched. Only gap I see is whether support responses need localization in this iteration. Did I miss anything important?
+```
 
 **Example using AskUserQuestion:**
 
@@ -57,8 +70,10 @@ Options:
 ### Phase 2: Exploration
 - Propose 2-3 different approaches
 - For each: Core architecture, trade-offs, complexity assessment
-- **Use AskUserQuestion tool** to present approaches as structured choices
-- Ask your human partner which approach resonates
+
+- **Use AskUserQuestion tool** to present approaches when you truly need a judgement call
+- Lead with the option you prefer and explain why; invite disagreement if your partner sees it differently
+- Own prioritization: if the repo makes priorities clear, state them and proceed rather than asking
 
 **Example using AskUserQuestion:**
 
@@ -70,21 +85,20 @@ Options:
   - "Hybrid with background jobs" (balanced, moderate complexity, best of both)
 ```
 
-<mark class="user-highlight" data-user-name="Wesley" data-created="2025-10-22 14:08">I'm often going to use this with the application tech lead, and I don't want it to be asking me architectural questions. I want to rely on its expertise. So how will this phase two directive work with that? </mark>
+
 ### Phase 3: Design Presentation
-- Present in 200-300 word sections
+- Present in coherent sections; use ~200-300 words when introducing new material, shorter summaries once alignment is obvious
 - Cover: Architecture, components, data flow, error handling, testing
-- Ask after each section: "Does this look right so far?" (open-ended)
-- Use open-ended questions here to allow freeform feedback
+- Check in at natural breakpoints rather than after every paragraph: "Stop me if this diverges from what you expect."
+- Use open-ended questions to allow freeform feedback
+- Assume ownership and proceed unless your partner redirects you
 
 ### Phase 4: Design Documentation
-After design is validated, write it to a permanent document:
-- **File location:**  [Directory and File Naming Conventions](../../../design-docs/Architecture%20-%20Baseline.md#Level%204%20-%20Code)  (use actual date and descriptive topic)
+After validating the design, write it to a permanent document:
+- **File location:** `docs/plans/YYYY-MM-DD-<topic>-design.md` (use actual date and descriptive topic)
 - **RECOMMENDED SUB-SKILL:** Use elements-of-style:writing-clearly-and-concisely (if available) for documentation quality
-- **Content:** Capture the design as discussed and validated in Phase 3, organized into the sections that emerged from the conversation
+- **Content:** Capture the design as discussed and validated in Phase 3, organized into sections that emerged from the conversation
 - Commit the design document to git before proceeding
-
-<mark class="user-highlight" data-user-name="Wesley" data-created="2025-10-22 14:09">The architecture baseline for the workspace already lays out where files should be located. And generally, I think with these skills, we don't want to be hard coding file locations in them. So how can we adopt phase four to be more responsive to project conventions like file paths and architectural principles and software patterns, etc.? </mark>
 
 ### Phase 5: Worktree Setup (for implementation)
 When design is approved and implementation will follow:
@@ -92,8 +106,6 @@ When design is approved and implementation will follow:
 - **REQUIRED SUB-SKILL:** Use superpowers:using-git-worktrees
 - Follow that skill's process for directory selection, safety verification, and setup
 - Return here when worktree ready
-
-<mark class="user-highlight" data-user-name="Wesley" data-created="2025-10-22 14:10">I think we want to do the work tree setup when we actually implement, not during the brainstorming phase. </mark>
 
 ### Phase 6: Planning Handoff
 Ask: "Ready to create the implementation plan?"
@@ -107,16 +119,15 @@ When your human partner confirms (any affirmative response):
 
 ### When to Use AskUserQuestion Tool
 
-**Use AskUserQuestion for:**
-- Phase 1: Clarifying questions with 2-4 clear options
-- Phase 2: Architectural approach selection (2-3 alternatives)
-- Any decision with distinct, mutually exclusive choices
-- When options have clear trade-offs to explain
+**Use AskUserQuestion when:**
+- You need your partner to make a judgement call among real alternatives
+- You have a recommendation and can explain why it’s your preference
+- Prioritization is ambiguous and cannot be inferred from existing materials
 
-**Benefits:**
-- Structured presentation of options with descriptions
-- Clear trade-off visibility for partner
-- Forces explicit choice (prevents vague "maybe both" responses)
+**Best practices:**
+- State your preferred option and rationale inside the question so your partner can agree or redirect
+- If you know the answer from repo/docs, state it as fact and proceed—no question needed
+- When priorities are spelled out, acknowledge them and proceed rather than delegating the choice back to your partner
 
 ### When to Use Open-Ended Questions
 
@@ -125,6 +136,8 @@ When your human partner confirms (any affirmative response):
 - When you need detailed feedback or explanation
 - When partner should describe their own requirements
 - When structured options would limit creative input
+
+Frame them to confirm or expand your current understanding rather than reopening settled topics.
 
 **Example decision flow:**
 - "What authentication method?" → Use AskUserQuestion (2-4 options)
@@ -171,10 +184,11 @@ graph LR
 
 | Principle | Application |
 |-----------|-------------|
-| **One question at a time** | Phase 1: Single question per message, use AskUserQuestion for choices |
+| **One question at a time** | Phase 1: Single targeted question only for gaps you can’t close yourself |
 | **Structured choices** | Use AskUserQuestion tool for 2-4 options with trade-offs |
 | **YAGNI ruthlessly** | Remove unnecessary features from all designs |
 | **Explore alternatives** | Always propose 2-3 approaches before settling |
 | **Incremental validation** | Present design in sections, validate each |
 | **Flexible progression** | Go backward when needed - flexibility > rigidity |
+| **Own the initiative** | Recommend priorities and next steps; ask if you should proceed only when requirements conflict |
 | **Announce usage** | State skill usage at start of session |
