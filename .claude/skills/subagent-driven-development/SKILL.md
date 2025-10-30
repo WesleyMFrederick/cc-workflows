@@ -38,6 +38,7 @@ Read plan file, create TodoWrite with all tasks.
 For each task:
 
 **Dispatch fresh subagent:**
+- Populate {{Insert Task N EXACT TEXT from plan-file}} EXACTLY, WORD FOR WORD, from the plan file so the subagent does not need to read a ~1500 line file.
 
 ```plaintext
 Task tool ({{agent}} | general-purpose):
@@ -45,7 +46,7 @@ Task tool ({{agent}} | general-purpose):
   prompt: |
     You are implementing Task N from [plan-file].
 
-    [Task N EXACT TEXT from plan-file]
+    {{Insert Task N EXACT TEXT from plan-file}}
 
     Your job is to:
     1. Implement exactly what the task specifies

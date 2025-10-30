@@ -5,6 +5,7 @@
 ## Modular Design Principles
 **Replaceable by Design**: Modularity keeps systems flexible, replaceable, and understandable. Each part should do one thing well, interact only through well-defined boundaries, and remain simple enough to be swapped, extended, or recombined without ripple effects. ^modular-design-principles-definition
 
+- **Loose Coupling, Tight Cohesion**: Maximize internal relatedness within modules (cohesion) while minimizing dependencies between them (coupling). Related functionality belongs together; unrelated functionality stays separate. This makes changes localized, reduces ripple effects, and keeps reasoning bounded to one module at a time. ^loose-coupling-tight-cohesion
 - **Black Box Interfaces**: Expose clean, documented APIs and hide implementation details. ^black-box-interfaces
 - **Single Responsibility**: Give each class, module, or file one clear concern. ^single-responsibility
 - **Replaceable Parts**: Design components so they can be swapped out using only their interfaces. ^replaceable-parts
@@ -62,6 +63,7 @@
 **Clarity Before Flexibility:** Interfaces are the touchpoints where systems and people connect. Good ones reduce errors, lower cognitive load, and make the system easier to extend. Keep them simple, focused, and role-specific to prevent bloat and confusion. ^format-interface-design-definition
 
 - **Simplicity First**: - Make interfaces as simple as possible to implement. Favor simple designs that reduce complexity and potential for errors. Prefer one good way over multiple complex options. ^simplicity-first
+- **Progressive Defaults**: Design interfaces with sensible defaults that handle the majority (80%) of use cases out-of-the-box, while providing clear customization paths for specialized needs. This reduces initial complexity, accelerates adoption, and ensures common paths remain simple while power users retain flexibility. ^progressive-defaults
 - **Interface Segregation**: - Design small, role-specific interfaces rather than broad, catch-all ones. ^interface-segregation
 
 ---

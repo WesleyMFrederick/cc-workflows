@@ -17,6 +17,8 @@
 		"citation:validate": "node tools/citation-manager/src/citation-manager.js validate",
 		"citation:ast": "node tools/citation-manager/src/citation-manager.js ast",
 		"citation:base-paths": "node tools/citation-manager/src/citation-manager.js base-paths",
+		"citation:extract": "node tools/citation-manager/src/citation-manager.js extract links",
+		"citation:extract:content": "sh -c 'node tools/citation-manager/src/citation-manager.js extract links \"$1\" | jq \".extractedContentBlocks\"' --",
 		"citation:fix": "node tools/citation-manager/src/citation-manager.js validate --fix",
 		"mock:run": "node tools/mock-tool/src/mock-tool.js",
 		"qr-gen": "node tools/linkedin-qr-generator/src/linkedin-qr-generator.js"

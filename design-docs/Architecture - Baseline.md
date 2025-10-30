@@ -440,13 +440,13 @@ This project follows JavaScript/TypeScript naming conventions aligned with our [
 
 - **MVP-Focused Testing**: We will maintain a lean **target test-to-code ratio of 0.3:1 to 0.5:1**. The primary goal is to **prove that functionality works** as specified in the user story's acceptance criteria, not to achieve 100% test coverage.
 - **Integration-Driven Development**: We start by writing a **failing integration test** that validates a user story, then build the minimum code required to make it pass.
-- **Real Systems, Fake Fixtures**: 
-	- *Real Systems:*
-		- Tests will run against the **real file system**, execute **real shell commands**, and inject real **Components**
-	- *Fake Fixtures:* 
-		- Test fixture files (not production documents). You can copy a production document into the fixture folders
-		- We have a zero-tolerance policy for mocking.
-		- Static, Not Dynamic: Fixtures created once and checked into repo
+- **Real Systems, Fake Fixtures**:
+  - _Real Systems:_
+    - Tests will run against the **real file system**, execute **real shell commands**, and inject real **Components**
+  - _Fake Fixtures:_
+    - Test fixture files (not production documents). You can copy a production document into the fixture folders
+    - We have a zero-tolerance policy for mocking.
+    - Static, Not Dynamic: Fixtures created once and checked into repo
 
 ### Workspace Testing Approach
 
@@ -592,6 +592,72 @@ describe('Citation Manager Integration Tests', () => {
 - Aligns test architecture with production architecture (both use same code path)
 
 **Reference**: [Bug 3: Buffer Limit Resolution](../../../tools/citation-manager/design-docs/features/20251003-content-aggregation/user-stories/us1.8-implement-validation-enrichment-pattern/bug3-buffer-limit-resolution.md)
+
+###### CLI Testing: stdout/stderr Separation Pattern
+
+**Architectural Decision**: CLI tools must maintain strict separation between data output (stdout) and diagnostic messages (stderr). This separation ensures:
+- JSON output remains parseable (no warnings/errors mixed in)
+- Real-world CLI usage patterns work correctly (piping, redirection)
+- Tests accurately reflect production behavior
+
+**Implementation Pattern**:
+
+CLI tools should route output based on type:
+- **stdout**: Structured data (JSON), primary command output
+- **stderr**: Warnings, diagnostics, validation errors, progress messages
+
+**Test Helper Pattern**:
+
+The `cli-runner.js` helper supports both capture modes:
+
+```javascript
+// For JSON output - capture only stdout (default: captureStderr=true)
+const output = runCLI(
+  `node citation-manager.js validate file.md --format json`,
+  { captureStderr: false }  // Don't mix stderr into stdout
+);
+const result = JSON.parse(output); // Clean JSON parsing
+
+// For text output - capture both streams
+const output = runCLI(
+  `node citation-manager.js validate file.md`,
+  { captureStderr: true }  // Merge stderr for full output
+);
+expect(output).toContain('Validation errors found'); // Check errors
+```
+
+**Example - Citation Manager**:
+
+```javascript
+// Production code correctly separates streams
+if (options.format === 'json') {
+  console.log(JSON.stringify(result, null, 2));  // stdout
+} else {
+  console.log(formatTextReport(result));         // stdout
+}
+console.error('Validation errors found:');       // stderr
+```
+
+**Test Pattern**:
+
+```javascript
+it('should validate with JSON format', () => {
+  // Given: Test file with citations
+  const testFile = join(FIXTURES_DIR, 'test.md');
+
+  // When: Execute with JSON format (stderr not captured)
+  const output = runCLI(
+    `node citation-manager.js validate "${testFile}" --format json`,
+    { captureStderr: false }
+  );
+
+  // Then: Clean JSON can be parsed without warnings
+  const result = JSON.parse(output);
+  expect(result.summary.total).toBeGreaterThan(0);
+});
+```
+
+**Rationale**: This pattern matches real-world usage where users pipe JSON to other tools (`citation-manager validate file.md --format json | jq .summary`) or redirect output (`citation-manager validate file.md > report.txt 2> errors.log`). Tests must verify this separation works correctly.
 
 ##### Component Integration Testing (DI Required)
 

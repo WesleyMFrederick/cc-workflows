@@ -35,12 +35,14 @@ This applies to ALL commits: simple fixes, typos, documentation, emergencies - e
 ### Required Format
 
 ```text
-<type>(<scope>): <description>
+<type>(<scope>): [US#.#] [Task #.#.#] <description>
 
 [optional body]
 
 [optional footer(s)]
 ```
+
+**Note:** User story and task numbers are included in the description line when available. If no task number exists, include only the user story number. If working without user stories, omit the bracketed identifiers.
 
 ### Supported Types (Extended Common Set)
 
@@ -121,11 +123,12 @@ Commit descriptions follow the project's **Self-Contained Naming Principles** - 
 
 ### Description Guidelines
 
+- Include user story and task numbers when available: `[US#.#] [Task #.#.#]`
 - Focus on WHAT and WHY, not HOW
 - Complete the sentence: "This commit will..."
 - Be specific: "add" not "update", "fix" not "change"
-- Keep under 72 characters
-- Lowercase first word (after type)
+- Keep under 72 characters (excluding US/task identifiers)
+- Lowercase first word (after US/task identifiers if present, or after type if not)
 - No period at end
 
 **Examples:**
@@ -133,6 +136,8 @@ Commit descriptions follow the project's **Self-Contained Naming Principles** - 
 - ❌ `fix(auth): update code` - What code? What changed?
 - ✅ `fix(auth): prevent null pointer on missing OAuth state`
 - ✅ `feat(api): add email validation to login endpoint`
+- ✅ `feat(citation-manager): [US2.3] [Task 2.3.1] implement link extraction from markdown`
+- ✅ `docs(readme): [US1.2] add installation instructions for CLI`
 
 ## Footer Management
 
@@ -228,8 +233,11 @@ If you're thinking any of these, STOP and apply the format correctly:
 - Using vague scopes like "misc", "various", "other"
 - Skipping scope entirely
 - Vague descriptions like "fix bug" or "update code"
+- **"US/task numbers are just context, put them in body"** ← Common rationalization
+- **"US/task numbers make description too long"** ← They don't count toward 72-char limit
+- "Description should be purely technical without US numbers"
 
-**All of these mean: Stop. Apply the format correctly with a specific scope.**
+**All of these mean: Stop. Apply the format correctly with a specific scope and US/task numbers in description.**
 
 ## Common Rationalizations
 
@@ -247,6 +255,8 @@ These are captured from real baseline testing - agents use these exact rationali
 | **"Scope adds minimal value"** | **Scopes enable filtering, navigation, and understanding. Mandatory for tooling.** |
 | **"Can't decide scope after thinking"** | **Use the 30-Second Rule: pick first file's directory or most specific layer.** |
 | "Multiple layers, can't pick one" | **Primary Scope Rule: pick the layer that changed MOST or is MOST important to the feature.** |
+| **"US/task numbers are context, not metadata"** | **Context belongs in body. Identifiers belong in description. US/task numbers are identifiers for traceability.** |
+| **"Description should be purely technical"** | **US/task numbers ARE technical metadata. They link commits to requirements for impact analysis.** |
 
 ## Common Mistakes
 
@@ -314,6 +324,28 @@ fix(auth): fix OAuth null pointer error
 
 **Fix:** Description should be lowercase (except proper nouns).
 
+### Mistake 5: US/Task Numbers in Body Instead of Description
+
+**Wrong:**
+
+```text
+feat(citation-manager): implement link extraction from markdown
+
+Adds LinkExtractor component for US2.3.
+Part of Task 2.3.1 implementation.
+```
+
+**Right:**
+
+```text
+feat(citation-manager): [US2.3] [Task 2.3.1] implement link extraction from markdown
+
+Adds LinkExtractor component to extract and parse markdown links from
+content for validation and content extraction phases.
+```
+
+**Fix:** US/task numbers are identifiers that belong in the description line, not narrative context in the body. Check implementation plans, user story documents, or commit context for US/task numbers before committing.
+
 ## Integration with Bash Tool
 
 The Bash tool's git commit workflow references this skill:
@@ -332,7 +364,7 @@ The Bash tool's git commit workflow references this skill:
 
 ```bash
 git commit -m "$(cat <<'EOF'
-<type>(<scope>): <description>
+<type>(<scope>): [US#.#] [Task #.#.#] <description>
 
 [Optional body explaining why]
 
@@ -347,12 +379,15 @@ EOF
 )"
 ```
 
+**Note:** When working within user stories, always check implementation plans or context for US/task numbers. If no user story context exists, omit the bracketed identifiers.
+
 ## Quick Reference
 
 | Element | Requirement | Example |
 |---------|-------------|---------|
 | **Type** | REQUIRED | `feat`, `fix`, `docs` |
 | **Scope** | REQUIRED | `auth`, `api`, `readme` |
+| **US/Task IDs** | When available | `[US2.3] [Task 2.3.1]` |
 | **Description** | REQUIRED, lowercase, <72 chars | `add email validation` |
 | **Body** | Optional | Explain why, not what |
 | **Breaking change** | When applicable | `BREAKING CHANGE:` footer |
