@@ -80,11 +80,8 @@ Run: `pytest tests/path/test.py::test_name -v`
 Expected: PASS
 
 ### Step 5: Commit
+Use `create-git-commit` skill to commit
 
-```bash
-git add tests/path/test.py src/path/file.py
-git commit -m "feat: add specific feature"
-```
 ~~~
 
 ## Remember
