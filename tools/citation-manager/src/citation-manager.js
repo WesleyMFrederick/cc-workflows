@@ -1073,29 +1073,27 @@ extractCmd
 	.command("file")
 	.description("Extract entire file content")
 	.argument("<target-file>", "Markdown file to extract")
+	.addHelpText('before', `
+citation-manager extract file extracts the entire content of a markdown
+file without requiring a source document with links. Creates a synthetic
+full-file link and uses the same extraction and deduplication pipeline
+as extract links for consistent output structure.
+
+Examples:
+
+    $ citation-manager extract file docs/architecture.md
+    $ citation-manager extract file architecture.md --scope ./docs
+    $ citation-manager extract file file.md | jq '.extractedContentBlocks'
+    $ citation-manager extract file file.md | jq '.stats'
+`)
 	.option("--scope <folder>", "Limit file resolution to specified directory")
 	.option("--format <type>", "Output format (json)", "json")
-	.addHelpText("after", `
-Examples:
-  # Extract entire file
-  $ citation-manager extract file docs/architecture.md
-
-  # Extract with scope restriction
-  $ citation-manager extract file architecture.md --scope ./docs
-
-  # Pipe to jq for filtering
-  $ citation-manager extract file file.md | jq '.extractedContentBlocks'
-
+	.addHelpText('after', `
 Exit Codes:
   0  File extracted successfully
   1  File not found or validation failed
   2  System error (permission denied, parse error)
-
-Notes:
-  - Extracts complete file content without requiring source document
-  - Output is JSON OutgoingLinksExtractedContent structure
-  - Use --scope for smart filename resolution in large projects
-  `)
+`)
 	.action(async (targetFile, options) => {
 		// Integration: Create CitationManager instance
 		const manager = new CitationManager();
