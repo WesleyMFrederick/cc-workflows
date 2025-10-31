@@ -874,8 +874,25 @@ Exit Codes:
 
 program
 	.command("ast")
-	.description("Show AST and extracted data from markdown file")
+	.description("Display markdown AST and citation metadata")
 	.argument("<file>", "path to markdown file to analyze")
+	.addHelpText('before', `
+citation-manager ast displays the internal Abstract Syntax Tree (AST) and
+parsed citation metadata from a markdown file. This is useful for debugging
+why citations aren't being detected or for inspecting available anchors.
+
+Output includes:
+  - tokens: Markdown AST from marked.js parser
+  - links: Detected citation links with anchor metadata
+  - headings: Parsed heading structure
+  - anchors: Available anchor points (headers and blocks)
+
+Examples:
+
+    $ citation-manager ast docs/design.md
+    $ citation-manager ast file.md | jq '.links'
+    $ citation-manager ast file.md | jq '.anchors | length'
+`)
 	.action(async (file) => {
 		const manager = new CitationManager();
 		const ast = await manager.parser.parseFile(file);
