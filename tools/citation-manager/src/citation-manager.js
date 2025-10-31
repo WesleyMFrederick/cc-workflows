@@ -810,6 +810,18 @@ program
 	.command("validate")
 	.description("Validate citations in a markdown file")
 	.argument("<file>", "path to markdown file to validate")
+	.addHelpText('before', `
+citation-manager validate validates all citation links in a markdown file,
+checking that target files exist and anchors resolve correctly. It can
+output results in CLI-friendly format or JSON for CI/CD integration.
+
+Examples:
+
+    $ citation-manager validate docs/design.md
+    $ citation-manager validate file.md --format json
+    $ citation-manager validate file.md --lines 100-200
+    $ citation-manager validate file.md --fix --scope ./docs
+`)
 	.option("--format <type>", "output format (cli, json)", "cli")
 	.option(
 		"--lines <range>",
