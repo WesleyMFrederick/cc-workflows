@@ -799,6 +799,35 @@ export class CitationManager {
 	}
 }
 
+/**
+ * Semantic suggestion map for common user mistakes
+ *
+ * Maps common synonyms and typos to correct commands/options.
+ * Used by custom error handler to provide helpful suggestions.
+ */
+const semanticSuggestionMap = {
+	// Command synonyms
+	check: ['validate'],
+	verify: ['validate'],
+	lint: ['validate'],
+	parse: ['ast'],
+	tree: ['ast'],
+	debug: ['ast'],
+	show: ['ast'],
+
+	// Option synonyms
+	fix: ['--fix'],
+	repair: ['--fix'],
+	correct: ['--fix'],
+	output: ['--format'],
+	json: ['--format json'],
+	range: ['--lines'],
+	folder: ['--scope'],
+	directory: ['--scope'],
+	path: ['--scope'],
+	dir: ['--scope']
+};
+
 const program = new Command();
 
 program
