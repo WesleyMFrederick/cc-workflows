@@ -985,22 +985,30 @@ const extractCmd = program
 
 extractCmd
 	.command("links <source-file>")
-	.description("Extract content from all links in source document\n\n" +
-		"Workflow:\n" +
-		"  Phase 1: Validate and discover all links in source file\n" +
-		"  Phase 2: Extract content from eligible links\n" +
-		"  Phase 3: Output deduplicated JSON structure\n\n" +
-		"Examples:\n" +
-		"  $ citation-manager extract links docs/design.md\n" +
-		"  $ citation-manager extract links docs/design.md --full-files\n" +
-		"  $ citation-manager extract links docs/design.md --scope ./docs\n\n" +
-		"Exit Codes:\n" +
-		"  0  At least one link extracted successfully\n" +
-		"  1  No eligible links or all extractions failed\n" +
-		"  2  System error (file not found, permission denied)")
+	.description("Extract content from all links in source document")
+	.addHelpText('before', `
+citation-manager extract links discovers all citation links in a source
+document, validates them, determines extraction eligibility, and outputs
+deduplicated content from target files. The workflow includes validation,
+eligibility analysis via strategy chain, content retrieval, and SHA-256
+deduplication to minimize token usage.
+
+Examples:
+
+    $ citation-manager extract links docs/design.md
+    $ citation-manager extract links docs/design.md --full-files
+    $ citation-manager extract links docs/design.md --scope ./docs
+    $ citation-manager extract links file.md | jq '.stats.compressionRatio'
+`)
 	.option("--scope <folder>", "Limit file resolution to folder")
 	.option("--format <type>", "Output format (reserved for future)", "json")
 	.option("--full-files", "Enable full-file link extraction (default: sections only)")
+	.addHelpText('after', `
+Exit Codes:
+  0  At least one link extracted successfully
+  1  No eligible links or all extractions failed
+  2  System error (file not found, permission denied)
+`)
 	.action(async (sourceFile, options) => {
 		// Pattern: Delegate to CitationManager orchestrator
 		const manager = new CitationManager();
