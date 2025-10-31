@@ -1026,25 +1026,26 @@ extractCmd
 	.description("Extract specific header content from target file")
 	.argument("<target-file>", "Markdown file to extract from")
 	.argument("<header-name>", "Exact header text to extract")
-	.option("--scope <folder>", "Limit file resolution scope")
-	.addHelpText("after", `
+	.addHelpText('before', `
+citation-manager extract header extracts content from a specific header
+section in a target file without requiring a source document with links.
+Uses synthetic link creation and the same extraction pipeline as extract
+links for consistent behavior.
+
 Examples:
-  # Extract specific section from design document
-  $ citation-manager extract header plan.md "Task 1: Implementation"
 
-  # Extract with scope limiting
-  $ citation-manager extract header docs/guide.md "Overview" --scope ./docs
-
+    $ citation-manager extract header plan.md "Task 1: Implementation"
+    $ citation-manager extract header docs/guide.md "Overview" --scope ./docs
+    $ citation-manager extract header file.md "Design" | jq '.extractedContentBlocks'
+`)
+	.option("--scope <folder>", "Limit file resolution scope")
+	.option("--format <type>", "Output format (json)", "json")
+	.addHelpText('after', `
 Exit Codes:
   0  Header extracted successfully
   1  Header not found or validation failed
   2  System error (file not found, permission denied)
-
-Notes:
-  - Header name must match exactly (case-sensitive)
-  - Extracts complete section until next same-level heading
-  - Output is JSON OutgoingLinksExtractedContent structure
-  `)
+`)
 	.action(async (targetFile, headerName, options) => {
 		// Integration: Create CitationManager instance
 		const manager = new CitationManager();
