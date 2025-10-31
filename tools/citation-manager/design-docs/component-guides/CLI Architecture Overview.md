@@ -21,6 +21,25 @@ The CLI maintains strict separation between **command orchestration** (CLI's res
 
 The CLI exposes five commands, each accessible via `npm run citation:<command>`:
 
+### Help Documentation Pattern
+
+All commands follow the **jq-style help layout pattern**:
+
+1. **Title/Version** - Tool name and version (Commander default)
+2. **Usage** - Command syntax (Commander default)
+3. **Description** - Paragraph explaining what command does (`.addHelpText('before', ...)`)
+4. **Examples** - Real-world usage patterns (included in `.addHelpText('before', ...)`)
+5. **Command Options** - Flags and arguments (Commander `.option()` calls)
+6. **Exit Codes** - Return codes for automation (`.addHelpText('after', ...)` for complex commands)
+
+**Rationale**: Examples before options (jq pattern) lets users see real usage before diving into flags. This matches how developers actually learn CLI tools.
+
+**Implementation**: Uses Commander.js native `.addHelpText()` method only. No custom abstractions or template helpers.
+
+**Semantic Suggestions**: Custom error handler provides "Did you mean...?" suggestions for common typos and synonyms (e.g., "check" → "validate", "--folder" → "--scope").
+
+---
+
 ### 1. `validate` - Citation Validation with Auto-Fix
 
 **Purpose**: Validate all citations in a markdown file, optionally fixing broken citations automatically
