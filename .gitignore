@@ -40,6 +40,9 @@ Thumbs.db
 !.claude/
 .claude/**/*.jsonl
 
+# Keep .github/ directory for workflows
+!.github/
+
 # Logs
 logs/
 *.log
