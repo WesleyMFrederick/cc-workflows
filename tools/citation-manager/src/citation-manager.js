@@ -835,6 +835,12 @@ Examples:
 		"--fix",
 		"automatically fix citation anchors including kebab-case conversions and missing anchor corrections",
 	)
+	.addHelpText('after', `
+Exit Codes:
+  0  All citations valid
+  1  Validation errors found
+  2  System error (file not found, permission denied)
+`)
 	.action(async (file, options) => {
 		const manager = new CitationManager();
 		let result;
