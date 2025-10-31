@@ -835,6 +835,24 @@ program
 	.description("Citation validation and management tool for markdown files")
 	.version("1.0.0");
 
+// Configure custom error output with semantic suggestions
+program.configureOutput({
+	outputError: (str, write) => {
+		const match = str.match(/unknown (?:command|option) '([^']+)'/);
+		if (match) {
+			const input = match[1].replace(/^--?/, '');
+			const suggestions = semanticSuggestionMap[input];
+
+			if (suggestions) {
+				write(`Unknown ${match[0].includes('command') ? 'command' : 'option'} '${match[1]}'\n`);
+				write(`Did you mean: ${suggestions.join(', ')}?\n`);
+				return;
+			}
+		}
+		write(str);
+	}
+});
+
 program
 	.command("validate")
 	.description("Validate citations in a markdown file")
