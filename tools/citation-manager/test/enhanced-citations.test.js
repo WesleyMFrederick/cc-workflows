@@ -188,4 +188,27 @@ describe("Enhanced Citation Pattern Tests", () => {
 		}
 		// If directory reference not detected, that's acceptable - just verify other validations work
 	});
+
+	it("should extract base paths via npm script wrapper", () => {
+		// Given: Test file with multiple citations
+		const testFile = join(__dirname, "fixtures", "enhanced-citations.md");
+
+		// When: Execute npm script (pipes through validate → jq → sort)
+		const output = runCLI(
+			`npm run --silent citation:base-paths "${testFile}"`,
+			{ cwd: join(__dirname, '..', '..', '..') } // Workspace root for npm run
+		);
+
+		// Then: Output is newline-separated paths
+		const paths = output.trim().split('\n').filter(p => p.length > 0);
+
+		expect(paths.length).toBeGreaterThanOrEqual(6);
+		expect(paths).toEqual([...new Set(paths)]); // Unique (sort -u)
+		expect(paths).toEqual([...paths].sort()); // Sorted alphabetically
+		expect(paths.every(p => p !== 'null')).toBe(true); // No literal "null" strings
+
+		// Spot-check expected paths
+		expect(paths.some(p => p.includes('test-target.md'))).toBe(true);
+		expect(paths.some(p => p.includes('design-principles.md'))).toBe(true);
+	});
 });
