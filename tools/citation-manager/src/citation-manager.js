@@ -935,38 +935,6 @@ Output includes:
 		console.log(JSON.stringify(ast, null, 2));
 	});
 
-program
-	.command("base-paths")
-	.description("Extract distinct base paths from citations in a markdown file")
-	.argument("<file>", "path to markdown file to analyze")
-	.option("--format <type>", "output format (cli, json)", "cli")
-	.action(async (file, options) => {
-		try {
-			const manager = new CitationManager();
-			const basePaths = await manager.extractBasePaths(file);
-
-			if (options.format === "json") {
-				console.log(
-					JSON.stringify({ file, basePaths, count: basePaths.length }, null, 2),
-				);
-			} else {
-				console.log("Distinct Base Paths Found:");
-				console.log("========================");
-				console.log("");
-				basePaths.forEach((path, index) => {
-					console.log(`${index + 1}. ${path}`);
-				});
-				console.log("");
-				console.log(
-					`Total: ${basePaths.length} distinct base path${basePaths.length === 1 ? "" : "s"}`,
-				);
-			}
-		} catch (error) {
-			console.error(`ERROR: ${error.message}`);
-			process.exit(1);
-		}
-	});
-
 // Pattern: Extract command with links subcommand
 const extractCmd = program
 	.command("extract")
