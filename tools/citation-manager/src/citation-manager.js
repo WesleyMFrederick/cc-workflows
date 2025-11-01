@@ -498,64 +498,6 @@ export class CitationManager {
 	}
 
 	/**
-	 * Extract distinct base paths from citations
-	 *
-	 * Parses file and extracts all unique target file paths from citations.
-	 * Converts relative paths to absolute paths for consistency.
-	 *
-	 * @param {string} filePath - Path to markdown file
-	 * @returns {Promise<Array<string>>} Sorted array of absolute paths
-	 * @throws {Error} If extraction fails
-	 */
-	async extractBasePaths(filePath) {
-		try {
-			const { resolve, dirname, isAbsolute } = await import("node:path");
-			const result = await this.validator.validateFile(filePath);
-
-			const basePaths = new Set();
-			const sourceDir = dirname(filePath);
-
-			for (const link of result.links) {
-				// Extract path from link - prefer target.path.absolute if available
-				let path = null;
-
-				if (link.target && link.target.path && link.target.path.absolute) {
-					// Use pre-resolved absolute path from link object
-					basePaths.add(link.target.path.absolute);
-					continue;
-				}
-
-				// Fallback: extract path from fullMatch for patterns not captured in target
-				// Standard markdown link pattern: [text](path) or [text](path#anchor)
-				const standardMatch = link.fullMatch.match(
-					/\[([^\]]+)\]\(([^)#]+)(?:#[^)]+)?\)/,
-				);
-				if (standardMatch) {
-					path = standardMatch[2];
-				}
-
-				// Citation pattern: [cite: path]
-				const citeMatch = link.fullMatch.match(/\[cite:\s*([^\]]+)\]/);
-				if (citeMatch) {
-					path = citeMatch[1].trim();
-				}
-
-				if (path) {
-					// Convert relative paths to absolute paths
-					const absolutePath = isAbsolute(path)
-						? path
-						: resolve(sourceDir, path);
-					basePaths.add(absolutePath);
-				}
-			}
-
-			return Array.from(basePaths).sort();
-		} catch (error) {
-			throw new Error(`Failed to extract base paths: ${error.message}`);
-		}
-	}
-
-	/**
 	 * Automatically fix citations in markdown file
 	 *
 	 * Applies automatic fixes for:
