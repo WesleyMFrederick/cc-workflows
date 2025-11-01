@@ -16,7 +16,7 @@
 		"test:integration": "vitest run src/tests/integration",
 		"citation:validate": "node tools/citation-manager/src/citation-manager.js validate",
 		"citation:ast": "node tools/citation-manager/src/citation-manager.js ast",
-		"citation:base-paths": "node tools/citation-manager/src/citation-manager.js base-paths",
+		"citation:base-paths": "sh -c 'node tools/citation-manager/src/citation-manager.js validate \"$1\" --format json | jq -r \".links[] | select(.target.path.absolute) | .target.path.absolute\" | sort -u' --",
 		"citation:extract": "node tools/citation-manager/src/citation-manager.js extract links",
 		"citation:extract:content": "sh -c 'node tools/citation-manager/src/citation-manager.js extract links \"$1\" | jq \".extractedContentBlocks\"' --",
 		"citation:extract:header": "sh -c 'node tools/citation-manager/src/citation-manager.js extract header \"$1\" \"$2\"' --",

@@ -61,48 +61,6 @@ describe("Enhanced Citation Pattern Tests", () => {
 		expect(caretRefs.length).toBeGreaterThanOrEqual(2);
 	});
 
-	it("should extract all base paths from enhanced citation file", async () => {
-		const testFile = join(__dirname, "fixtures", "enhanced-citations.md");
-
-		try {
-			const output = runCLI(
-				`node "${citationManagerPath}" base-paths "${testFile}" --format json`,
-				{
-					cwd: __dirname,
-				},
-			);
-
-			const result = JSON.parse(output);
-
-			// Should extract multiple base paths
-			expect(result.count).toBeGreaterThanOrEqual(6);
-
-			// Should include standard markdown links
-			const hasTestTarget = result.basePaths.some((path) =>
-				path.includes("test-target.md"),
-			);
-			expect(hasTestTarget).toBe(true);
-
-			// Should include cite format paths
-			const hasDesignPrinciples = result.basePaths.some((path) =>
-				path.includes("design-principles.md"),
-			);
-			expect(hasDesignPrinciples).toBe(true);
-
-			// Should include relative paths from cite format
-			const hasArchitecturePatterns = result.basePaths.some((path) =>
-				path.includes("patterns.md"),
-			);
-			expect(hasArchitecturePatterns).toBe(true);
-		} catch (error) {
-			if (error.status !== 0) {
-				console.log("STDOUT:", error.stdout);
-				console.log("STDERR:", error.stderr);
-			}
-			throw new Error(`Base paths extraction failed: ${error.message}`);
-		}
-	});
-
 	it("should handle mixed citation patterns on same line", async () => {
 		const testFile = join(__dirname, "fixtures", "enhanced-citations.md");
 
@@ -187,5 +145,28 @@ describe("Enhanced Citation Pattern Tests", () => {
 			expect(dirReference.validation.status).toBe("error");
 		}
 		// If directory reference not detected, that's acceptable - just verify other validations work
+	});
+
+	it("should extract base paths via npm script wrapper", () => {
+		// Given: Test file with multiple citations
+		const testFile = join(__dirname, "fixtures", "enhanced-citations.md");
+
+		// When: Execute npm script (pipes through validate → jq → sort)
+		const output = runCLI(
+			`npm run --silent citation:base-paths "${testFile}"`,
+			{ cwd: join(__dirname, '..', '..', '..') } // Workspace root for npm run
+		);
+
+		// Then: Output is newline-separated paths
+		const paths = output.trim().split('\n').filter(p => p.length > 0);
+
+		expect(paths.length).toBeGreaterThanOrEqual(6);
+		expect(paths).toEqual([...new Set(paths)]); // Unique (sort -u)
+		expect(paths).toEqual([...paths].sort()); // Sorted alphabetically
+		expect(paths.every(p => p !== 'null')).toBe(true); // No literal "null" strings
+
+		// Spot-check expected paths
+		expect(paths.some(p => p.includes('test-target.md'))).toBe(true);
+		expect(paths.some(p => p.includes('design-principles.md'))).toBe(true);
 	});
 });
