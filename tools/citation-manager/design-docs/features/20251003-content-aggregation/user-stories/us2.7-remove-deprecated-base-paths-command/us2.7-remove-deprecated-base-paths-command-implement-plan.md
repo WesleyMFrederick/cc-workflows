@@ -337,71 +337,13 @@ Commit message: "Remove extractBasePaths method implementation"
 
 ## Task 5 - Remove Claude Code Permission
 
-### Files
-- `.claude/settings.local.json:17` (DELETE permission entry)
+**STATUS: NOT APPLICABLE - File does not exist in repository**
 
-### Step 1: Identify permission entry (RED)
+The `.claude/settings.local.json` file does not exist in the repository and is git-ignored (line 115 of `.gitignore`). This file contains developer-specific overrides and is never committed to version control. The shared `settings.json` does NOT contain this permission.
 
-Open `.claude/settings.local.json` and locate line 17:
+**Developer Action (Optional):** If you have a local `.claude/settings.local.json` file, manually remove: `"Bash(npm run citation:base-paths:*)"`
 
-```json
-"Bash(npm run citation:base-paths:*)",
-```
-
-### Step 2: Not applicable for config changes (Verify RED)
-
-Skip - no test for permissions file
-
-### Step 3: Remove permission entry (GREEN)
-
-Delete line 17 from `.claude/settings.local.json`.
-
-**Before:**
-
-```json
-{
-  "permissions": {
-    "allow": [
-      "Bash(tee:*)",
-      "Bash(claude:*)",
-      // ... other entries ...
-      "Bash(npm run citation:base-paths:*)",
-      "Skill(writing-implementation-pseudocode)",
-      // ... rest of entries ...
-    ]
-  }
-}
-```
-
-**After:**
-
-```json
-{
-  "permissions": {
-    "allow": [
-      "Bash(tee:*)",
-      "Bash(claude:*)",
-      // ... other entries ...
-      "Skill(writing-implementation-pseudocode)",
-      // ... rest of entries ...
-    ]
-  }
-}
-```
-
-### Step 4: Validate JSON syntax (Verify GREEN)
-
-Run: `cat .claude/settings.local.json | jq .`
-
-Expected: Valid JSON output with no errors
-
-### Step 5: Commit
-
-Use `create-git-commit` skill:
-
-Run: `/git-and-github:create-git-commit`
-
-Commit message: "Remove deprecated base-paths permission from Claude Code settings"
+No commit is needed for this change.
 
 ---
 

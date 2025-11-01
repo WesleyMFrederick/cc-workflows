@@ -339,6 +339,18 @@ sequenceDiagram
 ### `extract` Command Component Sequence Diagram
 ![ContentExtractor Workflow Component Interaction](../../component-guides/Content%20Extractor%20Implementation%20Guide.md#ContentExtractor%20Workflow%20Component%20Interaction)
 
+### Facade Pattern at npm Script Level (US2.7)
+
+The base-paths functionality is implemented as a facade at the package.json level rather than in application code. The npm script pipes validate output through jq for path extraction.
+
+**Architectural Decision**: This demonstrates the Adapter pattern at an unconventional level - the package manager layer. Benefits:
+- Preserves user-facing interface (backward compatibility)
+- Eliminates code duplication (single source of truth in validate)
+- Documents migration path (users can see new pattern in package.json)
+- Enables eventual removal if usage declines (localized to package.json)
+
+This pattern is appropriate for deprecation without breaking existing workflows.
+
 ### Auto-Fix Workflow
 
 The `--fix` flag enables automatic correction of broken citations. This workflow executes after async validation completes, applying corrections based on validation suggestions.
