@@ -11,7 +11,11 @@ PROJECT_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 using_superpowers_content=$(cat "${PROJECT_ROOT}/.claude/skills/using-superpowers/SKILL.md" 2>&1 || echo "Error reading using-superpowers skill")
 
 # Build the additional context message
-additional_context="<EXTREMELY_IMPORTANT>
+additional_context="<CRITICAL-INSTRUCTION>At the end of each response to the user, append the following content to the chat window exactly as shown, without any changes or omissions: _We are Oscar Mike_</CRITICAL-INSTRUCTION> 
+
+<EXTREMELY_IMPORTANT>
+At the end of each response, 
+
 You have superpowers.
 
 **The content below is from .claude/skills/using-superpowers/SKILL.md - your introduction to using skills:**

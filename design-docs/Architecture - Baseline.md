@@ -837,6 +837,64 @@ While DI makes it possible to inject mock dependencies for isolated unit testing
 
 For example, the `CitationValidator` should receive its `MarkdownParser` dependency via its constructor. During testing, we will pass in the _real_ `MarkdownParser` to ensure the validation logic works with the actual parsing output. This gives us confidence that the integrated system functions as expected. The existing `citation-manager` code, which does not fully use DI, has been [identified as technical debt](<../../../tools/citation-manager/design-docs/features/20251003-content-aggregation/content-aggregation-architecture.md#Lack of Dependency Injection>) to be refactored to align with this principle.
 
+### Tool Distribution and Linking
+
+The workspace supports sharing tools with external projects through **npm link**, enabling local development workflows where external projects can consume workspace tools without publishing them to a registry. This pattern is particularly valuable for iterating on tools while testing them in real-world usage contexts.
+
+#### npm link Pattern
+
+**Use Cases:**
+- Local development iteration across multiple projects
+- Testing tool changes in external projects before release
+- Sharing tools with projects outside the workspace (e.g., cc-workflows-site, ResumeCoach)
+
+**Implementation:**
+
+The npm link pattern creates symlinks in two steps:
+
+1. **Create Global Link** (from tool directory):
+
+   ```bash
+   cd /path/to/cc-workflows/tools/citation-manager
+   npm link
+   ```
+
+   Creates symlink: `/opt/homebrew/lib/node_modules/@cc-workflows/citation-manager` → tool directory
+
+2. **Link to External Project** (from consuming project):
+
+   ```bash
+   cd /path/to/external-project
+   npm link "@cc-workflows/citation-manager"
+   ```
+
+   Creates symlink: `node_modules/@cc-workflows/citation-manager` → global package
+
+**Result:** Changes to the tool in cc-workflows workspace are immediately available in the external project without rebuilding or republishing.
+
+#### Symlink Execution Detection
+
+**Technical Implementation:** Workspace tools must properly detect when executed via symlink (npm link or `node_modules/.bin`). The CLI entry point uses `realpathSync()` to resolve symlinks before comparing execution paths:
+
+```javascript
+// citation-manager.js
+import { realpathSync } from "node:fs";
+import { pathToFileURL } from "node:url";
+
+const realPath = realpathSync(process.argv[1]);
+const realPathAsUrl = pathToFileURL(realPath).href;
+
+if (import.meta.url === realPathAsUrl) {
+  program.parse();
+}
+```
+
+**Rationale:** The naive comparison `import.meta.url === \`file://${process.argv[1]}\`` fails with symlinks because `process.argv[1]` contains the symlink path while `import.meta.url` resolves to the real path. Using `realpathSync()` ensures proper detection regardless of how the tool is invoked.
+
+**Test Coverage:** The `cli-execution-detection.test.js` test suite validates symlink execution for all command types (help, validate, extract) to prevent regression.
+
+**Reference:** See [Linking CC-Workflows Tools to External Projects](guides/linking-cc-workflows-tools-to-external-projects.md) for complete setup guide, troubleshooting, and alternative patterns.
+
 ---
 ## Known Risks and Technical Debt
 
