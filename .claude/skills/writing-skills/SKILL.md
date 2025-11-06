@@ -5,6 +5,10 @@ description: Use when creating new skills, editing existing skills, or verifying
 
 # Writing Skills
 
+<critical-instruction>
+Use `citation-manager extract links {{this-document=path}}` to extract related link context
+</critical-instruction>
+
 ## Overview
 
 **Writing skills IS Test-Driven Development applied to process documentation.**
@@ -17,9 +21,11 @@ You write test cases (pressure scenarios with subagents), watch them fail (basel
 
 **Core principle:** If you didn't watch an agent fail without the skill, you don't know if the skill teaches the right thing.
 
-**REQUIRED BACKGROUND:** You MUST understand [**`test-driven-development`**](../test-driven-development/SKILL.md) skill before using this skill. That skill defines the fundamental RED-GREEN-REFACTOR cycle. This skill adapts TDD to documentation.`
+> **REQUIRED BACKGROUND:**
+> - You MUST understand [**`test-driven-development`**](../test-driven-development/SKILL.md) %% force-extract %% skill before using this skill. That skill defines the fundamental RED-GREEN-REFACTOR cycle. This skill adapts TDD to documentation.`
+> - You must use the `writing-clearly-and-concisely` skill when writing skills and related reference material
 
-**Official guidance:** For Anthropic's official skill authoring best practices, see [anthropic-best-practices](anthropic-best-practices.md). This document provides additional patterns and guidelines that complement the TDD-focused approach in this skill.
+**Official guidance:** For Anthropic's official skill authoring best practices, see [anthropic-best-practices](anthropic-best-practices.md) %% force-extract %%. This document provides additional patterns and guidelines that complement the TDD-focused approach in this skill.
 
 ## What is a Skill?
 

@@ -26,25 +26,25 @@
 
 The system's design is guided by core principles that prioritize **simplicity, maintainability, and extensibility** through a **modular, CLI-first architecture.**
 
-### [Minimum Viable Product (MVP) Principles](<Architecture Principles.md#Minimum Viable Product (MVP) Principles>)
+### [Minimum Viable Product (MVP) Principles](<../../resume-coach/design-docs/Architecture Principles.md#Minimum Viable Product (MVP) Principles>)
 
 - **Key Concept**: **Validate the core concept** of a centralized workspace by delivering value quickly. Every architectural decision is weighed against the goal of avoiding over-engineering to accelerate learning and iteration.
   
 - **Implementation Approach**: We are implementing this by choosing **native, low-overhead tooling** like NPM Workspaces and focusing strictly on the functionality required to migrate and enhance a single tool, `citation-manager`, as defined in the PRD.
 
-### [Modular Design Principles](<Architecture Principles.md#Modular Design Principles>)
+### [Modular Design Principles](<../../resume-coach/design-docs/Architecture Principles.md#Modular Design Principles>)
 
 - **Key Concept**: The system's architecture must support a collection of **independent, reusable, and replaceable tools**. This modularity is foundational to achieving the project's long-term goals of maintainability and extensibility as new tools are added to the workspace.
   
 - **Implementation Approach**: We are enforcing modularity by structuring the workspace with **NPM Workspaces**, where each tool lives in an isolated package with its own explicit dependencies and API boundaries.
 
-### [Foundation Reuse](<Architecture Principles.md#^foundation-reuse>)
+### [Foundation Reuse](<../../resume-coach/design-docs/Architecture Principles.md#^foundation-reuse>)
 
 - **Key Concept**: This principle directly addresses the core business problem of **eliminating duplicated effort and inconsistent quality**. The workspace must serve as the single, authoritative repository for all development tools and workflows.
 
 - **Implementation Approach**: The **centralized mono-repository structure** is the direct implementation of this principle, ensuring that any improvements to a tool like `citation-manager` are immediately available to all consumers without manual porting.
 
-### [Deterministic Offloading Principles](<Architecture Principles.md#Deterministic Offloading Principles>)
+### [Deterministic Offloading Principles](<../../resume-coach/design-docs/Architecture Principles.md#Deterministic Offloading Principles>)
 
 - **Key Concept**: The tools within this workspace are defined as **predictable, mechanical processors** that handle repeatable tasks. This clarifies their role and boundaries within a larger development workflow that may also involve non-deterministic AI agents.
 
@@ -64,7 +64,7 @@ The C4 model decomposes complex architecture by drilling down through four level
 
 ### Architectural and System Design
 
-- **Architecture Pattern:** Monorepo (multi-package workspace) — a single repo acting as a [centralized, single source of truth](<Architecture Principles.md#^foundation-reuse>) for multiple, distinct development utilities. The first tool is the `citation-manager`.
+- **Architecture Pattern:** Monorepo (multi-package workspace) — a single repo acting as a [centralized, single source of truth](<../../resume-coach/design-docs/Architecture Principles.md#^foundation-reuse>) for multiple, distinct development utilities. The first tool is the `citation-manager`.
 
 - **System Design:** tooling monorepo hosting a multi-command CLI with shared packages for test/build. This is a toolkit of independent tools that consume common services like [testing (FR2)](cc-workflows-workspace-prd.md#^FR2) and [builds (FR3)](cc-workflows-workspace-prd.md#^FR3)—not a single linear pipeline.
 
@@ -74,7 +74,7 @@ The C4 model decomposes complex architecture by drilling down through four level
 
 ### Key Software Design Patterns
 
-- [**Modular Component Design**](<Architecture Principles.md#Modular Design Principles>): - each tool (e.g., citation-manager) is isolated for independent evolution and migration, while shared utilities live in shared packages.
+- [**Modular Component Design**](<../../resume-coach/design-docs/Architecture Principles.md#Modular Design Principles>): - each tool (e.g., citation-manager) is isolated for independent evolution and migration, while shared utilities live in shared packages.
 
 ### Key Characteristics
 - **Interaction Style**: CLI-based, with commands executed via root-level NPM scripts.
@@ -83,7 +83,7 @@ The C4 model decomposes complex architecture by drilling down through four level
 - **Scaling Approach**: Scales by adding new, isolated tool packages to the workspace, with a clear migration path to more advanced tooling if the package count grows significantly. Start with `npm workspaces`; if growth demands, adopt `Nx/Turborepo` for caching & task orchestration.
 
 ### Rationale
-- [**Simplicity First:**](<Architecture Principles.md#^simplicity-first>) Native Node.js + npm integration minimizes tooling overhead.
+- [**Simplicity First:**](<../../resume-coach/design-docs/Architecture Principles.md#^simplicity-first>) Native Node.js + npm integration minimizes tooling overhead.
 - **Right-Sized Performance:** Optimized for ~5–10 tools/packages—fast installs/builds without premature complexity.
 - **Less Meta-Work:** Shared dependencies and scripts reduce coordination cost while keeping each tool|package independently maintainable.
 - [ADR-001: NPM Workspaces for Monorepo Management](#ADR-001%20NPM%20Workspaces%20for%20Monorepo%20Management)
@@ -269,7 +269,7 @@ tools/citation-manager/
 
 #### File Naming Patterns
 
-**Action-Based Organization:** Following our [Action-Based File Organization](<Architecture Principles.md#^action-based-file-organization-definition>) principle, files should be named by their primary transformation or operation on data.
+**Action-Based Organization:** Following our [Action-Based File Organization](<../../resume-coach/design-docs/Architecture Principles.md#^action-based-file-organization-definition>) principle, files should be named by their primary transformation or operation on data.
 
 ##### Core File Types
 
@@ -391,26 +391,26 @@ design-docs/features/20250928-cc-workflows-workspace-scaffolding/
 ---
 ## Coding Standards and Conventions
 
-This project follows JavaScript/TypeScript naming conventions with one strategic exception for test methods, aligned with our [Self-Contained Naming Principles](<Architecture Principles.md#^self-contained-naming-principles-definition>).
+This project follows JavaScript/TypeScript naming conventions with one strategic exception for test methods, aligned with our [Self-Contained Naming Principles](<../../resume-coach/design-docs/Architecture Principles.md#^self-contained-naming-principles-definition>).
 
 ### JavaScript Naming Conventions
 
-This project follows JavaScript/TypeScript naming conventions aligned with our [Action-Based File Organization](<Architecture Principles.md#^action-based-file-organization-definition>) principle.
+This project follows JavaScript/TypeScript naming conventions aligned with our [Action-Based File Organization](<../../resume-coach/design-docs/Architecture Principles.md#^action-based-file-organization-definition>) principle.
 
 - **Files**: File naming depends on purpose:
   - **Tool Scripts** (executable entry points): Use **kebab-case** (e.g., `citation-manager.js`, `ask-enhanced.js`)
   - **Implementation Modules** (transformation operations): Use **camelCase** named by their primary transformation (e.g., `parseMarkdown.js`, `validateCitations.js`, `extractContent.js`)
-  - **Rationale**: File names describe operations that transform data, following [Transformation Naming](<Architecture Principles.md#^transformation-naming>)
+  - **Rationale**: File names describe operations that transform data, following [Transformation Naming](<../../resume-coach/design-docs/Architecture Principles.md#^transformation-naming>)
 
 - **Functions & Variables**: Use **camelCase** for all functions and variables (e.g., `parseMarkdown`, `extractContent`, `validationResult`)
-  - **Primary Exports**: Each file's main export should match or closely relate to the file name ([Primary Export Pattern](<Architecture Principles.md#^primary-export-pattern>))
+  - **Primary Exports**: Each file's main export should match or closely relate to the file name ([Primary Export Pattern](<../../resume-coach/design-docs/Architecture Principles.md#^primary-export-pattern>))
 
 - **Constants**: Use **UPPER_SNAKE_CASE** for constants (e.g., `MAX_DEPTH`, `DEFAULT_ENCODING`)
 
 - **Classes**: Use **TitleCase** for class names (e.g., `CitationValidator`, `MarkdownParser`)
 
 - **Type Files**: Use **camelCase** with `Types` suffix for shared type definitions (e.g., `citationTypes.js`, `validationTypes.js`)
-  - **Rationale**: Separates data contracts (WHAT) from operations (HOW) per [Data Contracts Separate](<Architecture Principles.md#^data-contracts-separate>)
+  - **Rationale**: Separates data contracts (WHAT) from operations (HOW) per [Data Contracts Separate](<../../resume-coach/design-docs/Architecture Principles.md#^data-contracts-separate>)
 
 - **Test Descriptions**: Use **natural language with spaces** for test descriptions in `it()` methods (e.g., `it('should validate citations with valid references', () => {...})`)
   - **Rationale**: Test descriptions serve as executable specifications requiring maximum clarity per our **"Names as Contracts"** philosophy
@@ -422,14 +422,14 @@ This project follows JavaScript/TypeScript naming conventions aligned with our [
 
 ### Code Organization
 
-- **Modular Structure**: Each module should have a single, clear responsibility ([Single Responsibility](<Architecture Principles.md#^single-responsibility>))
-- **Interface Boundaries**: Define clear APIs between components ([Black Box Interfaces](<Architecture Principles.md#^black-box-interfaces>))
-- **Error Handling**: Implement fail-fast principles with clear error messages ([Fail Fast](<Architecture Principles.md#^fail-fast>))
+- **Modular Structure**: Each module should have a single, clear responsibility ([Single Responsibility](<../../resume-coach/design-docs/Architecture Principles.md#^single-responsibility>))
+- **Interface Boundaries**: Define clear APIs between components ([Black Box Interfaces](<../../resume-coach/design-docs/Architecture Principles.md#^black-box-interfaces>))
+- **Error Handling**: Implement fail-fast principles with clear error messages ([Fail Fast](<../../resume-coach/design-docs/Architecture Principles.md#^fail-fast>))
 
 ### Documentation Requirements
 
-- **Self-Documenting Code**: Names should provide immediate understanding without lookup ([Immediate Understanding](<Architecture Principles.md#immediate-understanding>))
-- **Inline Comments**: Include contextual comments for complex logic ([Contextual Comments](<Architecture Principles.md#contextual-comments>))
+- **Self-Documenting Code**: Names should provide immediate understanding without lookup ([Immediate Understanding](<../../resume-coach/design-docs/Architecture Principles.md#immediate-understanding>))
+- **Inline Comments**: Include contextual comments for complex logic ([Contextual Comments](<../../resume-coach/design-docs/Architecture Principles.md#contextual-comments>))
 - **Function Documentation**: Use docstrings to document public APIs and their contracts
 
 ---
@@ -481,7 +481,7 @@ Our strategy distinguishes between cross-cutting workspace functionality and too
 
 #### Testing Naming Conventions
 
-Test method names follow our [Self-Contained Naming Principles](<Architecture Principles.md#^self-contained-naming-principles-definition>) with a specific exception to optimize for readability and clarity:
+Test method names follow our [Self-Contained Naming Principles](<../../resume-coach/design-docs/Architecture Principles.md#^self-contained-naming-principles-definition>) with a specific exception to optimize for readability and clarity:
 
 ##### Test Description Naming: Natural Language Convention
 - **Convention**: Use **natural language with spaces** for test descriptions in `it()` method strings
@@ -515,7 +515,7 @@ describe('PaymentProcessor', () => {
 });
 ```
 
-This naming convention aligns with our **"Names as Contracts"** philosophy ([Descriptive Labels](<Architecture Principles.md#^descriptive-labels>), [Immediate Understanding](<Architecture Principles.md#^immediate-understanding>)) by prioritizing communication clarity and natural readability.
+This naming convention aligns with our **"Names as Contracts"** philosophy ([Descriptive Labels](<../../resume-coach/design-docs/Architecture Principles.md#^descriptive-labels>), [Immediate Understanding](<../../resume-coach/design-docs/Architecture Principles.md#^immediate-understanding>)) by prioritizing communication clarity and natural readability.
 
 #### BDD-Style Test Structure (Given-When-Then)
 
@@ -836,6 +836,64 @@ Use **Dependency Injection (DI)** as a foundational pattern to achieve a modular
 While DI makes it possible to inject mock dependencies for isolated unit testing, our testing philosophy explicitly prioritizes integration tests that verify real component interactions. Therefore, the workspace adheres to the **"Real Systems, Fake Fixtures"** principle, which includes a **"zero-tolerance policy for mocking"** application components. Our strategy is to use DI to inject _real_ dependencies during testing to gain the highest confidence that our components work together correctly.
 
 For example, the `CitationValidator` should receive its `MarkdownParser` dependency via its constructor. During testing, we will pass in the _real_ `MarkdownParser` to ensure the validation logic works with the actual parsing output. This gives us confidence that the integrated system functions as expected. The existing `citation-manager` code, which does not fully use DI, has been [identified as technical debt](<../../../tools/citation-manager/design-docs/features/20251003-content-aggregation/content-aggregation-architecture.md#Lack of Dependency Injection>) to be refactored to align with this principle.
+
+### Tool Distribution and Linking
+
+The workspace supports sharing tools with external projects through **npm link**, enabling local development workflows where external projects can consume workspace tools without publishing them to a registry. This pattern is particularly valuable for iterating on tools while testing them in real-world usage contexts.
+
+#### npm link Pattern
+
+**Use Cases:**
+- Local development iteration across multiple projects
+- Testing tool changes in external projects before release
+- Sharing tools with projects outside the workspace (e.g., cc-workflows-site, ResumeCoach)
+
+**Implementation:**
+
+The npm link pattern creates symlinks in two steps:
+
+1. **Create Global Link** (from tool directory):
+
+   ```bash
+   cd /path/to/cc-workflows/tools/citation-manager
+   npm link
+   ```
+
+   Creates symlink: `/opt/homebrew/lib/node_modules/@cc-workflows/citation-manager` → tool directory
+
+2. **Link to External Project** (from consuming project):
+
+   ```bash
+   cd /path/to/external-project
+   npm link "@cc-workflows/citation-manager"
+   ```
+
+   Creates symlink: `node_modules/@cc-workflows/citation-manager` → global package
+
+**Result:** Changes to the tool in cc-workflows workspace are immediately available in the external project without rebuilding or republishing.
+
+#### Symlink Execution Detection
+
+**Technical Implementation:** Workspace tools must properly detect when executed via symlink (npm link or `node_modules/.bin`). The CLI entry point uses `realpathSync()` to resolve symlinks before comparing execution paths:
+
+```javascript
+// citation-manager.js
+import { realpathSync } from "node:fs";
+import { pathToFileURL } from "node:url";
+
+const realPath = realpathSync(process.argv[1]);
+const realPathAsUrl = pathToFileURL(realPath).href;
+
+if (import.meta.url === realPathAsUrl) {
+  program.parse();
+}
+```
+
+**Rationale:** The naive comparison `import.meta.url === \`file://${process.argv[1]}\`` fails with symlinks because `process.argv[1]` contains the symlink path while `import.meta.url` resolves to the real path. Using `realpathSync()` ensures proper detection regardless of how the tool is invoked.
+
+**Test Coverage:** The `cli-execution-detection.test.js` test suite validates symlink execution for all command types (help, validate, extract) to prevent regression.
+
+**Reference:** See [Linking CC-Workflows Tools to External Projects](guides/linking-cc-workflows-tools-to-external-projects.md) for complete setup guide, troubleshooting, and alternative patterns.
 
 ---
 ## Known Risks and Technical Debt
