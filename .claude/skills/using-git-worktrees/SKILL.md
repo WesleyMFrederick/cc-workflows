@@ -39,7 +39,7 @@ grep -i "worktree.*director" CLAUDE.md 2>/dev/null
 
 If no directory exists and no CLAUDE.md preference:
 
-```
+```text
 No worktree directory found. Where should I create worktrees?
 
 1. .worktrees/ (project-local, hidden)
@@ -74,27 +74,41 @@ No .gitignore verification needed - outside project entirely.
 
 ## Creation Steps
 
-### 1. Detect Project Name
+### 1. Detect Current Branch and Project Name
+
+**ALWAYS use `{current-branch}-worktree` pattern. DO NOT ask user for branch name.**
 
 ```bash
+# Get current branch name
+current_branch=$(git branch --show-current)
+
+# Create worktree branch name automatically
+worktree_branch="${current_branch}-worktree"
+
+# Get project name
 project=$(basename "$(git rev-parse --show-toplevel)")
 ```
+
+**Why automatic naming:**
+- Consistent, predictable pattern
+- No user friction
+- Clear relationship to parent branch
 
 ### 2. Create Worktree
 
 ```bash
-# Determine full path
+# Determine full path using worktree_branch
 case $LOCATION in
   .worktrees|worktrees)
-    path="$LOCATION/$BRANCH_NAME"
+    path="$LOCATION/$worktree_branch"
     ;;
   ~/.config/superpowers/worktrees/*)
-    path="~/.config/superpowers/worktrees/$project/$BRANCH_NAME"
+    path="~/.config/superpowers/worktrees/$project/$worktree_branch"
     ;;
 esac
 
-# Create worktree with new branch
-git worktree add "$path" -b "$BRANCH_NAME"
+# Create worktree with new branch based on current branch
+git worktree add "$path" -b "$worktree_branch"
 cd "$path"
 ```
 
@@ -135,7 +149,7 @@ go test ./...
 
 ### 5. Report Location
 
-```
+```text
 Worktree ready at <full-path>
 Tests passing (<N> tests, 0 failures)
 Ready to implement <feature-name>
@@ -155,36 +169,41 @@ Ready to implement <feature-name>
 
 ## Common Mistakes
 
-**Skipping .gitignore verification**
+### Skipping .gitignore verification
+
 - **Problem:** Worktree contents get tracked, pollute git status
 - **Fix:** Always grep .gitignore before creating project-local worktree
 
-**Assuming directory location**
+### Assuming directory location
+
 - **Problem:** Creates inconsistency, violates project conventions
 - **Fix:** Follow priority: existing > CLAUDE.md > ask
 
-**Proceeding with failing tests**
+### Proceeding with failing tests
+
 - **Problem:** Can't distinguish new bugs from pre-existing issues
 - **Fix:** Report failures, get explicit permission to proceed
 
-**Hardcoding setup commands**
+### Hardcoding setup commands
+
 - **Problem:** Breaks on projects using different tools
 - **Fix:** Auto-detect from project files (package.json, etc.)
 
 ## Example Workflow
 
-```
+```text
 You: I'm using the using-git-worktrees skill to set up an isolated workspace.
 
+[Detect current branch: main]
 [Check .worktrees/ - exists]
 [Verify .gitignore - contains .worktrees/]
-[Create worktree: git worktree add .worktrees/auth -b feature/auth]
+[Create worktree: git worktree add .worktrees/main-worktree -b main-worktree]
 [Run npm install]
 [Run npm test - 47 passing]
 
-Worktree ready at /Users/jesse/myproject/.worktrees/auth
+Worktree ready at /Users/jesse/myproject/.worktrees/main-worktree
 Tests passing (47 tests, 0 failures)
-Ready to implement auth feature
+Ready to implement feature
 ```
 
 ## Red Flags
@@ -195,12 +214,27 @@ Ready to implement auth feature
 - Proceed with failing tests without asking
 - Assume directory location when ambiguous
 - Skip CLAUDE.md check
+- Ask user for branch name (automatic naming only)
+- Deviate from `{current-branch}-worktree` pattern
 
 **Always:**
 - Follow directory priority: existing > CLAUDE.md > ask
 - Verify .gitignore for project-local
 - Auto-detect and run project setup
 - Verify clean test baseline
+- Use `{current-branch}-worktree` naming automatically
+
+## Common Rationalizations (STOP and Follow Skill)
+
+If you catch yourself thinking ANY of these, you're rationalizing. Follow the skill:
+
+- "User might want different name" → WRONG. Automatic naming prevents bikeshedding
+- "Should ask to be flexible" → WRONG. Consistency > flexibility for worktrees
+- "What if user has conventions?" → WRONG. This IS the convention
+- "Pattern seems rigid" → WRONG. Predictability is the goal
+- "Branch might already exist" → CORRECT. Let git error, then handle (delete old or use different approach)
+
+**All of these mean: Use automatic `{current-branch}-worktree` naming. No exceptions.**
 
 ## Integration
 
