@@ -1,0 +1,53 @@
+#!/usr/bin/env bash
+# conditional-claude - Smart wrapper for Claude with auto-sandboxing in git worktrees
+#
+# Usage: conditional-claude [claude args...]
+# Example: conditional-claude -p "commit these changes"
+#
+# Behavior:
+# - In git worktree: Applies Seatbelt sandboxing automatically
+# - Outside worktree: Runs Claude normally (no sandbox)
+# - No git repo: Runs Claude normally (no sandbox)
+
+set -euo pipefail
+
+# Detect if we're in a git worktree
+detect_worktree() {
+    # Check if we're in a git repository at all
+    if ! git rev-parse --git-dir &>/dev/null 2>&1; then
+        return 1  # Not in git repo
+    fi
+
+    local common_dir git_dir
+
+    # Get git directories
+    common_dir="$(git rev-parse --git-common-dir 2>/dev/null || echo "")"
+    git_dir="$(git rev-parse --git-dir 2>/dev/null || echo "")"
+
+    # Make paths absolute for comparison
+    if [[ -n "$common_dir" && "$common_dir" != /* ]]; then
+        common_dir="$(cd "$(git rev-parse --show-toplevel)" && cd "$common_dir" && pwd -P)"
+    fi
+    if [[ -n "$git_dir" && "$git_dir" != /* ]]; then
+        git_dir="$(cd "$git_dir" && pwd -P)"
+    fi
+
+    # If common_dir differs from git_dir, we're in a worktree
+    if [[ -n "$common_dir" && -n "$git_dir" && "$common_dir" != "$git_dir" ]]; then
+        return 0  # In worktree
+    fi
+
+    return 1  # Not in worktree
+}
+
+# Get the directory where this script lives
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Main logic
+if detect_worktree; then
+    # In worktree: use sandboxed wrapper
+    exec "$script_dir/claude-worktree-sandbox.sh" "$@"
+else
+    # Not in worktree: run Claude normally
+    exec claude "$@"
+fi

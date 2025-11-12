@@ -10,6 +10,7 @@ export default defineConfig({
 			"src/tests/**/*.test.js",
 			"test/**/*.test.js",
 			"tools/**/test/**/*.test.js",
+		"packages/**/test/**/*.test.js",
 		],
 		exclude: ["node_modules/**", "dist/**"],
 

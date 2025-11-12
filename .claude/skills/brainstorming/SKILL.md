@@ -22,8 +22,6 @@ Transform rough ideas into fully-formed designs through structured questioning a
 | **2. Exploration**          | Propose 2-3 approaches           | `AskUserQuestion` for approach selection | Architecture options with trade-offs |
 | **3. Design Presentation**  | Present in 200-300 word sections | Open-ended questions                     | Complete design with validation      |
 | **4. Design Documentation** | Write design document            | `writing-clearly-and-concisely` skill    | Design doc in docs/plans/            |
-| **5. Worktree Setup**       | Set up isolated workspace        | `using-git-worktrees` skill              | Ready development environment        |
-| **6. Planning Handoff**     | Create implementation plan       | `writing-plans` skill                    | Detailed task breakdown              |
 
 ## The Process
 
@@ -36,8 +34,6 @@ Brainstorming Progress:
 - [ ] Phase 2: Exploration (2-3 approaches proposed and evaluated)
 - [ ] Phase 3: Design Presentation (design validated in sections)
 - [ ] Phase 4: Design Documentation (design written to docs/plans/)
-- [ ] Phase 5: Worktree Setup (if implementing)
-- [ ] Phase 6: Planning Handoff (if implementing)
 ```
 
 ### Prep: Autonomous Recon
@@ -53,6 +49,7 @@ Brainstorming Progress:
 - Gather: Purpose, constraints, success criteria (confirmed or amended by your partner)
 
 **Example summary + targeted question:**
+
 ```text
 Based on the README and yesterday's commit, we're expanding localization to dashboard and billing emails; admin console is still untouched. Only gap I see is whether support responses need localization in this iteration. Did I miss anything important?
 ```
@@ -85,7 +82,6 @@ Options:
   - "Hybrid with background jobs" (balanced, moderate complexity, best of both)
 ```
 
-
 ### Phase 3: Design Presentation
 - Present in coherent sections; use ~200-300 words when introducing new material, shorter summaries once alignment is obvious
 - Cover: Architecture, components, data flow, error handling, testing
@@ -99,21 +95,6 @@ After validating the design, write it to a permanent document:
 - **RECOMMENDED SUB-SKILL:** Use elements-of-style:writing-clearly-and-concisely (if available) for documentation quality
 - **Content:** Capture the design as discussed and validated in Phase 3, organized into sections that emerged from the conversation
 - Commit the design document to git before proceeding
-
-### Phase 5: Worktree Setup (for implementation)
-When design is approved and implementation will follow:
-- Announce: "I'm using the using-git-worktrees skill to set up an isolated workspace."
-- **REQUIRED SUB-SKILL:** Use superpowers:using-git-worktrees
-- Follow that skill's process for directory selection, safety verification, and setup
-- Return here when worktree ready
-
-### Phase 6: Planning Handoff
-Ask: "Ready to create the implementation plan?"
-
-When your human partner confirms (any affirmative response):
-- Announce: "I'm using the writing-plans skill to create the implementation plan."
-- **REQUIRED SUB-SKILL:** Use superpowers:writing-plans
-- Create detailed plan in the worktree
 
 ## Question Patterns
 
