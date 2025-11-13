@@ -4,7 +4,7 @@
 
 **Date:** 2025-01-13
 **Status:** Design Complete
-**Requirements:** [fast-slow-skill-variants-prd.md](./fast-slow-skill-variants-prd.md#Epic%201%20-%20Router%20Implementation) %% force-extract %%
+**Requirements:** [fast-slow-skill-variants-prd.md](../../fast-slow-skill-variants-prd.md#Epic%201%20-%20Router%20Implementation) %% force-extract %%
 
 ## Overview
 
@@ -496,8 +496,8 @@ Expected file: variants/fast-conversational.md
 
 ## References
 
-- **Requirements:** [fast-slow-skill-variants-prd.md](./fast-slow-skill-variants-prd.md)
-- **Architecture Principles:** [ARCHITECTURE-PRINCIPLES.md](../../../ARCHITECTURE-PRINCIPLES.md)
+- **Requirements:** [fast-slow-skill-variants-prd.md](../../fast-slow-skill-variants-prd.md)
+- **Architecture Principles:** [ARCHITECTURE-PRINCIPLES.md](../../../../../ARCHITECTURE-PRINCIPLES.md)
 - **Reference Skills:**
   - [brainstorming](../../../.claude/skills/brainstorming/SKILL.md) - Mermaid flowchart pattern
   - [test-driven-development](../../../.claude/skills/test-driven-development/SKILL.md) - TDD cycle foundation

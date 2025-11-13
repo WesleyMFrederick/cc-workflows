@@ -264,9 +264,56 @@ cc-workflows/
 └── vitest.config.js                  # Root configuration for the shared test framework
 ```
 
+#### Cross-Cutting Documentation Organization
+
+**Cross-cutting features** affect the entire workspace (e.g., Claude Code skills, workspace-level tooling, shared conventions) rather than a single tool. These features live at the workspace root and follow the same [Feature Organization Patterns](#Feature%20Organization%20Patterns) documented below.
+
+**Workspace root location:**
+
+```plaintext
+design-docs/                           # Workspace-level (cross-cutting)
+└── features/
+    └── {{YYYYMMDD}}-{{feature-name}}/
+        └── user-stories/              # Same epic/user-story patterns
+            ├── epic{{X}}-{{epic-name}}/           # Fast/simple features
+            └── us{{X.Y}}-{{story-name}}/          # Slow/complex features
+```
+
+**Tool-specific location (for comparison):**
+
+```plaintext
+tools/citation-manager/
+└── design-docs/                       # Tool-specific features
+    └── features/
+        └── {{YYYYMMDD}}-{{feature-name}}/
+            └── user-stories/          # Same epic/user-story patterns
+```
+
+The key difference is **location** (workspace root vs tool directory), not structure. See [Tool/Package Documentation Organization](#Tool/Package%20Documentation%20Organization) below for complete pattern details.
+
 #### Tool/Package Documentation Organization
 
-Each tool or package maintains its own `design-docs/` folder structure following the same pattern as the project root, enabling self-contained documentation and feature management:
+Each tool or package maintains its own `design-docs/` folder structure following the same pattern as the project root, enabling self-contained documentation and feature management.
+
+##### Feature Organization Patterns
+
+The workspace supports two documentation patterns based on feature complexity:
+
+**Fast/Simple Pattern (Epic-Level)**: For straightforward features with limited scope, low risk, and quick delivery timelines:
+- Roll all user stories into a single epic-level design and implementation plan
+- Used when: Feature is well-understood, has minimal dependencies, or requires rapid iteration
+- Example: `epic1-router-implementation/` in the fast-slow-skill-variants feature
+
+**Slow/Complex Pattern (User-Story-Level)**: For complex features with multiple dependencies, high risk, or requiring thorough validation:
+- Break down into individual user stories, each with its own design and implementation plans
+- Used when: Feature requires staged delivery, has unclear requirements, or needs isolated validation
+- Example: Individual user stories in content-aggregation feature
+
+**Decision Criteria**:
+- **Use Epic-Level (Fast)** when: Straightforward implementation, limited scope (<5 days), low risk, team has domain expertise
+- **Use User-Story-Level (Slow)** when: Complex implementation, multiple dependencies, high risk, requires staged validation
+
+##### Directory Structure
 
 ```plaintext
 tools/citation-manager/
@@ -280,18 +327,21 @@ tools/citation-manager/
 │           ├── {{feature-name}}-design-plan.md      # Feature architecture and design plan
 │           ├── {{feature-name}}-implement-plan.md   # (Optional) For smaller features that don't need epics and user stories
 │           ├── research/                            # Feature research
-│           └── user-stories/                        # (Optional) For larger features that require user stories
-│               └── us{{X.Y}}-{{story-name}}/
+│           └── user-stories/                        # Epic or user story implementations
+│               ├── epic{{X}}-{{epic-name}}/         # FAST/SIMPLE: Epic-level organization
+│               │   ├── epic{{X}}-{{epic-name}}-design.md
+│               │   └── epic{{X}}-{{epic-name}}-plan.md
+│               └── us{{X.Y}}-{{story-name}}/        # SLOW/COMPLEX: User-story-level organization
 │                   ├── us{{X.Y}}-{{story-name}}.md
-│                   └── us{{X.Y}}-{{story-name}}-design-plan.md   # Design plan that bridges generic requirements to specific architectural and technical details
-│                   └── us{{X.Y}}-{{story-name}}-implement-plan.md   # Technical implement and psuedocode of design plan
+│                   ├── us{{X.Y}}-{{story-name}}-design-plan.md
+│                   └── us{{X.Y}}-{{story-name}}-implement-plan.md
 ├── src/                              # Source code
 ├── test/                             # Tests
 ├── README.md                         # Quick start and tool summary
 └── package.json                      # Package configuration
 ```
 
-**Rationale**: This structure ensures each tool is self-contained with its own documentation hierarchy, enabling independent evolution while maintaining consistent organizational patterns across all workspace packages.
+**Rationale**: This flexible structure enables appropriate documentation rigor based on feature complexity while maintaining consistent organizational patterns. Fast features benefit from reduced documentation overhead, while complex features get the detailed planning they require.
 
 #### File Naming Patterns
 
@@ -406,6 +456,8 @@ design-docs/features/20250928-cc-workflows-workspace-scaffolding/
 
 ### File Naming Conventions
 
+#### Feature-Level Files
+
 - **Feature PRD**: Product requirements document for the feature
   - **Pattern**: `{{feature-short-name}}-prd.md`
   - **Example**: `cc-workflows-workspace-prd.md`
@@ -418,12 +470,36 @@ design-docs/features/20250928-cc-workflows-workspace-scaffolding/
   - **Pattern**: `{{research-topic}}.md`
   - **Example**: `content-aggregation-research.md`
 
+#### Epic-Level Files (Fast/Simple Pattern)
+
+Use for straightforward features with limited scope (<5 days), low risk, and minimal dependencies.
+
+- **Epic Design Document**: Design and architecture for the entire epic
+  - **Pattern**: `epic{{X}}-{{epic-name}}-design.md`
+  - **Example**: `epic1-router-implementation-design.md`
+
+- **Epic Implementation Plan**: Implementation plan and pseudocode for the entire epic
+  - **Pattern**: `epic{{X}}-{{epic-name}}-plan.md`
+  - **Example**: `epic1-router-implementation-plan.md`
+
+#### User-Story-Level Files (Slow/Complex Pattern)
+
+Use for complex features requiring staged delivery, unclear requirements, or isolated validation.
+
 - **User Story File**: The central orchestration document for the story
-  - **Pattern**: `us{{story-number}}-{{story-full-name}}.md`
+  - **Pattern**: `us{{X.Y}}-{{story-full-name}}.md`
   - **Example**: `us1.1-establish-workspace-directory-structure-and-basic-config.md`
 
+- **User Story Design Plan**: Design plan bridging requirements to technical details
+  - **Pattern**: `us{{X.Y}}-{{story-full-name}}-design-plan.md`
+  - **Example**: `us1.1-establish-workspace-directory-structure-and-basic-config-design-plan.md`
+
+- **User Story Implementation Plan**: Implementation plan with pseudocode
+  - **Pattern**: `us{{X.Y}}-{{story-full-name}}-implement-plan.md`
+  - **Example**: `us1.1-establish-workspace-directory-structure-and-basic-config-implement-plan.md`
+
 - **Task Implementation Details File**: Self-contained specification for a single task (optional)
-  - **Pattern**: `tasks/us{{story-number}}-t{{task-number}}-{{full-task-name}}.md`
+  - **Pattern**: `tasks/us{{X.Y}}-t{{task-number}}-{{full-task-name}}.md`
   - **Example**: `tasks/us1.1-t2.1.1-directory-manager-interface-test.md`
 
 ---
@@ -1105,3 +1181,4 @@ if (import.meta.url === realPathAsUrl) {
 | 2025-09-23 | 1.0     | System Context | Initial baseline architecture through Level 1 context diagram | Wesley |
 | 2025-10-04 | 2.0     | Baseline       | Copied from workspace feature to Baseline arch doc            | Wesley |
 | 2024-11-12 | 3.0     | Baseline       | TypeScript + Vite adoption - comprehensive architecture update reflecting TypeScript as primary language, Vite for dev infrastructure, updated all sections (principles, containers, code org, testing, tech stack, cross-cutting concerns, ADRs) | Application Tech Lead |
+| 2025-01-13 | 3.1     | Code Organization | Added dual documentation patterns (epic-level vs user-story-level) to Tool/Package Documentation Organization and File Naming Conventions sections. Epic-level pattern for fast/simple features (<5 days, low risk), user-story-level pattern for slow/complex features (staged delivery, high risk). Includes decision criteria and examples from fast-slow-skill-variants feature. | Application Tech Lead |
