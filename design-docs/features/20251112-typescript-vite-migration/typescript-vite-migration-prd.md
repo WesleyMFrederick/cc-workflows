@@ -198,7 +198,74 @@ graph TD
 - `using-git-worktrees` - Set up isolated workspace for infrastructure changes
 - `requesting-code-review` - Review infrastructure setup before proceeding
 
-**User Stories:** TBD
+**User Stories:**
+
+#### Story 1.1: Set Up Isolated Worktree for TypeScript Infrastructure
+
+Create isolated git worktree on feature branch for safe TypeScript infrastructure experimentation.
+
+**Deliverable:** Isolated worktree with dependencies installed and tests passing.
+
+**Acceptance Criteria:**
+- Worktree created in isolated directory on `feature/typescript-infrastructure-setup` branch
+- Dependencies installed via `npm install`
+- Existing test suite passes (clean starting state)
+- Worktree isolation verified (changes don't affect main directory)
+
+_Details: [user-stories/us1.1-set-up-isolated-worktree/us1.1-set-up-isolated-worktree.md](user-stories/us1.1-set-up-isolated-worktree/us1.1-set-up-isolated-worktree.md)_
+
+---
+
+#### Story 1.2: Create TypeScript Configuration Hierarchy
+
+Establish hierarchical TypeScript configuration with shared base settings and tool-specific overrides.
+
+**Deliverable:** Complete TypeScript configuration hierarchy validated by compiler.
+
+**Acceptance Criteria:**
+- Root `tsconfig.json` for workspace coordination
+- `tsconfig.base.json` with strict type checking enforced
+- Tool-specific `tools/citation-manager/tsconfig.json` extending base
+- `tsc --noEmit` validates successfully (zero errors)
+- ES modules configured with Vite-compatible resolution
+- All existing JavaScript tests pass unchanged
+
+_Details: [user-stories/us1.2-create-typescript-configuration-hierarchy/us1.2-create-typescript-configuration-hierarchy.md](user-stories/us1.2-create-typescript-configuration-hierarchy/us1.2-create-typescript-configuration-hierarchy.md)_
+
+---
+
+#### Story 1.3: Update Biome Configuration for TypeScript Support
+
+Extend Biome linter/formatter to support TypeScript files with same standards as JavaScript.
+
+**Deliverable:** Biome configuration updated to lint and format TypeScript files.
+
+**Acceptance Criteria:**
+- `biome.json` includes TypeScript file patterns (`*.ts`, `*.tsx`)
+- Biome successfully lints TypeScript configuration files (zero errors)
+- Biome formats TypeScript without modifying JavaScript formatting
+- `npx biome check .` completes successfully
+- All existing JavaScript files pass Biome checks unchanged
+
+_Details: [user-stories/us1.3-update-biome-configuration/us1.3-update-biome-configuration.md](user-stories/us1.3-update-biome-configuration/us1.3-update-biome-configuration.md)_
+
+---
+
+#### Story 1.4: Add Build Scripts and Validate Infrastructure
+
+Create npm scripts for TypeScript build, type checking, and comprehensive infrastructure validation.
+
+**Deliverable:** Build scripts operational with full infrastructure validation passing.
+
+**Acceptance Criteria:**
+- `build:ts` script compiles TypeScript to JavaScript
+- `type-check` script validates types without emitting files
+- `check:all` script runs comprehensive validation (types + lint + tests)
+- All scripts execute successfully with zero errors
+- All existing JavaScript tests pass during validation
+- Documentation added to CLAUDE.md explaining TypeScript workflow
+
+_Details: [user-stories/us1.4-add-build-scripts/us1.4-add-build-scripts.md](user-stories/us1.4-add-build-scripts/us1.4-add-build-scripts.md)_
 
 ---
 
