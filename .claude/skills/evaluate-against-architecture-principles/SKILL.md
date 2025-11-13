@@ -25,7 +25,7 @@ Use when evaluating:
 ## Mandatory First Step
 
 <critical-instruction>
-Read [Architecture Principles.md](Architecture Principles.md)
+Read [ARCHITECTURE-PRINCIPLES.md](../../../ARCHITECTURE-PRINCIPLES.md)
 </critical-instruction>
 
 **BEFORE evaluating ANY document, extract citation context:**
@@ -118,7 +118,7 @@ Provide evaluation in this format:
 
 ## Architecture Principles Reference
 
-The principles are defined in: [`design-docs/Architecture Principles.md`](../../../design-docs/Architecture%20Principles.md) %% force-extract %%
+The principles are defined in: [ARCHITECTURE-PRINCIPLES.md](../../../ARCHITECTURE-PRINCIPLES.md) %% force-extract %%
 
 Key categories:
 1. **Modular Design** (^modular-design-principles-definition)

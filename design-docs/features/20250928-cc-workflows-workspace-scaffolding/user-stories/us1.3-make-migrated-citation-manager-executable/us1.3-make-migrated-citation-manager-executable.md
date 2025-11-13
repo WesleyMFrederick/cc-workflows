@@ -356,17 +356,17 @@ This story configures the citation-manager CLI for execution from the workspace 
 
 ### Design Principles Adherence
 
-This story must adhere to the following [Design Principles](../../../../Architecture%20Principles.md):
+This story must adhere to the following [Design Principles](../../../../../ARCHITECTURE-PRINCIPLES.md):
 
 **Critical Principles:**
-- [**Tool-First Design**](../../../../Architecture%20Principles.md#^tool-first-design) (Deterministic Offloading): CLI commands discoverable via `npm run`, enabling deterministic execution and avoiding manual path lookup
-- [**Simplicity First**](../../../../Architecture%20Principles.md#^simplicity-first) (MVP): Direct node execution via npm scripts with minimal abstraction, avoiding complex build processes or wrapper scripts
-- [**Foundation Reuse**](../../../../Architecture%20Principles.md#^foundation-reuse) (MVP): Leverage CLI execution pattern validated in US1.1 mock-tool proof-of-concept, proven to work with NPM Workspaces
-- [**Black Box Interfaces**](../../../../Architecture%20Principles.md#^black-box-interfaces) (Modular): CLI exposes clean command interface via npm scripts, hiding internal module structure and implementation details
+- [**Tool-First Design**](../../../../../ARCHITECTURE-PRINCIPLES.md#^tool-first-design) (Deterministic Offloading): CLI commands discoverable via `npm run`, enabling deterministic execution and avoiding manual path lookup
+- [**Simplicity First**](../../../../../ARCHITECTURE-PRINCIPLES.md#^simplicity-first) (MVP): Direct node execution via npm scripts with minimal abstraction, avoiding complex build processes or wrapper scripts
+- [**Foundation Reuse**](../../../../../ARCHITECTURE-PRINCIPLES.md#^foundation-reuse) (MVP): Leverage CLI execution pattern validated in US1.1 mock-tool proof-of-concept, proven to work with NPM Workspaces
+- [**Black Box Interfaces**](../../../../../ARCHITECTURE-PRINCIPLES.md#^black-box-interfaces) (Modular): CLI exposes clean command interface via npm scripts, hiding internal module structure and implementation details
 
 **Anti-Patterns to Avoid:**
-- [**Hidden Global State**](../../../../Architecture%20Principles.md#^hidden-global-state): Use explicit parameter passing via npm script arguments (`-- <args>`), not environment variables or implicit configuration
-- [**Scattered Checks**](../../../../Architecture%20Principles.md#^scattered-checks): Centralize all citation commands in root package.json npm scripts, avoiding multiple entry points or script locations
+- [**Hidden Global State**](../../../../../ARCHITECTURE-PRINCIPLES.md#^hidden-global-state): Use explicit parameter passing via npm script arguments (`-- <args>`), not environment variables or implicit configuration
+- [**Scattered Checks**](../../../../../ARCHITECTURE-PRINCIPLES.md#^scattered-checks): Centralize all citation commands in root package.json npm scripts, avoiding multiple entry points or script locations
 
 **Implementation Guidance:**
 - Update existing citation:validate, citation:ast, citation:base-paths scripts to point to new location: `node tools/citation-manager/src/citation-manager.js <command>`

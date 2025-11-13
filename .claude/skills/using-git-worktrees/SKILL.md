@@ -131,29 +131,15 @@ if [ -f pyproject.toml ]; then poetry install; fi
 if [ -f go.mod ]; then go mod download; fi
 ```
 
-### 4. Verify Clean Baseline
-
-Run tests to ensure worktree starts clean:
-
-```bash
-# Examples - use project-appropriate command
-npm test
-cargo test
-pytest
-go test ./...
-```
-
-**If tests fail:** Report failures, ask whether to proceed or investigate.
-
-**If tests pass:** Report ready.
-
-### 5. Report Location
+### 4. Report Location
 
 ```text
-Worktree ready at <full-path>
-Tests passing (<N> tests, 0 failures)
-Ready to implement <feature-name>
+Worktree created at <full-path>
+Dependencies installed
+Ready for use
 ```
+
+**Note:** This skill does NOT run tests. The caller decides whether to validate the worktree environment.
 
 ## Quick Reference
 
@@ -164,7 +150,6 @@ Ready to implement <feature-name>
 | Both exist | Use `.worktrees/` |
 | Neither exists | Check CLAUDE.md → Ask user |
 | Directory not in .gitignore | Add it immediately + commit |
-| Tests fail during baseline | Report failures + ask |
 | No package.json/Cargo.toml | Skip dependency install |
 
 ## Common Mistakes
@@ -178,11 +163,6 @@ Ready to implement <feature-name>
 
 - **Problem:** Creates inconsistency, violates project conventions
 - **Fix:** Follow priority: existing > CLAUDE.md > ask
-
-### Proceeding with failing tests
-
-- **Problem:** Can't distinguish new bugs from pre-existing issues
-- **Fix:** Report failures, get explicit permission to proceed
 
 ### Hardcoding setup commands
 
@@ -199,19 +179,16 @@ You: I'm using the using-git-worktrees skill to set up an isolated workspace.
 [Verify .gitignore - contains .worktrees/]
 [Create worktree: git worktree add .worktrees/main-worktree -b main-worktree]
 [Run npm install]
-[Run npm test - 47 passing]
 
-Worktree ready at /Users/jesse/myproject/.worktrees/main-worktree
-Tests passing (47 tests, 0 failures)
-Ready to implement feature
+Worktree created at /Users/jesse/myproject/.worktrees/main-worktree
+Dependencies installed
+Ready for use
 ```
 
 ## Red Flags
 
 **Never:**
 - Create worktree without .gitignore verification (project-local)
-- Skip baseline test verification
-- Proceed with failing tests without asking
 - Assume directory location when ambiguous
 - Skip CLAUDE.md check
 - Ask user for branch name (automatic naming only)
@@ -221,7 +198,6 @@ Ready to implement feature
 - Follow directory priority: existing > CLAUDE.md > ask
 - Verify .gitignore for project-local
 - Auto-detect and run project setup
-- Verify clean test baseline
 - Use `{current-branch}-worktree` naming automatically
 
 ## Common Rationalizations (STOP and Follow Skill)
@@ -239,9 +215,12 @@ If you catch yourself thinking ANY of these, you're rationalizing. Follow the sk
 ## Integration
 
 **Called by:**
+- **setting-up-implementation-worktree** - MECHANISM skill for this POLICY skill's environment verification
 - **brainstorming** (Phase 4) - REQUIRED when design is approved and implementation follows
 - Any skill needing isolated workspace
 
 **Pairs with:**
 - **finishing-a-development-branch** - REQUIRED for cleanup after work complete
 - **executing-plans** or **subagent-driven-development** - Work happens in this worktree
+
+**Note:** This is a MECHANISM skill. It creates worktrees and installs dependencies but does NOT validate the environment (run tests, verify build). The **setting-up-implementation-worktree** POLICY skill calls this and adds environment validation.

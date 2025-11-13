@@ -76,11 +76,11 @@ The following technical design decisions are foundational to the implementation 
 > **Technical Lead Partial Resolution** (US1.1): Intra-package dependency pattern established
 > _US1.1 Finding_: Modules within a package use **relative paths with explicit `.js` extensions** (ESM standard). Mock-tool implementation: `import { greet } from "./greeter.js"`. Citation-manager already follows this pattern: `import { CitationValidator } from "./src/CitationValidator.js"`.
 > _Still Open_: Cross-package dependencies (e.g., citation-manager importing from shared-utils) not yet tested. Will be addressed when/if shared packages are introduced.
-> _Relevant Architecture Principles_: [dependency-abstraction](../../Architecture%20Principles.md#^dependency-abstraction), [black-box-interfaces](../../Architecture%20Principles.md#^black-box-interfaces), [single-responsibility](../../Architecture%20Principles.md#^single-responsibility)
+> _Relevant Architecture Principles_: [dependency-abstraction](../../../ARCHITECTURE-PRINCIPLES.md#^dependency-abstraction), [black-box-interfaces](../../../ARCHITECTURE-PRINCIPLES.md#^black-box-interfaces), [single-responsibility](../../../ARCHITECTURE-PRINCIPLES.md#^single-responsibility)
 <!-- -->
 > **Technical Lead Feedback**: Error Handling & Logging Strategy decision needed
 > _Architecture Impact_: We need to define a consistent strategy for how errors are logged and propagated to the CLI to ensure predictable behavior and support for automated workflows.
-> _Relevant Architecture Principles_: [fail-fast](../../Architecture%20Principles.md#^fail-fast), [error-recovery](../../Architecture%20Principles.md#^error-recovery), [clear-contracts](../../Architecture%20Principles.md#^clear-contracts), [atomic-operations](../../Architecture%20Principles.md#^atomic-operations)
+> _Relevant Architecture Principles_: [fail-fast](../../../ARCHITECTURE-PRINCIPLES.md#^fail-fast), [error-recovery](../../../ARCHITECTURE-PRINCIPLES.md#^error-recovery), [clear-contracts](../../../ARCHITECTURE-PRINCIPLES.md#^clear-contracts), [atomic-operations](../../../ARCHITECTURE-PRINCIPLES.md#^atomic-operations)
 
 ## Epic List
 
@@ -132,7 +132,7 @@ Establish shared infrastructure (testing, linting, builds) and prove that a comp
 > **Technical Lead Resolution** (US1.1 Completed): Test discovery implemented via Vitest glob patterns
 > _Implementation_: Vitest configuration uses `tools/**/test/**/*.test.js` pattern for workspace packages while preserving legacy patterns (`src/tests/**/*.test.js`, `test/**/*.test.js`) to support incremental migration. Pattern successfully validated through mock-tool proof-of-concept in US1.1.
 > _Documentation_: See [WORKSPACE-SETUP.md](../../../WORKSPACE-SETUP.md#Vitest%20Test%20Discovery%20Pattern) for complete pattern documentation and [Architecture: Testing Infrastructure](cc-workflows-workspace-architecture.md#Testing%20Infrastructure) for design rationale.
-> _Relevant Architecture Principles_: [black-box-interfaces](../../Architecture%20Principles.md#^black-box-interfaces), [tool-first-design](../../Architecture%20Principles.md#^tool-first-design), [simplicity-first](../../Architecture%20Principles.md#^simplicity-first)
+> _Relevant Architecture Principles_: [black-box-interfaces](../../../ARCHITECTURE-PRINCIPLES.md#^black-box-interfaces), [tool-first-design](../../../ARCHITECTURE-PRINCIPLES.md#^tool-first-design), [simplicity-first](../../../ARCHITECTURE-PRINCIPLES.md#^simplicity-first)
 
 _Depends On_: None
 _Functional Requirements_: [[#^FR1|FR1]]

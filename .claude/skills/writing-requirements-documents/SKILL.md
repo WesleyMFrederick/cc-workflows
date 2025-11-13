@@ -71,7 +71,7 @@ Use this skill when:
 **Cross-Document Format:**
 
 ```markdown
-*Related Design*: [Architecture Principles](../design-docs/Architecture-Principles.md)
+*Related Design*: [ARCHITECTURE-PRINCIPLES.md](../../../ARCHITECTURE-PRINCIPLES.md)
 *Implementation Guide*: [Setup Guide](./guides/setup.md#installation)
 ```
 

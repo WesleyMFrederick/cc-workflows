@@ -22,6 +22,8 @@ Transform rough ideas into fully-formed designs through structured questioning a
 | **2. Exploration**          | Propose 2-3 approaches           | `AskUserQuestion` for approach selection | Architecture options with trade-offs |
 | **3. Design Presentation**  | Present in 200-300 word sections | Open-ended questions                     | Complete design with validation      |
 | **4. Design Documentation** | Write design document            | `writing-clearly-and-concisely` skill    | Design doc in docs/plans/            |
+| **5. Worktree Setup**       | Set up isolated workspace        | `using-git-worktrees` skill              | Ready development environment        |
+| **6. Planning Handoff**     | Create implementation plan       | `writing-plans` skill                    | Detailed task breakdown              |
 
 ## The Process
 
@@ -34,6 +36,8 @@ Brainstorming Progress:
 - [ ] Phase 2: Exploration (2-3 approaches proposed and evaluated)
 - [ ] Phase 3: Design Presentation (design validated in sections)
 - [ ] Phase 4: Design Documentation (design written to docs/plans/)
+- [ ] Phase 5: Worktree Setup (if implementing)
+- [ ] Phase 6: Planning Handoff (if implementing)
 ```
 
 ### Prep: Autonomous Recon

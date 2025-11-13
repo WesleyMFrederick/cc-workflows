@@ -664,4 +664,4 @@ For MVP, the following tests are validated manually during installation:
 - Conditional Logic: [poc-2-conditional-wrapper.md](./poc-2-conditional-wrapper.md)
 - Requirements: [USER-STORY.md](../USER-STORY.md)
 - Implementation Scripts: [conditional-claude.sh](../conditional-claude.sh), [claude-worktree-sandbox.sh](../claude-worktree-sandbox.sh)
-- Workspace Testing Standards: [Architecture - Baseline.md](../../../design-docs/Architecture%20-%20Baseline.md#Testing%20Strategy)
+- Workspace Testing Standards: [Architecture - Baseline.md](<../../../ARCHITECTURE.md#Testing Strategy>)

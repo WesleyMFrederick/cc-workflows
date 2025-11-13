@@ -26,25 +26,25 @@
 
 The system's design is guided by core principles that prioritize **simplicity, maintainability, and extensibility** through a **modular, CLI-first architecture.**
 
-### [Minimum Viable Product (MVP) Principles](../../Architecture%20Principles.md#Minimum%20Viable%20Product%20%28MVP%29%20Principles)
+### [Minimum Viable Product (MVP) Principles](<../../../ARCHITECTURE-PRINCIPLES.md#Minimum Viable Product (MVP) Principles>)
 
 - **Key Concept**: **Validate the core concept** of a centralized workspace by delivering value quickly. Every architectural decision is weighed against the goal of avoiding over-engineering to accelerate learning and iteration.
   
 - **Implementation Approach**: We are implementing this by choosing **native, low-overhead tooling** like NPM Workspaces and focusing strictly on the functionality required to migrate and enhance a single tool, `citation-manager`, as defined in the PRD.
 
-### [Modular Design Principles](../../Architecture%20Principles.md#Modular%20Design%20Principles)
+### [Modular Design Principles](<../../../ARCHITECTURE-PRINCIPLES.md#Modular Design Principles>)
 
 - **Key Concept**: The system's architecture must support a collection of **independent, reusable, and replaceable tools**. This modularity is foundational to achieving the project's long-term goals of maintainability and extensibility as new tools are added to the workspace.
   
 - **Implementation Approach**: We are enforcing modularity by structuring the workspace with **NPM Workspaces**, where each tool lives in an isolated package with its own explicit dependencies and API boundaries.
 
-### [Foundation Reuse](../../Architecture%20Principles.md#^foundation-reuse)
+### [Foundation Reuse](../../../ARCHITECTURE-PRINCIPLES.md#^foundation-reuse)
 
 - **Key Concept**: This principle directly addresses the core business problem of **eliminating duplicated effort and inconsistent quality**. The workspace must serve as the single, authoritative repository for all development tools and workflows.
 
 - **Implementation Approach**: The **centralized mono-repository structure** is the direct implementation of this principle, ensuring that any improvements to a tool like `citation-manager` are immediately available to all consumers without manual porting.
 
-### [Deterministic Offloading Principles](../../Architecture%20Principles.md#Deterministic%20Offloading%20Principles)
+### [Deterministic Offloading Principles](<../../../ARCHITECTURE-PRINCIPLES.md#Deterministic Offloading Principles>)
 
 - **Key Concept**: The tools within this workspace are defined as **predictable, mechanical processors** that handle repeatable tasks. This clarifies their role and boundaries within a larger development workflow that may also involve non-deterministic AI agents.
 
@@ -64,7 +64,7 @@ The C4 model decomposes complex architecture by drilling down through four level
 
 ### Architectural and System Design
 
-- **Architecture Pattern:** Monorepo (multi-package workspace) — a single repo acting as a [centralized, single source of truth](../../Architecture%20Principles.md#^foundation-reuse) for multiple, distinct development utilities. The first tool is the `citation-manager`.
+- **Architecture Pattern:** Monorepo (multi-package workspace) — a single repo acting as a [centralized, single source of truth](../../../ARCHITECTURE-PRINCIPLES.md#^foundation-reuse) for multiple, distinct development utilities. The first tool is the `citation-manager`.
 
 - **System Design:** tooling monorepo hosting a multi-command CLI with shared packages for test/build. This is a toolkit of independent tools that consume common services like [testing (FR2)](cc-workflows-workspace-prd.md#^FR2) and [builds (FR3)](cc-workflows-workspace-prd.md#^FR3)—not a single linear pipeline.
 
@@ -74,7 +74,7 @@ The C4 model decomposes complex architecture by drilling down through four level
 
 ### Key Software Design Patterns
 
-- [**Modular Component Design**](../../Architecture%20Principles.md#Modular%20Design%20Principles): - each tool (e.g., citation-manager) is isolated for independent evolution and migration, while shared utilities live in shared packages.
+- [**Modular Component Design**](<../../../ARCHITECTURE-PRINCIPLES.md#Modular Design Principles>): - each tool (e.g., citation-manager) is isolated for independent evolution and migration, while shared utilities live in shared packages.
 
 ### Key Characteristics
 - **Interaction Style**: CLI-based, with commands executed via root-level NPM scripts.
@@ -83,7 +83,7 @@ The C4 model decomposes complex architecture by drilling down through four level
 - **Scaling Approach**: Scales by adding new, isolated tool packages to the workspace, with a clear migration path to more advanced tooling if the package count grows significantly. Start with `npm workspaces`; if growth demands, adopt `Nx/Turborepo` for caching & task orchestration.
 
 ### Rationale
-- [**Simplicity First:**](../../Architecture%20Principles.md#^simplicity-first) Native Node.js + npm integration minimizes tooling overhead.
+- [**Simplicity First:**](../../../ARCHITECTURE-PRINCIPLES.md#^simplicity-first) Native Node.js + npm integration minimizes tooling overhead.
 - **Right-Sized Performance:** Optimized for ~5–10 tools/packages—fast installs/builds without premature complexity.
 - **Less Meta-Work:** Shared dependencies and scripts reduce coordination cost while keeping each tool|package independently maintainable.
 - [ADR-001: NPM Workspaces for Monorepo Management](#ADR-001%20NPM%20Workspaces%20for%20Monorepo%20Management)
@@ -356,7 +356,7 @@ design-docs/features/20250928-cc-workflows-workspace-scaffolding/
 ---
 ## Coding Standards and Conventions
 
-This project follows JavaScript/TypeScript naming conventions with one strategic exception for test methods, aligned with our [Self-Contained Naming Principles](../../Architecture%20Principles.md#^self-contained-naming-principles-definition).
+This project follows JavaScript/TypeScript naming conventions with one strategic exception for test methods, aligned with our [Self-Contained Naming Principles](../../../ARCHITECTURE-PRINCIPLES.md#^self-contained-naming-principles-definition).
 
 ### JavaScript Naming Conventions
 
@@ -374,14 +374,14 @@ This project follows JavaScript/TypeScript naming conventions with one strategic
 
 ### Code Organization
 
-- **Modular Structure**: Each module should have a single, clear responsibility ([Single Responsibility](../../Architecture%20Principles.md#^single-responsibility))
-- **Interface Boundaries**: Define clear APIs between components ([Black Box Interfaces](../../Architecture%20Principles.md#^black-box-interfaces))
-- **Error Handling**: Implement fail-fast principles with clear error messages ([Fail Fast](../../Architecture%20Principles.md#^fail-fast))
+- **Modular Structure**: Each module should have a single, clear responsibility ([Single Responsibility](../../../ARCHITECTURE-PRINCIPLES.md#^single-responsibility))
+- **Interface Boundaries**: Define clear APIs between components ([Black Box Interfaces](../../../ARCHITECTURE-PRINCIPLES.md#^black-box-interfaces))
+- **Error Handling**: Implement fail-fast principles with clear error messages ([Fail Fast](../../../ARCHITECTURE-PRINCIPLES.md#^fail-fast))
 
 ### Documentation Requirements
 
-- **Self-Documenting Code**: Names should provide immediate understanding without lookup ([Immediate Understanding](../../Architecture%20Principles.md#immediate-understanding))
-- **Inline Comments**: Include contextual comments for complex logic ([Contextual Comments](../../Architecture%20Principles.md#contextual-comments))
+- **Self-Documenting Code**: Names should provide immediate understanding without lookup ([Immediate Understanding](../../../ARCHITECTURE-PRINCIPLES.md#immediate-understanding))
+- **Inline Comments**: Include contextual comments for complex logic ([Contextual Comments](../../../ARCHITECTURE-PRINCIPLES.md#contextual-comments))
 - **Function Documentation**: Use docstrings to document public APIs and their contracts
 
 ---
@@ -427,7 +427,7 @@ Our strategy distinguishes between cross-cutting workspace functionality and too
 
 #### Testing Naming Conventions
 
-Test method names follow our [Self-Contained Naming Principles](../../Architecture%20Principles.md#^self-contained-naming-principles-definition) with a specific exception to optimize for readability and clarity:
+Test method names follow our [Self-Contained Naming Principles](../../../ARCHITECTURE-PRINCIPLES.md#^self-contained-naming-principles-definition) with a specific exception to optimize for readability and clarity:
 
 ##### Test Description Naming: Natural Language Convention
 - **Convention**: Use **natural language with spaces** for test descriptions in `it()` method strings
@@ -461,7 +461,7 @@ describe('PaymentProcessor', () => {
 });
 ```
 
-This naming convention aligns with our **"Names as Contracts"** philosophy ([Descriptive Labels](../../Architecture%20Principles.md#^descriptive-labels), [Immediate Understanding](../../Architecture%20Principles.md#^immediate-understanding)) by prioritizing communication clarity and natural readability.
+This naming convention aligns with our **"Names as Contracts"** philosophy ([Descriptive Labels](../../../ARCHITECTURE-PRINCIPLES.md#^descriptive-labels), [Immediate Understanding](../../../ARCHITECTURE-PRINCIPLES.md#^immediate-understanding)) by prioritizing communication clarity and natural readability.
 
 #### BDD-Style Test Structure (Given-When-Then)
 
@@ -784,7 +784,7 @@ const validator = new CitationValidator(parser, cache, fs, path);
 **Rationale for Accepting Risk**: Constructor-based DI is architecturally superior for this project because:
 1. Aligns with "Real Systems, Fake Fixtures" testing philosophy ([Testing Strategy](#Testing%20Strategy))
 2. Provides explicit dependency contracts and fail-fast validation
-3. Supports core principles: [Dependency Abstraction](../../Architecture%20Principles.md#^dependency-abstraction), [Black Box Interfaces](../../Architecture%20Principles.md#^black-box-interfaces), [Replaceable Parts](../../Architecture%20Principles.md#^replaceable-parts)
+3. Supports core principles: [Dependency Abstraction](../../../ARCHITECTURE-PRINCIPLES.md#^dependency-abstraction), [Black Box Interfaces](../../../ARCHITECTURE-PRINCIPLES.md#^black-box-interfaces), [Replaceable Parts](../../../ARCHITECTURE-PRINCIPLES.md#^replaceable-parts)
 4. Alternative (function-parameter DI) is designed for mocking, contradicting project's "zero-tolerance for mocking" principle
 
 **Mitigation Strategy**: Factory Pattern for Common Configurations

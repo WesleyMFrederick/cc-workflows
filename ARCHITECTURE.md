@@ -26,29 +26,43 @@
 
 The system's design is guided by core principles that prioritize **simplicity, maintainability, and extensibility** through a **modular, CLI-first architecture.**
 
-### [Minimum Viable Product (MVP) Principles](<../../resume-coach/design-docs/Architecture Principles.md#Minimum Viable Product (MVP) Principles>)
+### [Minimum Viable Product (MVP) Principles](<../resume-coach/design-docs/Architecture Principles.md#Minimum Viable Product (MVP) Principles>)
 
 - **Key Concept**: **Validate the core concept** of a centralized workspace by delivering value quickly. Every architectural decision is weighed against the goal of avoiding over-engineering to accelerate learning and iteration.
   
 - **Implementation Approach**: We are implementing this by choosing **native, low-overhead tooling** like NPM Workspaces and focusing strictly on the functionality required to migrate and enhance a single tool, `citation-manager`, as defined in the PRD.
 
-### [Modular Design Principles](<../../resume-coach/design-docs/Architecture Principles.md#Modular Design Principles>)
+### [Modular Design Principles](<../resume-coach/design-docs/Architecture Principles.md#Modular Design Principles>)
 
 - **Key Concept**: The system's architecture must support a collection of **independent, reusable, and replaceable tools**. This modularity is foundational to achieving the project's long-term goals of maintainability and extensibility as new tools are added to the workspace.
   
 - **Implementation Approach**: We are enforcing modularity by structuring the workspace with **NPM Workspaces**, where each tool lives in an isolated package with its own explicit dependencies and API boundaries.
 
-### [Foundation Reuse](<../../resume-coach/design-docs/Architecture Principles.md#^foundation-reuse>)
+### [Foundation Reuse](<../resume-coach/design-docs/Architecture Principles.md#^foundation-reuse>)
 
 - **Key Concept**: This principle directly addresses the core business problem of **eliminating duplicated effort and inconsistent quality**. The workspace must serve as the single, authoritative repository for all development tools and workflows.
 
 - **Implementation Approach**: The **centralized mono-repository structure** is the direct implementation of this principle, ensuring that any improvements to a tool like `citation-manager` are immediately available to all consumers without manual porting.
 
-### [Deterministic Offloading Principles](<../../resume-coach/design-docs/Architecture Principles.md#Deterministic Offloading Principles>)
+### [Deterministic Offloading Principles](<../resume-coach/design-docs/Architecture Principles.md#Deterministic Offloading Principles>)
 
 - **Key Concept**: The tools within this workspace are defined as **predictable, mechanical processors** that handle repeatable tasks. This clarifies their role and boundaries within a larger development workflow that may also involve non-deterministic AI agents.
 
 - **Implementation Approach**: The `citation-manager` exemplifies this by performing verifiable, deterministic operations like **parsing markdown and validating file paths**, leaving semantic interpretation to other systems.
+
+### TypeScript Strengthens Core Principles
+
+**TypeScript as Architecture Enabler:**
+
+- **Data-First Design**: TypeScript enforces explicit type contracts for all data structures, making data schemas first-class citizens that serve as living documentation and compile-time validation.
+
+- **Fail Fast**: TypeScript surfaces type errors at compile-time rather than runtime, catching contract violations before code executes and reducing debugging cycles.
+
+- **Self-Contained Naming**: Type annotations provide immediate inline documentation, reducing cognitive load and making interfaces self-documenting without external lookup.
+
+- **Modular Design**: TypeScript's type system enforces explicit API boundaries between modules, preventing accidental coupling and ensuring each component's contract is clearly defined.
+
+**Implementation**: TypeScript compilation (`tsc`) is integrated into the build pipeline, with strict type checking enabled to maximize these benefits. Type definitions (`.d.ts`) are generated alongside compiled output, enabling type-safe consumption by other tools and projects.
 
 ---
 ## Document Overview
@@ -64,26 +78,31 @@ The C4 model decomposes complex architecture by drilling down through four level
 
 ### Architectural and System Design
 
-- **Architecture Pattern:** Monorepo (multi-package workspace) — a single repo acting as a [centralized, single source of truth](<../../resume-coach/design-docs/Architecture Principles.md#^foundation-reuse>) for multiple, distinct development utilities. The first tool is the `citation-manager`.
+- **Architecture Pattern:** Monorepo (multi-package workspace) — a single repo acting as a [centralized, single source of truth](<../resume-coach/design-docs/Architecture Principles.md#^foundation-reuse>) for multiple, distinct development utilities. The first tool is the `citation-manager`.
 
-- **System Design:** tooling monorepo hosting a multi-command CLI with shared packages for test/build. This is a toolkit of independent tools that consume common services like [testing (FR2)](cc-workflows-workspace-prd.md#^FR2) and [builds (FR3)](cc-workflows-workspace-prd.md#^FR3)—not a single linear pipeline.
+- **System Design:** tooling monorepo hosting a multi-command CLI with shared packages for test/build. This is a toolkit of independent tools that consume common services like [testing (FR2)](design-docs/cc-workflows-workspace-prd.md#^FR2) and [builds (FR3)](design-docs/cc-workflows-workspace-prd.md#^FR3)—not a single linear pipeline.
 
 #### Architectural Pattern Implementations
-- `Monorepo` implemented via `npm workspaces` ([NPM Workspaces vs Alternatives](<research/content-aggregation-research.md#2.1 NPM Workspaces vs Alternatives>))
+- `Monorepo` implemented via `npm workspaces` ([NPM Workspaces vs Alternatives](<design-docs/research/content-aggregation-research.md#2.1 NPM Workspaces vs Alternatives>))
 - `cli multi-command` implemented via `commander` (initial). Clear upgrade path to `oclif` if/when plugin-based extensibility is required.
+- `TypeScript` as primary development language with strict type checking
+- `Vite` for shared development infrastructure (HMR, dev server, bundling)
 
 ### Key Software Design Patterns
 
-- [**Modular Component Design**](<../../resume-coach/design-docs/Architecture Principles.md#Modular Design Principles>): - each tool (e.g., citation-manager) is isolated for independent evolution and migration, while shared utilities live in shared packages.
+- [**Modular Component Design**](<../resume-coach/design-docs/Architecture Principles.md#Modular Design Principles>): - each tool (e.g., citation-manager) is isolated for independent evolution and migration, while shared utilities live in shared packages.
 
 ### Key Characteristics
-- **Interaction Style**: CLI-based, with commands executed via root-level NPM scripts.
-- **Runtime Model**: Local, on-demand execution of individual Node.js tool scripts.
-- **Deployment Model**: Fully self-contained within a version-controlled repository; no external deployment is required.
+- **Primary Language**: TypeScript with strict type checking, compiled to JavaScript for execution
+- **Interaction Style**: CLI-based, with commands executed via root-level NPM scripts
+- **Runtime Model**: Local, on-demand execution of compiled Node.js tool scripts from `dist/` directories
+- **Development Model**: Vite provides HMR and dev server for rapid iteration during development
+- **Build Pipeline**: TypeScript compilation (`tsc`) for type checking and JavaScript generation, with `.d.ts` type definitions
+- **Deployment Model**: Fully self-contained within a version-controlled repository; no external deployment required
 - **Scaling Approach**: Scales by adding new, isolated tool packages to the workspace, with a clear migration path to more advanced tooling if the package count grows significantly. Start with `npm workspaces`; if growth demands, adopt `Nx/Turborepo` for caching & task orchestration.
 
 ### Rationale
-- [**Simplicity First:**](<../../resume-coach/design-docs/Architecture Principles.md#^simplicity-first>) Native Node.js + npm integration minimizes tooling overhead.
+- [**Simplicity First:**](<../resume-coach/design-docs/Architecture Principles.md#^simplicity-first>) Native Node.js + npm integration minimizes tooling overhead.
 - **Right-Sized Performance:** Optimized for ~5–10 tools/packages—fast installs/builds without premature complexity.
 - **Less Meta-Work:** Shared dependencies and scripts reduce coordination cost while keeping each tool|package independently maintainable.
 - [ADR-001: NPM Workspaces for Monorepo Management](#ADR-001%20NPM%20Workspaces%20for%20Monorepo%20Management)
@@ -174,13 +193,15 @@ graph LR
 
 ### CC Workflows Workspace
 - **Name:** CC Workflows Workspace
-- **Technology:** `Node.js`, `NPM Workspaces`, `Vitest`, `Biome`
-- **Technology Status:** Prototype
+- **Technology:** `Node.js`, `TypeScript`, `NPM Workspaces`, `Vite`, `Vitest`, `Biome`
+- **Technology Status:** Production
 - **Description:** Development infrastructure platform that:
   - Manages dependencies and workspace configuration via NPM Workspaces
+  - Provides TypeScript compilation and type checking via shared `tsconfig.base.json`
+  - Provides Vite development infrastructure for HMR and dev server capabilities
   - Orchestrates tool execution through centralized npm scripts
   - Runs automated tests for all tools via shared Vitest framework
-  - Enforces code quality standards via Biome linting and formatting
+  - Enforces code quality standards via Biome linting and formatting (JavaScript + TypeScript)
   - Provides monorepo directory structure (`tools/`, `packages/`) for tool isolation
 - **User Value:** Centralized workspace with shared infrastructure vs. scattered tools across projects, eliminating duplicated effort and reducing "meta-work" tax
 - **Interactions:**
@@ -190,14 +211,17 @@ graph LR
 
 ### Tool Packages
 - **Name:** Tool Packages
-- **Technology:** `Node.js`, `Commander` (varies by tool)
-- **Technology Status:** Prototype
+- **Technology:** `Node.js`, `TypeScript`, `Commander` (varies by tool)
+- **Technology Status:** Production
 - **Description:** Individual CLI tools for development workflow automation:
+  - Written in TypeScript with strict type checking
+  - Compiled to JavaScript in tool-specific `dist/` directories
+  - Type definitions (`.d.ts`) generated for type-safe consumption
   - Markdown validation and processing
   - Content transformation and extraction
   - Code analysis and formatting
-  - _Citation Manager is the first MVP tool in this container_
-- **User Value:** Reusable, tested tools vs. scattered, inconsistent scripts across projects
+  - _Citation Manager is the first production tool in this container_
+- **User Value:** Reusable, type-safe, tested tools vs. scattered, inconsistent scripts across projects
 - **Interactions:**
   - _is used by_ Developer and AI Assistants
 
@@ -207,7 +231,7 @@ graph LR
 
 Component-level architecture (C4 Level 3) is defined within each tool's own architecture documentation, not at the workspace level. This approach enforces our **Modular Design Principles** by treating each tool as a self-contained container, keeping the workspace architecture focused on system-level boundaries.
 
-See the [content-aggregation-architecture](../../../tools/citation-manager/design-docs/features/20251003-content-aggregation/content-aggregation-architecture.md)  for a reference implementation.
+See the [content-aggregation-architecture](../../tools/citation-manager/design-docs/features/20251003-content-aggregation/content-aggregation-architecture.md)  for a reference implementation.
 
 ---
 ## Component Interfaces and Data Contracts
@@ -269,34 +293,36 @@ tools/citation-manager/
 
 #### File Naming Patterns
 
-**Action-Based Organization:** Following our [Action-Based File Organization](<../../resume-coach/design-docs/Architecture Principles.md#^action-based-file-organization-definition>) principle, files should be named by their primary transformation or operation on data.
+**Action-Based Organization:** Following our [Action-Based File Organization](<../resume-coach/design-docs/Architecture Principles.md#^action-based-file-organization-definition>) principle, files should be named by their primary transformation or operation on data.
 
 ##### Core File Types
 
-- **Tool Scripts**: Executable entry points for tools must use **`kebab-case.js`** (e.g., `citation-manager.js`)
-- **Source Modules**: Implementation files should use **`camelCase.js`** following transformation naming (e.g., `parseMarkdown.js`, `validateCitations.js`, `generateReport.js`)
-- **Data Contracts**: Type definition files use **`camelCase.js`** with `Types` suffix (e.g., `citationTypes.js`, `validationTypes.js`)
-- **Test Files**: Test files mirror the module name with **`.test.js`** suffix (e.g., `parseMarkdown.test.js`)
-- **Configuration Files**: Standard names (`package.json`, `biome.json`, `vitest.config.js`)
+- **Tool Scripts**: Executable entry points for tools must use **`kebab-case.ts`** (e.g., `citation-manager.ts`)
+- **Source Modules**: Implementation files should use **`camelCase.ts`** following transformation naming (e.g., `parseMarkdown.ts`, `validateCitations.ts`, `generateReport.ts`)
+- **Data Contracts**: Type definition files use **`camelCase.ts`** with `Types` suffix (e.g., `citationTypes.ts`, `validationTypes.ts`)
+- **Test Files**: Test files mirror the module name with **`.test.ts`** suffix (e.g., `parseMarkdown.test.ts`)
+- **Configuration Files**: TypeScript configs use `.ts` extension (`vitest.config.ts`, `vite.config.ts`), standard configs remain unchanged (`package.json`, `biome.json`, `tsconfig.json`)
+- **Compiled Output**: JavaScript files in `dist/` directory mirror source structure with `.js` extension and accompanying `.d.ts` type definitions
 
 ##### Action-Based Naming Patterns
 
 - **Transformation Naming**: Name files by their primary operation using verb-noun or noun-verb patterns:
-  - `parseMarkdown.js` - parses markdown to AST
-  - `validateCitations.js` - validates citation references
-  - `extractContent.js` - extracts content from documents
-  - `calculateMetrics.js` - calculates metrics from data
+  - `parseMarkdown.ts` - parses markdown to AST
+  - `validateCitations.ts` - validates citation references
+  - `extractContent.ts` - extracts content from documents
+  - `calculateMetrics.ts` - calculates metrics from data
 
 - **Primary Export Pattern**: Each file exports one main function matching (or closely related to) the file name:
-  - `parseMarkdown.js` → `export function parseMarkdown()`
-  - `validateCitations.js` → `export function validateCitations()`
+  - `parseMarkdown.ts` → `export function parseMarkdown()`
+  - `validateCitations.ts` → `export function validateCitations()`
 
 - **Helper Co-location**: Supporting functions stay in the same file as their primary operation:
-  - `parseMarkdown.js` contains helper functions like `normalizeWhitespace()`, `tokenizeLine()`
+  - `parseMarkdown.ts` contains helper functions like `normalizeWhitespace()`, `tokenizeLine()`
 
-- **Type Separation**: Extract shared types to dedicated `*Types.js` files to prevent circular dependencies:
-  - `citationTypes.js` - types used across citation validation, parsing, and reporting
-  - `validationTypes.js` - types used across multiple validation modules
+- **Type Separation**: Extract shared types to dedicated `*Types.ts` files to prevent circular dependencies:
+  - `citationTypes.ts` - interfaces and types used across citation validation, parsing, and reporting
+  - `validationTypes.ts` - interfaces and types used across multiple validation modules
+  - TypeScript interfaces and type aliases provide compile-time contracts without runtime overhead
 
 ##### Structural Patterns
 
@@ -321,6 +347,16 @@ The implementation of a user story follows four distinct phases:
 2. **Decomposition**: A specific **User Story** is created as a markdown file. This file acts as the central orchestration document for all work related to the story.
 3. **Tasking**: Within the User Story file, the work is broken down into a checklist of discrete **Tasks**, each representing a verifiable step toward completing the story's acceptance criteria.
 4. **Specification**: Each task in the story file links to a self-contained **Implementation Details** markdown file, which provides the specific, detailed instructions for a development agent to execute that task.
+
+### TypeScript Development Workflow
+
+TypeScript introduces additional validation steps in the development workflow:
+
+1. **Type Checking**: Run `tsc --noEmit` before committing to catch type errors
+2. **Build Verification**: Run `npm run build` to ensure TypeScript compiles successfully
+3. **Test Execution**: Tests run against TypeScript source with integrated type checking
+4. **Development Mode**: Use `npm run dev` for HMR during active development
+5. **Pre-Commit Validation**: Biome checks + TypeScript type checking must pass
 
 ### Directory Structure Convention
 All artifacts for a given user story must be organized within the `design-docs/features/` directory using the following hierarchical structure, which prioritizes discoverability and temporal context.
@@ -391,26 +427,34 @@ design-docs/features/20250928-cc-workflows-workspace-scaffolding/
 ---
 ## Coding Standards and Conventions
 
-This project follows JavaScript/TypeScript naming conventions with one strategic exception for test methods, aligned with our [Self-Contained Naming Principles](<../../resume-coach/design-docs/Architecture Principles.md#^self-contained-naming-principles-definition>).
+This project follows JavaScript/TypeScript naming conventions with one strategic exception for test methods, aligned with our [Self-Contained Naming Principles](<../resume-coach/design-docs/Architecture Principles.md#^self-contained-naming-principles-definition>).
 
-### JavaScript Naming Conventions
+### TypeScript Naming Conventions
 
-This project follows JavaScript/TypeScript naming conventions aligned with our [Action-Based File Organization](<../../resume-coach/design-docs/Architecture Principles.md#^action-based-file-organization-definition>) principle.
+This project follows TypeScript naming conventions aligned with our [Action-Based File Organization](<../resume-coach/design-docs/Architecture Principles.md#^action-based-file-organization-definition>) principle.
 
 - **Files**: File naming depends on purpose:
-  - **Tool Scripts** (executable entry points): Use **kebab-case** (e.g., `citation-manager.js`, `ask-enhanced.js`)
-  - **Implementation Modules** (transformation operations): Use **camelCase** named by their primary transformation (e.g., `parseMarkdown.js`, `validateCitations.js`, `extractContent.js`)
-  - **Rationale**: File names describe operations that transform data, following [Transformation Naming](<../../resume-coach/design-docs/Architecture Principles.md#^transformation-naming>)
+  - **Tool Scripts** (executable entry points): Use **kebab-case.ts** (e.g., `citation-manager.ts`, `ask-enhanced.ts`)
+  - **Implementation Modules** (transformation operations): Use **camelCase.ts** named by their primary transformation (e.g., `parseMarkdown.ts`, `validateCitations.ts`, `extractContent.ts`)
+  - **Rationale**: File names describe operations that transform data, following [Transformation Naming](<../resume-coach/design-docs/Architecture Principles.md#^transformation-naming>)
 
 - **Functions & Variables**: Use **camelCase** for all functions and variables (e.g., `parseMarkdown`, `extractContent`, `validationResult`)
-  - **Primary Exports**: Each file's main export should match or closely relate to the file name ([Primary Export Pattern](<../../resume-coach/design-docs/Architecture Principles.md#^primary-export-pattern>))
+  - **Primary Exports**: Each file's main export should match or closely relate to the file name ([Primary Export Pattern](<../resume-coach/design-docs/Architecture Principles.md#^primary-export-pattern>))
+  - **Type Annotations**: Include explicit type annotations for function parameters and return types
 
 - **Constants**: Use **UPPER_SNAKE_CASE** for constants (e.g., `MAX_DEPTH`, `DEFAULT_ENCODING`)
 
 - **Classes**: Use **TitleCase** for class names (e.g., `CitationValidator`, `MarkdownParser`)
 
-- **Type Files**: Use **camelCase** with `Types` suffix for shared type definitions (e.g., `citationTypes.js`, `validationTypes.js`)
-  - **Rationale**: Separates data contracts (WHAT) from operations (HOW) per [Data Contracts Separate](<../../resume-coach/design-docs/Architecture Principles.md#^data-contracts-separate>)
+- **Interfaces**: Use **TitleCase** with `I` prefix optional (e.g., `Citation` or `ICitation`, `ValidationResult` or `IValidationResult`)
+  - **Rationale**: Modern TypeScript convention omits `I` prefix; use team preference consistently
+
+- **Type Aliases**: Use **TitleCase** for type aliases (e.g., `ValidationError`, `CitationTarget`)
+
+- **Type Files**: Use **camelCase.ts** with `Types` suffix for shared type definitions (e.g., `citationTypes.ts`, `validationTypes.ts`)
+  - **Rationale**: Separates data contracts (WHAT) from operations (HOW) per [Data Contracts Separate](<../resume-coach/design-docs/Architecture Principles.md#^data-contracts-separate>)
+
+- **Enums**: Use **TitleCase** for enum names and **UPPER_SNAKE_CASE** for enum values (e.g., `enum LogLevel { DEBUG = "DEBUG", INFO = "INFO" }`)
 
 - **Test Descriptions**: Use **natural language with spaces** for test descriptions in `it()` methods (e.g., `it('should validate citations with valid references', () => {...})`)
   - **Rationale**: Test descriptions serve as executable specifications requiring maximum clarity per our **"Names as Contracts"** philosophy
@@ -422,14 +466,14 @@ This project follows JavaScript/TypeScript naming conventions aligned with our [
 
 ### Code Organization
 
-- **Modular Structure**: Each module should have a single, clear responsibility ([Single Responsibility](<../../resume-coach/design-docs/Architecture Principles.md#^single-responsibility>))
-- **Interface Boundaries**: Define clear APIs between components ([Black Box Interfaces](<../../resume-coach/design-docs/Architecture Principles.md#^black-box-interfaces>))
-- **Error Handling**: Implement fail-fast principles with clear error messages ([Fail Fast](<../../resume-coach/design-docs/Architecture Principles.md#^fail-fast>))
+- **Modular Structure**: Each module should have a single, clear responsibility ([Single Responsibility](<../resume-coach/design-docs/Architecture Principles.md#^single-responsibility>))
+- **Interface Boundaries**: Define clear APIs between components ([Black Box Interfaces](<../resume-coach/design-docs/Architecture Principles.md#^black-box-interfaces>))
+- **Error Handling**: Implement fail-fast principles with clear error messages ([Fail Fast](<../resume-coach/design-docs/Architecture Principles.md#^fail-fast>))
 
 ### Documentation Requirements
 
-- **Self-Documenting Code**: Names should provide immediate understanding without lookup ([Immediate Understanding](<../../resume-coach/design-docs/Architecture Principles.md#immediate-understanding>))
-- **Inline Comments**: Include contextual comments for complex logic ([Contextual Comments](<../../resume-coach/design-docs/Architecture Principles.md#contextual-comments>))
+- **Self-Documenting Code**: Names should provide immediate understanding without lookup ([Immediate Understanding](<../resume-coach/design-docs/Architecture Principles.md#immediate-understanding>))
+- **Inline Comments**: Include contextual comments for complex logic ([Contextual Comments](<../resume-coach/design-docs/Architecture Principles.md#contextual-comments>))
 - **Function Documentation**: Use docstrings to document public APIs and their contracts
 
 ---
@@ -450,9 +494,24 @@ This project follows JavaScript/TypeScript naming conventions aligned with our [
 
 ### Workspace Testing Approach
 
-The workspace provides a **shared Vitest configuration** and **common testing principles**, but each tool maintains its own independent test suite. Fulfills the requirement for a shared, centralized testing framework \[[FR2](cc-workflows-workspace-prd.md#^FR2)\]
+The workspace provides a **shared Vitest configuration** and **common testing principles**, but each tool maintains its own independent test suite. Fulfills the requirement for a shared, centralized testing framework \[[FR2](design-docs/cc-workflows-workspace-prd.md#^FR2)\]
 
-**Current State (MVP):**
+**Test Files:**
+- Test files use **`.test.ts`** extension (TypeScript)
+- TypeScript type checking integrated into test execution
+- Tests run against TypeScript source without requiring pre-compilation
+
+**Type Safety in Tests:**
+- All test code uses TypeScript with strict type checking
+- Type errors caught at compile-time before test execution
+- IDE provides autocomplete and inline documentation during test development
+
+**Browser Testing:**
+- For browser-based testing needs, use the **`superpowers-chrome`** MCP tool
+- Playwright is NOT used in this workspace (CLI-first tooling focus)
+- Browser testing via `superpowers-chrome` when validating web-based workflows
+
+**Current State:**
 - No shared test utilities or helpers
 - Each tool creates its own fixtures and test infrastructure
 - Tools are completely self-contained
@@ -481,7 +540,7 @@ Our strategy distinguishes between cross-cutting workspace functionality and too
 
 #### Testing Naming Conventions
 
-Test method names follow our [Self-Contained Naming Principles](<../../resume-coach/design-docs/Architecture Principles.md#^self-contained-naming-principles-definition>) with a specific exception to optimize for readability and clarity:
+Test method names follow our [Self-Contained Naming Principles](<../resume-coach/design-docs/Architecture Principles.md#^self-contained-naming-principles-definition>) with a specific exception to optimize for readability and clarity:
 
 ##### Test Description Naming: Natural Language Convention
 - **Convention**: Use **natural language with spaces** for test descriptions in `it()` method strings
@@ -515,7 +574,7 @@ describe('PaymentProcessor', () => {
 });
 ```
 
-This naming convention aligns with our **"Names as Contracts"** philosophy ([Descriptive Labels](<../../resume-coach/design-docs/Architecture Principles.md#^descriptive-labels>), [Immediate Understanding](<../../resume-coach/design-docs/Architecture Principles.md#^immediate-understanding>)) by prioritizing communication clarity and natural readability.
+This naming convention aligns with our **"Names as Contracts"** philosophy ([Descriptive Labels](<../resume-coach/design-docs/Architecture Principles.md#^descriptive-labels>), [Immediate Understanding](<../resume-coach/design-docs/Architecture Principles.md#^immediate-understanding>)) by prioritizing communication clarity and natural readability.
 
 #### BDD-Style Test Structure (Given-When-Then)
 
@@ -591,7 +650,7 @@ describe('Citation Manager Integration Tests', () => {
 - Reserve subprocess testing for true E2E scenarios (argument parsing, exit codes)
 - Aligns test architecture with production architecture (both use same code path)
 
-**Reference**: [Bug 3: Buffer Limit Resolution](../../../tools/citation-manager/design-docs/features/20251003-content-aggregation/user-stories/us1.8-implement-validation-enrichment-pattern/bug3-buffer-limit-resolution.md)
+**Reference**: [Bug 3: Buffer Limit Resolution](../../tools/citation-manager/design-docs/features/20251003-content-aggregation/user-stories/us1.8-implement-validation-enrichment-pattern/bug3-buffer-limit-resolution.md)
 
 ###### CLI Testing: stdout/stderr Separation Pattern
 
@@ -608,12 +667,12 @@ CLI tools should route output based on type:
 
 **Test Helper Pattern**:
 
-The `cli-runner.js` helper supports both capture modes:
+The `cli-runner.ts` helper supports both capture modes:
 
-```javascript
+```typescript
 // For JSON output - capture only stdout (default: captureStderr=true)
 const output = runCLI(
-  `node citation-manager.js validate file.md --format json`,
+  `node dist/citation-manager.js validate file.md --format json`,
   { captureStderr: false }  // Don't mix stderr into stdout
 );
 const result = JSON.parse(output); // Clean JSON parsing
@@ -663,7 +722,7 @@ it('should validate with JSON format', () => {
 
 When testing component collaboration, use constructor dependency injection to pass in real dependencies (not mocks).
 
-**Note:** This example represents the target architecture after refactoring citation-manager to implement DI ([technical debt](<../../../tools/citation-manager/design-docs/features/20251003-content-aggregation/content-aggregation-architecture.md#Lack of Dependency Injection>)) and factory pattern ([mitigation strategy](#Constructor-Based%20DI%20Wiring%20Overhead)).
+**Note:** This example represents the target architecture after refactoring citation-manager to implement DI ([technical debt](<../../tools/citation-manager/design-docs/features/20251003-content-aggregation/content-aggregation-architecture.md#Lack of Dependency Injection>)) and factory pattern ([mitigation strategy](#Constructor-Based%20DI%20Wiring%20Overhead)).
 
 **Production Code - USES Factory:**
 
@@ -747,7 +806,7 @@ describe('CitationValidator Integration Tests', () => {
 
 ### Citation-Manager: Reference Test Structure
 
-The citation-manager tool provides the established pattern for tool-level testing within the workspace. See [Citation Manager Testing Strategy](<../../../tools/citation-manager/design-docs/features/20251003-content-aggregation/content-aggregation-architecture.md#Testing Strategy>) for complete test structure and principles.
+The citation-manager tool provides the established pattern for tool-level testing within the workspace. See [Citation Manager Testing Strategy](<../../tools/citation-manager/design-docs/features/20251003-content-aggregation/content-aggregation-architecture.md#Testing Strategy>) for complete test structure and principles.
 
 ---
 
@@ -755,40 +814,62 @@ The citation-manager tool provides the established pattern for tool-level testin
 
 |Technology/Library|Category|Version|Module|Purpose in the System|Used By (Container.Component)|
 |---|---|---|---|---|---|
-|**Node.js**|**Runtime**|>=18.0.0|`node`|Provides the JavaScript execution environment for all tools and scripts.|TBD|
-|**NPM Workspaces**|**Build & Dependency Management**|npm 7+|`npm` (CLI)|The core mechanism for managing the monorepo, handling dependency hoisting, and enabling script execution across packages.|TBD|
-|**Vitest**|**Testing Framework**|latest|`vitest`|Provides the shared testing framework for running unit and integration tests across all packages in the workspace.|TBD|
-|**Biome**|**Code Quality**|latest|`@biomejs/biome`|Enforces consistent code formatting and linting standards across the entire monorepo from a single, root configuration.|TBD|
+|**Node.js**|**Runtime**|>=18.0.0|`node`|Provides the JavaScript execution environment for all tools and scripts.|All Containers|
+|**TypeScript**|**Primary Language**|>=5.3.0|`typescript`|Primary development language with strict type checking, compiles to JavaScript for execution. Generates `.d.ts` type definitions for type-safe consumption.|All Tool Packages|
+|**NPM Workspaces**|**Build & Dependency Management**|npm 7+|`npm` (CLI)|The core mechanism for managing the monorepo, handling dependency hoisting, and enabling script execution across packages.|Workspace Infrastructure|
+|**Vite**|**Development Infrastructure**|>=5.0.0|`vite`|Provides shared development infrastructure including HMR, dev server, and bundling capabilities for rapid iteration.|Workspace Infrastructure|
+|**Vitest**|**Testing Framework**|>=4.0.0|`vitest`|Provides the shared testing framework for running TypeScript unit and integration tests across all packages in the workspace.|All Tool Packages|
+|**Biome**|**Code Quality**|>=1.9.0|`@biomejs/biome`|Enforces consistent code formatting and linting standards for both JavaScript and TypeScript across the entire monorepo from a single, root configuration.|All Containers|
 
 ---
 ## Cross-Cutting Concerns
 These are system-wide responsibilities that affect multiple components and tools within the workspace.
 
 ### Configuration Management
-Workspace behavior is configured through three root-level files that provide shared infrastructure for all tools. This centralized approach ensures consistency and avoids configuration duplication.
+Workspace behavior is configured through root-level configuration files that provide shared infrastructure for all tools. This centralized approach ensures consistency and avoids configuration duplication.
 
 - **Workspace Structure**: The root `package.json` file defines the monorepo structure using the `workspaces` array, which specifies glob patterns (`tools/*`, `packages/*`) for package discovery. NPM automatically hoists shared dependencies to the root `node_modules/` directory.
-- **Code Quality**: The `biome.json` file centralizes all linting and formatting rules, ensuring that any tool in the workspace inherits these standards automatically.
-- **Testing Framework**: The `vitest.config.js` file defines test discovery patterns, the execution environment, and coverage settings for the entire workspace.
+- **TypeScript Configuration**: The `tsconfig.base.json` file provides shared TypeScript compiler settings that all tools extend, ensuring consistent type checking and compilation behavior across the workspace.
+- **Vite Configuration**: The `vite.config.ts` file provides shared development infrastructure (HMR, dev server, bundling) for all tools.
+- **Testing Framework**: The `vitest.config.ts` file defines test discovery patterns, the execution environment, and coverage settings for the entire workspace with TypeScript support.
+- **Code Quality**: The `biome.json` file centralizes all linting and formatting rules for both JavaScript and TypeScript, ensuring that any tool in the workspace inherits these standards automatically.
+
+**Key settings within `tsconfig.base.json`:**
+
+| Key | Type | Description |
+|-----|------|-------------|
+| `compilerOptions.target` | `string` | ECMAScript target version (ES2022). Modern JavaScript features for Node.js >=18. |
+| `compilerOptions.module` | `string` | Module system (ES2022). Native ESM support. |
+| `compilerOptions.strict` | `boolean` | Enables all strict type checking options for maximum type safety. |
+| `compilerOptions.declaration` | `boolean` | Generates `.d.ts` type definition files alongside compiled JavaScript. |
+| `compilerOptions.sourceMap` | `boolean` | Generates source maps for debugging compiled code. |
+
+**Key settings within `vite.config.ts`:**
+
+| Key | Type | Description |
+|-----|------|-------------|
+| `build.lib.formats` | `array(string)` | Output formats (es, cjs). Supports both ESM and CommonJS consumers. |
+| `build.target` | `string` | Build target (node18). Optimized for Node.js runtime. |
+| `resolve.conditions` | `array(string)` | Module resolution conditions (node). Ensures Node.js-compatible resolution. |
 
 **Key settings within `biome.json`:**
 
 | Key | Type | Description |
 |-----|------|-------------|
 | `formatter.indentStyle` | `string` | Indentation standard (tabs). Allows developer preference configuration while maintaining smaller file sizes. |
-| `javascript.formatter.quoteStyle` | `string` | String quote convention (double quotes). Ensures consistency across all JavaScript files. |
-| `linter.rules.recommended` | `boolean` | Enables Biome's recommended ruleset for code quality enforcement. |
+| `javascript.formatter.quoteStyle` | `string` | String quote convention (double quotes). Ensures consistency across all JavaScript and TypeScript files. |
+| `linter.rules.recommended` | `boolean` | Enables Biome's recommended ruleset for code quality enforcement (JavaScript + TypeScript). |
 | `organizeImports.enabled` | `boolean` | Automatic import sorting and organization on format operations. |
-| `files.include` | `array(string)` | Glob patterns defining which files Biome processes (default: all files). |
+| `files.include` | `array(string)` | Glob patterns defining which files Biome processes (includes `.ts` files). |
 | `files.ignore` | `array(string)` | Directories excluded from linting (node_modules, dist, build artifacts). |
 
-**Key settings within `vitest.config.js`:**
+**Key settings within `vitest.config.ts`:**
 
 | Key | Type | Description |
 |-----|------|-------------|
 | `test.environment` | `string` | Execution environment (node). Optimized for file system and CLI testing. |
-| `test.include` | `array(string)` | Test discovery patterns supporting both legacy locations and workspace packages. |
-| `test.pool` | `string` | Process isolation strategy (forks). Ensures proper CommonJS module isolation. |
+| `test.include` | `array(string)` | Test discovery patterns supporting `.test.ts` files in workspace packages. |
+| `test.pool` | `string` | Process isolation strategy (forks). Ensures proper module isolation. |
 | `test.globals` | `boolean` | Disables global test functions (false). Requires explicit imports for clarity. |
 | `coverage.provider` | `string` | Coverage collection tool (c8). Native Node.js coverage without instrumentation overhead. |
 
@@ -797,15 +878,39 @@ Workspace behavior is configured through three root-level files that provide sha
 All code quality enforcement is centralized through **Biome**, which provides both **linting and formatting** from a single tool. Quality checks are run from the repository root and apply to all workspace packages.
 
 - **Formatting Standards**: The workspace enforces **tab indentation** and **double-quote strings** to reduce file size and allow for developer-specific display preferences.
-- **Linting Enforcement**: Biome's recommended ruleset is enabled to detect common errors and enforce consistent coding patterns.
-- **Validation Pattern**: Quality checks are run via `npx biome check .` from the repository root. This command discovers all relevant files across the workspace and validates them against the centralized configuration.
+- **Linting Enforcement**: Biome's recommended ruleset is enabled to detect common errors and enforce consistent coding patterns in both JavaScript and TypeScript.
+- **Type Checking**: TypeScript compiler (`tsc`) provides additional validation beyond linting, catching type errors at compile-time.
+- **Validation Pattern**: Quality checks are run via `npx biome check .` for linting/formatting and `tsc --noEmit` for type checking from the repository root.
+
+### Build Pipeline
+
+The workspace provides a **TypeScript-first build pipeline** that compiles source code to JavaScript with type definitions for distribution.
+
+- **TypeScript Compilation**: The `tsc` compiler transforms TypeScript source (`.ts`) to JavaScript (`.js`) with accompanying type definitions (`.d.ts`) in tool-specific `dist/` directories.
+- **Type Checking**: Strict type checking runs during compilation, catching type errors before code execution.
+- **Source Maps**: Generated source maps enable debugging of compiled code with TypeScript source line numbers.
+- **Build Commands**:
+  - `npm run build` - Builds all workspace packages
+  - `npm run type-check` - Type checks without emitting files
+  - Tool-specific builds via `npm run build:citation` for individual tools
+- **Vite Integration**: Vite provides additional bundling capabilities and HMR during development, complementing TypeScript compilation.
+
+### Development Infrastructure
+
+The workspace provides **Vite-based development infrastructure** for rapid iteration during tool development.
+
+- **Dev Server**: Vite dev server (`npm run dev`) provides HMR for instant feedback during development.
+- **Hot Module Reloading (HMR)**: Code changes reflect immediately without full restart, accelerating development cycles.
+- **Build Watch Mode**: Continuous compilation during development via `npm run dev` in tool directories.
+- **TypeScript Integration**: Vite natively supports TypeScript, providing seamless development experience with type checking and HMR.
 
 ### Testing Infrastructure
 
-The workspace provides a **shared Vitest testing framework** that discovers and executes tests across all packages from a single root command, fulfilling the requirement for a centralized testing framework.
+The workspace provides a **shared Vitest testing framework** that discovers and executes TypeScript tests across all packages from a single root command, fulfilling the requirement for a centralized testing framework.
 
-- **Test Discovery**: Vitest is configured with multiple glob patterns to discover tests in both legacy locations (`src/tests/**/*.test.js`) and new workspace packages (`tools/**/test/**/*.test.js`). This multi-pattern approach is a deliberate strategy to support the incremental migration of existing tools like `citation-manager`.
-- **Testing Principles**: All tests must adhere to the **"Real Systems, Fake Fixtures"** principle, which mandates a zero-tolerance policy for mocking application components and favors testing against real file system operations. Tests must also follow the **BDD Given-When-Then** comment structure and use **`snake_case`** for test method names for clarity and improved AI comprehension.
+- **Test Discovery**: Vitest is configured with glob patterns to discover `.test.ts` files in workspace packages (`tools/**/test/**/*.test.ts`, `packages/**/test/**/*.test.ts`).
+- **TypeScript Support**: Tests run against TypeScript source without pre-compilation, with type checking integrated into test execution.
+- **Testing Principles**: All tests must adhere to the **"Real Systems, Fake Fixtures"** principle, which mandates a zero-tolerance policy for mocking application components and favors testing against real file system operations. Tests must also follow the **BDD Given-When-Then** comment structure.
 
 ### Dependency Management
 
@@ -818,8 +923,9 @@ The workspace provides a **shared Vitest testing framework** that discovers and 
 
 The workspace establishes a consistent pattern for executing tool CLIs through **root-level npm scripts**, providing centralized command discovery and parameter passing.
 
-- **Root Script Orchestration**: The root `package.json` defines npm scripts that execute workspace package CLIs directly via `node` commands (e.g., `"mock:run": "node tools/mock-tool/src/mock-tool.js"`). This makes all tool commands discoverable via `npm run`.
-- **Parameter Passing**: CLI arguments are passed to the target script using the standard `--` separator convention (e.g., `npm run mock:run -- Alice`).
+- **Root Script Orchestration**: The root `package.json` defines npm scripts that execute workspace package CLIs from compiled output via `node` commands (e.g., `"citation:validate": "node tools/citation-manager/dist/citation-manager.js validate"`). This makes all tool commands discoverable via `npm run`.
+- **Compilation Requirement**: Tools must be compiled (`npm run build`) before execution, as CLIs run from `dist/` directories containing compiled JavaScript.
+- **Parameter Passing**: CLI arguments are passed to the target script using the standard `--` separator convention (e.g., `npm run citation:validate -- file.md`).
 
 ### Error Handling and Logging
 
@@ -835,7 +941,7 @@ Use **Dependency Injection (DI)** as a foundational pattern to achieve a modular
 
 While DI makes it possible to inject mock dependencies for isolated unit testing, our testing philosophy explicitly prioritizes integration tests that verify real component interactions. Therefore, the workspace adheres to the **"Real Systems, Fake Fixtures"** principle, which includes a **"zero-tolerance policy for mocking"** application components. Our strategy is to use DI to inject _real_ dependencies during testing to gain the highest confidence that our components work together correctly.
 
-For example, the `CitationValidator` should receive its `MarkdownParser` dependency via its constructor. During testing, we will pass in the _real_ `MarkdownParser` to ensure the validation logic works with the actual parsing output. This gives us confidence that the integrated system functions as expected. The existing `citation-manager` code, which does not fully use DI, has been [identified as technical debt](<../../../tools/citation-manager/design-docs/features/20251003-content-aggregation/content-aggregation-architecture.md#Lack of Dependency Injection>) to be refactored to align with this principle.
+For example, the `CitationValidator` should receive its `MarkdownParser` dependency via its constructor. During testing, we will pass in the _real_ `MarkdownParser` to ensure the validation logic works with the actual parsing output. This gives us confidence that the integrated system functions as expected. The existing `citation-manager` code, which does not fully use DI, has been [identified as technical debt](<../../tools/citation-manager/design-docs/features/20251003-content-aggregation/content-aggregation-architecture.md#Lack of Dependency Injection>) to be refactored to align with this principle.
 
 ### Tool Distribution and Linking
 
@@ -891,9 +997,9 @@ if (import.meta.url === realPathAsUrl) {
 
 **Rationale:** The naive comparison `import.meta.url === \`file://${process.argv[1]}\`` fails with symlinks because `process.argv[1]` contains the symlink path while `import.meta.url` resolves to the real path. Using `realpathSync()` ensures proper detection regardless of how the tool is invoked.
 
-**Test Coverage:** The `cli-execution-detection.test.js` test suite validates symlink execution for all command types (help, validate, extract) to prevent regression.
+**Test Coverage:** The `cli-execution-detection.test.ts` test suite validates symlink execution for all command types (help, validate, extract) to prevent regression.
 
-**Reference:** See [Linking CC-Workflows Tools to External Projects](guides/linking-cc-workflows-tools-to-external-projects.md) for complete setup guide, troubleshooting, and alternative patterns.
+**Reference:** See [Linking CC-Workflows Tools to External Projects](design-docs/guides/linking-cc-workflows-tools-to-external-projects.md) for complete setup guide, troubleshooting, and alternative patterns.
 
 ---
 ## Known Risks and Technical Debt
@@ -915,6 +1021,48 @@ if (import.meta.url === realPathAsUrl) {
   - **Negative**: The solution has **known scaling limitations**, with research indicating potential performance degradation if the workspace grows beyond 70+ packages. ^cc-workflows-workspace-adr-001
   - **Negative**: It **lacks advanced features** like built-in task dependency graphing and computation caching, which may require supplemental tooling (e.g., Nx, Turborepo) if future complexity increases.
 
+### ADR-002: TypeScript as Primary Development Language
+
+- **Status**: Accepted
+- **Date**: 2024-11-12
+- **Context**: The workspace reached a stable foundation with established testing patterns and operational tooling. As complexity grows and more tools are added, the risk of runtime type errors increases. JavaScript's dynamic typing provides flexibility but defers error detection to runtime or test execution, increasing debugging cycles. The citation-manager tool has ~58 files (10 source, 48 tests) with complex data flows between components, making it an ideal candidate for type safety validation before expanding the workspace further.
+- **Decision**: Adopt **TypeScript as the primary development language** for all workspace tools, with strict type checking enabled. All new tools must be written in TypeScript, and existing tools will be migrated following the Infrastructure-First pattern validated with citation-manager as the pilot.
+- **Alternatives Considered**:
+  - **JSDoc + Type Checking**: Provides gradual typing without compilation step, but offers weaker type guarantees and inferior IDE support
+  - **Flow**: Facebook's type system with similar capabilities, but smaller ecosystem and uncertain long-term support
+  - **Continue with JavaScript**: Lowest friction, but accumulating technical debt as codebase complexity increases
+- **Consequences**:
+  - **Positive**: **Compile-time error detection** catches type violations before code executes, reducing debugging cycles
+  - **Positive**: **IDE autocomplete and inline documentation** via type information improves developer experience
+  - **Positive**: **Explicit type contracts** serve as living documentation without manual maintenance
+  - **Positive**: **Refactoring confidence** through compiler-verified type safety during large-scale changes
+  - **Positive**: **Architecture principle alignment** - strengthens Data-First Design, Fail Fast, and Self-Contained Naming principles
+  - **Negative**: **Build step required** - adds compilation before execution, though mitigated by HMR during development
+  - **Negative**: **Learning curve** for team members unfamiliar with TypeScript (minimal for experienced JavaScript developers)
+  - **Negative**: **Migration effort** - 58 files in citation-manager require conversion, though Infrastructure-First approach minimizes risk
+
+### ADR-003: Vite for Development Infrastructure
+
+- **Status**: Accepted
+- **Date**: 2024-11-12
+- **Context**: The workspace lacked unified development infrastructure for rapid iteration. Developers manually restarted processes after code changes, slowing development cycles. TypeScript compilation added a build step, making instant feedback even more critical. The workspace needed a development server with Hot Module Reloading (HMR) to maintain fast iteration while supporting TypeScript. The cc-workflows-site project successfully demonstrated Vite with TypeScript + Vitest integration, providing a validated reference pattern.
+- **Decision**: Adopt **Vite as the shared development infrastructure** for HMR, dev server capabilities, and bundling. Vite complements TypeScript compilation by providing instant feedback during development while supporting production builds when needed.
+- **Alternatives Considered**:
+  - **Webpack**: Mature bundler with extensive ecosystem, but complex configuration and slower HMR
+  - **esbuild**: Extremely fast builds, but limited plugin ecosystem and less mature dev server
+  - **No dev server**: Simplest option, but forces manual restarts and slow iteration cycles
+  - **ts-node-dev**: TypeScript-specific watch mode, but limited to Node.js and no bundling capabilities
+- **Consequences**:
+  - **Positive**: **Hot Module Reloading** provides instant feedback during development without full restarts
+  - **Positive**: **Native TypeScript support** eliminates separate transpilation configuration
+  - **Positive**: **Fast cold starts** due to native ESM and esbuild-powered transforms
+  - **Positive**: **Unified tooling** - Vite integrates with Vitest (already in use) for consistent dev experience
+  - **Positive**: **Flexible output** - supports both ESM and CommonJS for diverse consumers
+  - **Positive**: **Validated pattern** - cc-workflows-site project demonstrates successful integration
+  - **Negative**: **Build complexity** - adds another tool to the stack, though benefits outweigh overhead
+  - **Negative**: **Not required for CLI tools** - dev server less critical for CLI-focused workspace, but HMR valuable during development
+  - **Negative**: **Learning curve** - team must understand Vite configuration, though simpler than alternatives
+
 ---
 
 ## Appendices
@@ -932,14 +1080,19 @@ if (import.meta.url === realPathAsUrl) {
 ### References & Further Reading
 
 **Related Architecture Documents:**
-- [CC Workflows PRD](cc-workflows-workspace-prd.md): Product requirements and epic breakdown for MVP implementation
-- [Content Aggregation Research](research/content-aggregation-research.md): Industry patterns and technical recommendations for workspace management
+- [TypeScript + Vite Migration PRD](design-docs/features/20251112-typescript-vite-migration/typescript-vite-migration-prd.md): Requirements document for TypeScript and Vite adoption
+- [CC Workflows PRD](design-docs/cc-workflows-workspace-prd.md): Product requirements and epic breakdown for MVP implementation
+- [Content Aggregation Research](design-docs/research/content-aggregation-research.md): Industry patterns and technical recommendations for workspace management
 - [C4 Model Framework Overview](/Users/wesleyfrederick/Documents/ObsidianVaultNew/Technical KnowledgeBase/AI Coding Assistants/Concepts/C4 Framework Overview.md): Architectural documentation methodology used in this document
-- [Psuedocode Style Guide](<Psuedocode Style Guide.md>): Pseudocode syntax reference used in this document
-- [citation-guidelines](../../../agentic-workflows/rules/citation-guidelines.md): Citation and reference formatting standards used in this document
-- [WORKSPACE-SETUP](../../../WORKSPACE-SETUP.md): Validated workspace patterns for workspace configuration and development
+- [Psuedocode Style Guide](<design-docs/Psuedocode Style Guide.md>): Pseudocode syntax reference used in this document
+- [citation-guidelines](../../agentic-workflows/rules/citation-guidelines.md): Citation and reference formatting standards used in this document
+- [WORKSPACE-SETUP](../../WORKSPACE-SETUP.md): Validated workspace patterns for workspace configuration and development
 
 **External References:**
+- [TypeScript Documentation](https://www.typescriptlang.org/docs/): Official TypeScript language and compiler documentation
+- [TypeScript Handbook](https://www.typescriptlang.org/docs/handbook/intro.html): Comprehensive TypeScript guide and best practices
+- [Vite Documentation](https://vitejs.dev/): Official Vite build tool and dev server documentation
+- [Vitest Documentation](https://vitest.dev/): Official Vitest testing framework documentation (Vite-native)
 - [NPM Workspaces Documentation](https://docs.npmjs.com/cli/v7/using-npm/workspaces): Foundation pattern for package management
 - [C4 Model Documentation](https://c4model.com/): Architectural documentation methodology used in this document
 
@@ -948,4 +1101,5 @@ if (import.meta.url === realPathAsUrl) {
 | Date       | Version | Level          | Change Description                                            | Author |
 | ---------- | ------- | -------------- | ------------------------------------------------------------- | ------ |
 | 2025-09-23 | 1.0     | System Context | Initial baseline architecture through Level 1 context diagram | Wesley |
-| 2025-10-04 | 2.0     | Baseline       | Copied from workspace feature to Basline arch doc             | Wesley |
+| 2025-10-04 | 2.0     | Baseline       | Copied from workspace feature to Baseline arch doc            | Wesley |
+| 2024-11-12 | 3.0     | Baseline       | TypeScript + Vite adoption - comprehensive architecture update reflecting TypeScript as primary language, Vite for dev infrastructure, updated all sections (principles, containers, code org, testing, tech stack, cross-cutting concerns, ADRs) | Application Tech Lead |

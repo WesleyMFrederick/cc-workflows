@@ -17,7 +17,7 @@ Arguments: $1 $2
 ## Load Skill & Execute Plan
 1. Load `brainstorming` skill
 2. If requirements-file-path argument provided, read @$1
-3. If propvided, Focus on user story $2
+3. If provided, Focus on user story $2
 4. Gather additional context
 
    ```bash

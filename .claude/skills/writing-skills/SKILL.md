@@ -5,10 +5,6 @@ description: Use when creating new skills, editing existing skills, or verifying
 
 # Writing Skills
 
-<critical-instruction>
-Use `citation-manager extract links {{this-document=path}}` to extract related link context
-</critical-instruction>
-
 ## Overview
 
 **Writing skills IS Test-Driven Development applied to process documentation.**
@@ -21,11 +17,9 @@ You write test cases (pressure scenarios with subagents), watch them fail (basel
 
 **Core principle:** If you didn't watch an agent fail without the skill, you don't know if the skill teaches the right thing.
 
-> **REQUIRED BACKGROUND:**
-> - You MUST understand [**`test-driven-development`**](../test-driven-development/SKILL.md) %% force-extract %% skill before using this skill. That skill defines the fundamental RED-GREEN-REFACTOR cycle. This skill adapts TDD to documentation.`
-> - You must use the `writing-clearly-and-concisely` skill when writing skills and related reference material
+**REQUIRED BACKGROUND:** You MUST understand [**`test-driven-development`**](../test-driven-development/SKILL.md) skill before using this skill. That skill defines the fundamental RED-GREEN-REFACTOR cycle. This skill adapts TDD to documentation.`
 
-**Official guidance:** For Anthropic's official skill authoring best practices, see [anthropic-best-practices](anthropic-best-practices.md) %% force-extract %%. This document provides additional patterns and guidelines that complement the TDD-focused approach in this skill.
+**Official guidance:** For Anthropic's official skill authoring best practices, see [anthropic-best-practices](anthropic-best-practices.md). This document provides additional patterns and guidelines that complement the TDD-focused approach in this skill.
 
 ## What is a Skill?
 
@@ -157,6 +151,48 @@ Way of thinking about problems (flatten-with-flags, test-invariants)
 
 ### Reference
 API docs, syntax guides, tool documentation (office docs)
+
+### Modular Pattern: MECHANISM vs POLICY
+
+When creating skills that build on each other, use this separation pattern:
+
+**MECHANISM Skills** = "How to do X"
+- Flexible, reusable building blocks
+- No opinions on when/why to use
+- Focus: technical execution
+- Example: `using-git-worktrees` (creates worktrees, installs deps, reports ready)
+
+**POLICY Skills** = "When/why to do X"
+- Strict orchestrators enforcing standards
+- Delegates to MECHANISM skills for execution
+- Focus: validation, enforcement, workflow
+- Example: `setting-up-implementation-worktree` (verifies clean state, delegates creation, enforces tests)
+
+**Benefits:**
+- Reusability: MECHANISM skills usable in multiple contexts
+- Clear separation: Policy decisions separate from technical execution
+- Testability: Each skill has single responsibility
+
+**When to use:**
+- Multiple workflows need same technical operation with different policies
+- Strict enforcement needed in some contexts but not others
+- Skills have significant overlap that could be modularized
+
+**Example from worktree skills:**
+
+```text
+setting-up-implementation-worktree (POLICY)
+  ├─ Enforces: clean git state, passing tests
+  ├─ Cleans up: existing worktrees
+  ├─ Delegates to: using-git-worktrees (MECHANISM)
+  └─ Validates: dependencies, tests, build after creation
+
+using-git-worktrees (MECHANISM)
+  ├─ Selects: directory location
+  ├─ Creates: worktree with auto-naming
+  ├─ Installs: project dependencies
+  └─ Reports: ready (no test enforcement)
+```
 
 ## Directory Structure
 

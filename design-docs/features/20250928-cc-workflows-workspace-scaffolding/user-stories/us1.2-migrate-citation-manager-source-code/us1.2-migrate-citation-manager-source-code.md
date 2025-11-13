@@ -97,7 +97,7 @@ _Source: [Story 1.2 Acceptance Criteria](../../cc-workflows-workspace-prd.md#Sto
   - **Test**: Source files migrated: 4 files exist at new locations with git history preserved
   - **Commands**: `git status | grep renamed && ls tools/citation-manager/src/*.js | wc -l`
   - _Requirements_: [[#^US1-2AC1|AC1]]
-  - _Leverage_: Git mv preserves history per [Foundation Reuse](../../../../Architecture%20Principles.md#^foundation-reuse) principle
+  - _Leverage_: Git mv preserves history per [Foundation Reuse](../../../../../ARCHITECTURE-PRINCIPLES.md#^foundation-reuse) principle
   - _Implementation Details_: [Will be populated in Phase 4]
 
 ### Task Group 3: Documentation Migration
@@ -204,7 +204,7 @@ This story performs file relocation to establish the citation-manager as a prope
   - **Enables**: Story 1.4 (test migration requires relocated source to establish proper test paths)
 
 - **Technical Constraints**:
-  - [Preserve git history](../../../../Architecture%20Principles.md#^foundation-reuse) via `git mv` operations exclusively
+  - [Preserve git history](../../../../../ARCHITECTURE-PRINCIPLES.md#^foundation-reuse) via `git mv` operations exclusively
   - No code modifications allowed - maintain exact file contents (zero diffs except path)
   - Module import path updates explicitly deferred to Story 1.3 (executable configuration)
   - Test migration explicitly out of scope - deferred to Story 1.4
@@ -214,17 +214,17 @@ This story performs file relocation to establish the citation-manager as a prope
 
 ### Design Principles Adherence
 
-This story must adhere to the following [Design Principles](../../../../Architecture%20Principles.md):
+This story must adhere to the following [Design Principles](../../../../../ARCHITECTURE-PRINCIPLES.md):
 
 **Critical Principles:**
-- [**Foundation Reuse**](../../../../Architecture%20Principles.md#^foundation-reuse) (MVP): Migrating citation-manager into centralized workspace establishes single source of truth for tool development, eliminating duplicated effort across projects
-- [**Replaceable Parts**](../../../../Architecture%20Principles.md#^replaceable-parts) (Modular Design): Each tool maintains self-contained documentation hierarchy within workspace package structure, enabling independent evolution and replacement
-- [**Simplicity First**](../../../../Architecture%20Principles.md#^simplicity-first) (MVP): Pure file relocation without premature refactoring - defer code changes to subsequent stories to minimize risk
-- [**Tool-First Design**](../../../../Architecture%20Principles.md#^tool-first-design) (Deterministic Offloading): Use `git mv` to preserve file history rather than manual copy operations, leveraging deterministic tools for mechanical tasks
+- [**Foundation Reuse**](../../../../../ARCHITECTURE-PRINCIPLES.md#^foundation-reuse) (MVP): Migrating citation-manager into centralized workspace establishes single source of truth for tool development, eliminating duplicated effort across projects
+- [**Replaceable Parts**](../../../../../ARCHITECTURE-PRINCIPLES.md#^replaceable-parts) (Modular Design): Each tool maintains self-contained documentation hierarchy within workspace package structure, enabling independent evolution and replacement
+- [**Simplicity First**](../../../../../ARCHITECTURE-PRINCIPLES.md#^simplicity-first) (MVP): Pure file relocation without premature refactoring - defer code changes to subsequent stories to minimize risk
+- [**Tool-First Design**](../../../../../ARCHITECTURE-PRINCIPLES.md#^tool-first-design) (Deterministic Offloading): Use `git mv` to preserve file history rather than manual copy operations, leveraging deterministic tools for mechanical tasks
 
 **Anti-Patterns to Avoid:**
-- [**Scattered Checks**](../../../../Architecture%20Principles.md#^scattered-checks): Avoid validating migration success through multiple manual checks - create single validation script that verifies all acceptance criteria
-- [**Over-Engineered Structures**](../../../../Architecture%20Principles.md#^over-engineered-structures): Follow established workspace patterns from Story 1.1, don't introduce custom documentation structures or premature organizational complexity
+- [**Scattered Checks**](../../../../../ARCHITECTURE-PRINCIPLES.md#^scattered-checks): Avoid validating migration success through multiple manual checks - create single validation script that verifies all acceptance criteria
+- [**Over-Engineered Structures**](../../../../../ARCHITECTURE-PRINCIPLES.md#^over-engineered-structures): Follow established workspace patterns from Story 1.1, don't introduce custom documentation structures or premature organizational complexity
 
 **Implementation Guidance:**
 - Use `git mv` exclusively for file relocation to preserve complete commit history and attribution
