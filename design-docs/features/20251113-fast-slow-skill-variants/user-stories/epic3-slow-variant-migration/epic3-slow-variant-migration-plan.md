@@ -8,7 +8,7 @@
 
 **Tech Stack:** Markdown documentation, Git worktrees, Claude CLI with --deny-path flag, Bash scripting
 
-**Execution Context:** This plan assumes execution from within a feature worktree (e.g., `.worktrees/feature/skill-testing`). All commands use `MAIN_REPO` variable to reference the actual main repository, and test worktrees are created from the main repo, not from the current feature worktree.
+**Execution Context:** This plan assumes execution from within an implementation worktree (e.g., `.worktrees/feature/skill-testing-fast-slow-variants-worktree`). Test worktrees are created directly from the implementation worktree using `git worktree add .worktrees/testing-skills/scenario-N`, which automatically creates them based on the current implementation branch. All updated skill files are available in test worktrees via git checkout.
 
 ---
 
@@ -112,68 +112,85 @@ IMPORTANT: This is a real scenario. You must choose and act.
 
 ## Worktree Setup
 
+**Execution Context:** These commands run from an implementation worktree (e.g., `.worktrees/feature-branch-worktree`). Test worktrees are created as nested worktrees within the implementation worktree.
+
 ### Creating Test Worktree
 
-**Pattern:** `.worktrees/{skill-name}/scenario-N-{name}` enables concurrent scenario testing
+**Simple approach:** From implementation worktree, create test worktree directly
 
 ```bash
-# Example: Testing the testing-skills-with-subagents skill itself
-git worktree add .worktrees/testing-skills-with-subagents/scenario-0-single-worktree-verification \
-  -b test/testing-skills-with-subagents/scenario-0-single-worktree-verification
+# From implementation worktree, create test worktree
+# Git automatically creates branch based on current implementation branch
+git worktree add .worktrees/testing-skills-with-subagents/scenario-0-single-worktree-verification
+
+# Verify creation
+git worktree list
 ```
 
-**Benefits of scoped naming:**
-- Isolates each scenario in its own worktree
-- Enables concurrent testing of multiple scenarios
-- Clear organization by skill being tested
+**Benefits:**
+- Test worktree inherits all commits from implementation branch (has updated skills)
+- Simple command - no branch name needed
+- Sandbox automatically detects nested worktree
 
 ### Copying Prompt Files
 
 ```bash
-# Copy prompts to make them accessible within sandbox
-cp baseline-prompt.md .worktrees/{skill-name}/scenario-N-{name}/
-cp green-prompt.md .worktrees/{skill-name}/scenario-N-{name}/
+# Copy prompts from implementation worktree to test worktree root
+# Paths are relative to implementation worktree
+cp .claude/skills/{tested-skill}/evals/scenario-N-{name}/baseline-prompt.md \
+  .worktrees/testing-skills-with-subagents/scenario-N-{name}/
+
+cp .claude/skills/{tested-skill}/evals/scenario-N-{name}/green-prompt.md \
+  .worktrees/testing-skills-with-subagents/scenario-N-{name}/
 ```
 
-**Why required:** Sandbox restricts filesystem access; copying into worktree makes prompts accessible.
+**Why required:** Sandbox restricts test worktree to its own directory; prompts must be copied to root for access.
 
 ## Running Tests
+
+**From implementation worktree:** Navigate to test worktree, run tests, logs save to implementation worktree
 
 ### Baseline Test (RED Phase)
 
 ```bash
-# Navigate to worktree
-cd .worktrees/{skill-name}/scenario-N-{name}
+# Navigate to test worktree
+cd .worktrees/testing-skills-with-subagents/scenario-N-{name}
 
-# Run with --deny-path flag to block skill access
-claude --deny-path /absolute/path/to/main-repo/.claude/skills/{tested-skill} \
+# Get absolute path to skill for --deny-path
+SKILL_PATH=$(pwd)/.claude/skills/{tested-skill}
+
+# Create log directory in implementation worktree (relative path)
+mkdir -p ../../.claude/skills/{tested-skill}/evals/scenario-N-{name}/logs
+
+# Run with --deny-path to block skill access
+claude --deny-path "$SKILL_PATH" \
   --output-format stream-json --verbose \
   baseline-prompt.md 2>&1 | tee \
-  /absolute/path/to/main-repo/.claude/skills/{tested-skill}/evals/scenario-N-{name}/logs/baseline.jsonl
+  ../../.claude/skills/{tested-skill}/evals/scenario-N-{name}/logs/baseline.jsonl &
 ```
 
 **Key details:**
-- `--deny-path` blocks skill access (permission denied when agent tries to read)
-- Absolute path to skill ensures correct blocking
-- Logs use absolute path to main repo (persist after cleanup)
-- `tee` writes to file AND stdout (enables monitoring)
+- `--deny-path` uses absolute path to skill in test worktree
+- Logs written to implementation worktree via relative path (`../../`)
+- Logs persist after test worktree cleanup
+- `&` runs in background for monitoring
 
 ### Green Test (GREEN Phase)
 
 ```bash
-# Same worktree, no --deny-path flag
-cd .worktrees/{skill-name}/scenario-N-{name}
+# Same test worktree, no --deny-path flag
+cd .worktrees/testing-skills-with-subagents/scenario-N-{name}
 
 # Run WITHOUT --deny-path to allow skill access
 claude --output-format stream-json --verbose \
   green-prompt.md 2>&1 | tee \
-  /absolute/path/to/main-repo/.claude/skills/{tested-skill}/evals/scenario-N-{name}/logs/green.jsonl
+  ../../.claude/skills/{tested-skill}/evals/scenario-N-{name}/logs/green.jsonl &
 ```
 
 **Key details:**
-- No --deny-path flag → skill accessible via SessionStart hook
+- No --deny-path → skill accessible via SessionStart hook
 - Same worktree as baseline (single worktree approach)
-- Logs to same directory structure as baseline
+- Logs to implementation worktree (persist after cleanup)
 
 ## Cleanup
 
@@ -188,15 +205,14 @@ claude --output-format stream-json --verbose \
 ### Removing Single Scenario Worktree
 
 ```bash
-# Navigate to main repo BEFORE cleanup
-cd /path/to/main-repo
+# From implementation worktree, remove test worktree
+git worktree remove .worktrees/testing-skills-with-subagents/scenario-N-{name}
 
-# Remove worktree
-git worktree remove --force .worktrees/{skill-name}/scenario-N-{name}
-
-# Delete branch
-git branch -D test/{skill-name}/scenario-N-{name}
+# Delete auto-generated branch (uses directory name)
+git branch -D scenario-N-{name}
 ```
+
+**Note:** Must be in implementation worktree to remove nested test worktrees
 
 ### Verifying Cleanup
 
@@ -211,13 +227,14 @@ git branch | grep scenario-N-{name}
 ### Cleanup After Full Test Session
 
 ```bash
-# Remove all scenario worktrees for a skill after session complete
-cd /path/to/main-repo
-git worktree remove --force .worktrees/{skill-name}/scenario-*
-git branch -D test/{skill-name}/scenario-*
+# From implementation worktree, remove all test worktrees for a skill
+git worktree remove .worktrees/testing-skills-with-subagents/scenario-*
+
+# Delete all auto-generated test branches
+git branch -D scenario-*
 ```
 
-**Logs persist:** Log files remain in main repo at `.claude/skills/{tested-skill}/evals/scenario-N-{name}/logs/`
+**Logs persist:** Log files remain in implementation worktree at `.claude/skills/{tested-skill}/evals/scenario-N-{name}/logs/`
 
 ### Step 3: Verify file created
 
@@ -308,8 +325,9 @@ Insert after "## When to Use" section:
 
 **How to create logs:**
 - Determine tested skill name from context
-- Create eval directory: `mkdir -p .claude/skills/{tested-skill}/evals/scenario-N-{name}/logs/`
-- Use absolute paths so logs persist after worktree cleanup
+- From test worktree, create log directory in implementation worktree: `mkdir -p ../../.claude/skills/{tested-skill}/evals/scenario-N-{name}/logs/`
+- Use relative paths (`../../`) to write logs to implementation worktree
+- Logs persist after test worktree cleanup
 - Write to `.jsonl` format for stream-json output compatibility
 ```
 
@@ -325,9 +343,9 @@ Before deploying skill, verify you followed RED-GREEN-REFACTOR:
 **Setup:**
 - [ ] Created eval folder structure (evals/scenario-N-name/)
 - [ ] Created scenario.md file with test metadata
-- [ ] Created logs/ folder for test output
-- [ ] Created single test worktree (`.worktrees/{skill-name}/scenario-N-{name}`)
-- [ ] Copied baseline-prompt.md and green-prompt.md to worktree
+- [ ] Created baseline-prompt.md and green-prompt.md files
+- [ ] Created single test worktree from implementation worktree: `git worktree add .worktrees/testing-skills-with-subagents/scenario-N-{name}`
+- [ ] Copied prompts to test worktree root
 
 **For infrastructure details, see:** [running-isolated-tests.md](../infrastructure/running-isolated-tests.md)
 
@@ -359,10 +377,10 @@ Before deploying skill, verify you followed RED-GREEN-REFACTOR:
 - [ ] Agent follows rule under maximum pressure
 
 **Cleanup:**
-- [ ] Removed worktree (`git worktree remove --force`)
-- [ ] Deleted branch (`git branch -D`)
+- [ ] Removed test worktree (`git worktree remove .worktrees/testing-skills-with-subagents/scenario-N-{name}`)
+- [ ] Deleted auto-generated branch (`git branch -D scenario-N-{name}`)
 - [ ] Verified cleanup (`git worktree list`)
-- [ ] Confirmed logs persist in main repo
+- [ ] Confirmed logs persist in implementation worktree
 
 **For cleanup details, see:** [running-isolated-tests.md](../infrastructure/running-isolated-tests.md)
 ```
@@ -699,52 +717,55 @@ Use `create-git-commit` skill to commit:
 - `.worktrees/testing-skills-with-subagents/scenario-0-single-worktree-verification/` (CREATE via git)
 - `.claude/skills/testing-skills-with-subagents/evals/scenario-0-single-worktree-verification/logs/baseline.jsonl` (CREATE via test)
 
-### Step 1: Create worktree following mechanism file
+### Step 1: Create worktree from implementation worktree
 
 ```bash
-# Get absolute path to main repo (works from feature worktree or main repo)
-MAIN_REPO=$(git rev-parse --show-toplevel 2>/dev/null)
-if [[ -z "$MAIN_REPO" ]]; then
-  # Fallback: get common dir if in worktree
-  MAIN_REPO=$(git rev-parse --git-common-dir 2>/dev/null | xargs dirname)
-fi
+# From implementation worktree, create test worktree
+# Git automatically creates branch based on current implementation branch
+git worktree add .worktrees/testing-skills-with-subagents/scenario-0-single-worktree-verification
 
-echo "Main repo: $MAIN_REPO"
-
-# Navigate to main repo to create worktree
-cd "$MAIN_REPO"
-
-# Create single worktree from main repo
-git worktree add .worktrees/testing-skills-with-subagents/scenario-0-single-worktree-verification \
-  -b test/testing-skills-with-subagents/scenario-0-single-worktree-verification
+# Verify worktree created
+git worktree list
 ```
 
-### Step 2: Copy prompt files to worktree
+**Expected:** New worktree appears in list, based on implementation branch
+
+### Step 2: Copy prompt files to test worktree root
 
 ```bash
-# Copy from main repo to worktree
-cp ${MAIN_REPO}/.claude/skills/testing-skills-with-subagents/evals/scenario-0-single-worktree-verification/baseline-prompt.md \
-  ${MAIN_REPO}/.worktrees/testing-skills-with-subagents/scenario-0-single-worktree-verification/
+# Copy prompts to test worktree root (for sandbox access)
+cp .claude/skills/testing-skills-with-subagents/evals/scenario-0-single-worktree-verification/baseline-prompt.md \
+  .worktrees/testing-skills-with-subagents/scenario-0-single-worktree-verification/
 
-cp ${MAIN_REPO}/.claude/skills/testing-skills-with-subagents/evals/scenario-0-single-worktree-verification/green-prompt.md \
-  ${MAIN_REPO}/.worktrees/testing-skills-with-subagents/scenario-0-single-worktree-verification/
+cp .claude/skills/testing-skills-with-subagents/evals/scenario-0-single-worktree-verification/green-prompt.md \
+  .worktrees/testing-skills-with-subagents/scenario-0-single-worktree-verification/
 ```
+
+**Why:** Sandbox restricts test worktree to its own directory, so prompts must be copied to root
 
 ### Step 3: Run baseline test with --deny-path flag
 
 ```bash
 # Navigate to test worktree
-cd ${MAIN_REPO}/.worktrees/testing-skills-with-subagents/scenario-0-single-worktree-verification
+cd .worktrees/testing-skills-with-subagents/scenario-0-single-worktree-verification
+
+# Get absolute path to skill for --deny-path
+SKILL_PATH=$(pwd)/.claude/skills/testing-skills-with-subagents
+
+# Create log directory in implementation worktree (so logs persist after test worktree cleanup)
+mkdir -p ../../.claude/skills/testing-skills-with-subagents/evals/scenario-0-single-worktree-verification/logs
 
 # Run baseline with --deny-path to block skill access
-claude --deny-path ${MAIN_REPO}/.claude/skills/testing-skills-with-subagents \
+claude --deny-path "$SKILL_PATH" \
   --output-format stream-json --verbose \
   baseline-prompt.md 2>&1 | tee \
-  ${MAIN_REPO}/.claude/skills/testing-skills-with-subagents/evals/scenario-0-single-worktree-verification/logs/baseline.jsonl &
+  ../../.claude/skills/testing-skills-with-subagents/evals/scenario-0-single-worktree-verification/logs/baseline.jsonl &
 
 # Store background job ID
 BASELINE_PID=$!
 ```
+
+**Note:** Logs written to implementation worktree (relative path `../../`) so they persist after test worktree cleanup
 
 ### Step 4: Monitor test execution
 
@@ -760,12 +781,12 @@ sleep 15
 ### Step 5: Verify permission denied in logs
 
 ```bash
-# Return to main repo
-cd ${MAIN_REPO}
+# Return to implementation worktree
+cd ../..
 
 # Check for permission denied when accessing skill
 grep -i "permission denied\|denied" \
-  .claude/skills/testing-skills-with-subagent s/evals/scenario-0-single-worktree-verification/logs/baseline.jsonl
+  .claude/skills/testing-skills-with-subagents/evals/scenario-0-single-worktree-verification/logs/baseline.jsonl
 ```
 
 Expected: Evidence of blocked skill access
@@ -785,12 +806,12 @@ No commit yet - continue to green test
 
 ```bash
 # Navigate to SAME test worktree
-cd ${MAIN_REPO}/.worktrees/testing-skills-with-subagents/scenario-0-single-worktree-verification
+cd .worktrees/testing-skills-with-subagents/scenario-0-single-worktree-verification
 
 # Run green WITHOUT --deny-path to allow skill access
 claude --output-format stream-json --verbose \
   green-prompt.md 2>&1 | tee \
-  ${MAIN_REPO}/.claude/skills/testing-skills-with-subagents/evals/scenario-0-single-worktree-verification/logs/green.jsonl &
+  ../../.claude/skills/testing-skills-with-subagents/evals/scenario-0-single-worktree-verification/logs/green.jsonl &
 
 # Store background job ID
 GREEN_PID=$!
@@ -810,8 +831,8 @@ sleep 15
 ### Step 3: Verify skill accessible in logs
 
 ```bash
-# Return to main repo
-cd ${MAIN_REPO}
+# Return to implementation worktree
+cd ../..
 
 # Check SessionStart hook shows skill loaded
 grep -i "testing-skills-with-subagents" \
@@ -834,25 +855,24 @@ No commit yet - continue to cleanup
 ### Step 1: Verify logs persisted
 
 ```bash
-# Navigate to main repo first
-cd ${MAIN_REPO}
-
 # Should show both baseline.jsonl and green.jsonl
 ls -la .claude/skills/testing-skills-with-subagents/evals/scenario-0-single-worktree-verification/logs/
 ```
 
 Expected: baseline.jsonl and green.jsonl files exist
 
-### Step 2: Remove worktree
+### Step 2: Remove test worktree
 
 ```bash
-git worktree remove --force .worktrees/testing-skills-with-subagents/scenario-0-single-worktree-verification
+# Must use full path for nested worktree removal
+git worktree remove .worktrees/testing-skills-with-subagents/scenario-0-single-worktree-verification
 ```
 
-### Step 3: Delete branch
+### Step 3: Delete test branch
 
 ```bash
-git branch -D test/testing-skills-with-subagents/scenario-0-single-worktree-verification
+# Branch name auto-generated by git (uses directory name)
+git branch -D scenario-0-single-worktree-verification
 ```
 
 ### Step 4: Verify cleanup
