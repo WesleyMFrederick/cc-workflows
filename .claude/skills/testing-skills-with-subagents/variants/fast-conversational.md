@@ -19,9 +19,14 @@ You run scenarios without the skill (RED - watch agent fail), write skill addres
 
 ## Logging (Fast Variant)
 
-This variant uses lightweight conversational logging:
+This variant uses lightweight conversational logging colocated with the skill being tested.
 
-**Log location:** `.claude/skills/testing-skills-with-subagents/logs/YYYYMMDD-HHMMSS-{skill-name}/`
+**Log location:** `.claude/skills/{tested-skill}/logs/YYYYMMDD-HHMMSS-test-session/`
+
+**Determining tested skill:**
+- Read context from conversation: "testing the citation-manager skill" → `{tested-skill}` = `citation-manager`
+- If unclear, ask user which skill is being tested
+- Use skill directory name exactly as it appears in `.claude/skills/`
 
 **What to log:**
 - Scenario text (verbatim)
@@ -30,9 +35,10 @@ This variant uses lightweight conversational logging:
 - Compliance result (pass/fail)
 
 **How to log:**
-- Create log directory at start: `mkdir -p .claude/skills/testing-skills-with-subagents/logs/$(date +%Y%m%d-%H%M%S)-{skill-name}`
+- Determine tested skill name from context
+- Create log directory: `mkdir -p .claude/skills/{tested-skill}/logs/$(date +%Y%m%d-%H%M%S)-test-session`
 - Write results as you go (don't wait until end)
-- One file per scenario: `scenario-01-baseline.md`, `scenario-02-pressure.md`, etc.
+- One file per scenario: `scenario-01-baseline.log`, `scenario-02-baseline.log`, etc.
 
 ## Subagent Invocation Patterns
 
@@ -58,7 +64,7 @@ C) [option C]
 Choose A, B, or C."
 
 **Log capture:**
-1. Create: `logs/YYYYMMDD-HHMMSS-{skill-name}/scenario-01-baseline.log`
+1. Create: `.claude/skills/{tested-skill}/logs/YYYYMMDD-HHMMSS-test-session/scenario-01-baseline.log`
 2. Copy full subagent response verbatim
 3. Note: Option chosen, rationalizations, red flags
 
@@ -84,7 +90,7 @@ C) [option C]
 Choose A, B, or C."
 
 **Log capture:**
-1. Create: `logs/YYYYMMDD-HHMMSS-{skill-name}/scenario-01-green.log`
+1. Create: `.claude/skills/{tested-skill}/logs/YYYYMMDD-HHMMSS-test-session/scenario-01-green.log`
 2. Copy full subagent response verbatim
 3. Note: Compliance vs rationalization, skill sections cited
 
@@ -335,7 +341,7 @@ Control scenario:
 **Example Directory:**
 
 ```text
-logs/20250113-143022-tdd/
+.claude/skills/test-driven-development/logs/20250113-143022-test-session/
 ├── scenario-01-baseline.log
 ├── scenario-01-green.log
 ├── scenario-02-baseline.log
