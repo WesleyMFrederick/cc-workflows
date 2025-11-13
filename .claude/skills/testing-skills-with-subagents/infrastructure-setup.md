@@ -103,7 +103,7 @@ Never tell the subagent to read and extract from scenario.md.
 
 ```bash
 # ❌ This doesn't work
-cco --print "Do NOT use the skill-name skill..."
+claude --print "Do NOT use the skill-name skill..."
 ```
 
 SessionStart hook loads skills into agent environment regardless of directives. Agent can rationalize around "Do NOT use" instructions.

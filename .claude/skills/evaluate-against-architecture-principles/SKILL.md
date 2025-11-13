@@ -1,28 +1,67 @@
 ---
 name: evaluate-against-architecture-principles
-description: Use when reviewing requirements documents, design plans, or implementation plans for architecture compliance - systematically evaluates against all architecture principle categories using citation-manager to extract full context before evaluation
+description: Use when user references architecture principles, at start of fresh conversation with design work, before creating any requirements/design/implementation documents, or when reviewing for compliance - grounds problem framing and solution making in all 9 principle categories using citation-manager to extract full context
 ---
 
 # Evaluate Against Architecture Principles
 
 ## Overview
 
-**Systematic architecture evaluation prevents violations that cause technical debt.** This skill ensures complete, structured evaluation of documents against all architecture principle categories, not just the "obviously relevant" ones.
+**Grounding in architecture principles during creation prevents violations before they happen. Systematic evaluation during review catches what slipped through.**
+
+This skill serves two purposes:
+1. **Before creating**: Read principles to ground problem framing and solution design in all 9 architecture categories
+2. **When reviewing**: Systematically evaluate documents against all architecture principle categories for compliance verification
+
+Both prevent technical debt - grounding prevents violations during creation, evaluation catches them during review.
 
 ## When to Use
 
-Use when evaluating:
-- Requirements documents (PRDs, user stories)
-- Design documents
-- Implementation plans
+Use **BEFORE creating** to ground thinking in principles:
+- **User explicitly references principles** - "using our architecture principles", "following the principles", "check against principles"
+- **Fresh conversation with design work** - Empty context and user requests design, requirements, or architecture work
+- **Any design-type work** - Starting a new requirements document (PRD, user story)
+- Framing a design problem or solution approach
+- Planning implementation tasks or file structure
+- Brainstorming architectural approaches
+
+Use **when reviewing** for compliance verification:
+- Completed requirements documents (PRDs, user stories)
+- Finished design documents
+- Written implementation plans
 - Code review requests for architectural patterns
 
 **Do NOT skip this skill because:**
+- "I'll check principles during review" → Grounding happens during creation, not after
 - "Document seems simple" → Simple docs still need safety, naming, MVP checks
 - "Only need to check MVP principles" → MVP docs still define data models, interfaces
 - "Time pressure" → Systematic evaluation takes 5-10 minutes, prevents weeks of rework
+- "I already know the principles" → Reading refreshes context, prevents blind spots
 
-## Mandatory First Step
+## Workflows
+
+### Workflow: Before Creating
+
+When starting to create a new document:
+
+1. **Read principles** - Read [ARCHITECTURE-PRINCIPLES.md](../../../ARCHITECTURE-PRINCIPLES.md) to refresh all 9 categories
+2. **Internalize context** - Focus on categories relevant to your document type (see Document Type Guidance)
+3. **Create grounded** - Write with principles actively in mind, referencing as needed
+
+**Purpose**: Ground thinking in principles BEFORE structure locks in. Prevents violations from becoming embedded assumptions.
+
+### Workflow: When Reviewing
+
+When evaluating an existing document:
+
+1. **Read principles** - Read [ARCHITECTURE-PRINCIPLES.md](../../../ARCHITECTURE-PRINCIPLES.md)
+2. **Extract citations** - Run `citation-manager extract links <file-path>` to get full context
+3. **Systematic evaluation** - Follow Evaluation Checklist below, checking ALL categories
+4. **Structured output** - Provide evaluation in standard format
+
+**Purpose**: Catch violations systematically before they reach production.
+
+## Mandatory First Step (Review Mode)
 
 <critical-instruction>
 Read [ARCHITECTURE-PRINCIPLES.md](../../../ARCHITECTURE-PRINCIPLES.md)
@@ -135,6 +174,13 @@ Key categories:
 
 | Excuse | Reality |
 |--------|---------|
+| "User said 'principles' but meant generally" | User mentioned principles = trigger to read ARCHITECTURE-PRINCIPLES.md. No exceptions. |
+| "Fresh conversation, I can start directly" | Empty context = read principles first to ground thinking. Don't skip this step. |
+| "User wants quick design, no time for principles" | Fresh conversation with design work = mandatory principles read. 5 min prevents days of rework. |
+| "I'll check principles during review" | Grounding happens during creation. Review catches violations that cost hours to fix. |
+| "I already know the principles" | Reading refreshes all 9 categories, prevents blind spots under pressure. |
+| "Just need to start writing quickly" | 5 min reading principles prevents days of rework. Start grounded. |
+| "Will evaluate after first draft" | First draft locks in structure. Violations become embedded assumptions. |
 | "Only MVP principles are relevant" | MVP docs still define data models, interfaces, naming patterns |
 | "Document labeled 'MVP' = only check MVP" | "MVP" label is WARNING SIGN to check scope violations, not excuse to skip categories |
 | "Not enough detail to evaluate X" | Mark "➖ Not mentioned" and recommend adding detail |

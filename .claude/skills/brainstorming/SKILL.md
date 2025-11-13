@@ -13,6 +13,12 @@ Transform rough ideas into fully-formed designs through structured questioning a
 
 **Announce at start:** "I'm using the brainstorming skill to refine your idea into a design."
 
+## User Interface
+
+<criticial-instruction>
+- Use `AskUserQuestion` tool only when you need the human to make a decision among real alternatives.
+</criticial-instruction>
+
 ## Quick Reference
 
 | Phase                       | Key Activities                   | Tool Usage                               | Output                               |
@@ -21,9 +27,7 @@ Transform rough ideas into fully-formed designs through structured questioning a
 | **1. Understanding**        | Ask questions (one at a time)    | `AskUserQuestion` for choices            | Purpose, constraints, criteria       |
 | **2. Exploration**          | Propose 2-3 approaches           | `AskUserQuestion` for approach selection | Architecture options with trade-offs |
 | **3. Design Presentation**  | Present in 200-300 word sections | Open-ended questions                     | Complete design with validation      |
-| **4. Design Documentation** | Write design document            | `writing-clearly-and-concisely` skill    | Design doc in docs/plans/            |
-| **5. Worktree Setup**       | Set up isolated workspace        | `using-git-worktrees` skill              | Ready development environment        |
-| **6. Planning Handoff**     | Create implementation plan       | `writing-plans` skill                    | Detailed task breakdown              |
+| **4. Design Documentation** | Write design document            | `writing-clearly-and-concisely` skill    | Design doc using project design document conventions            |
 
 ## The Process
 
@@ -35,9 +39,7 @@ Brainstorming Progress:
 - [ ] Phase 1: Understanding (purpose, constraints, criteria gathered)
 - [ ] Phase 2: Exploration (2-3 approaches proposed and evaluated)
 - [ ] Phase 3: Design Presentation (design validated in sections)
-- [ ] Phase 4: Design Documentation (design written to docs/plans/)
-- [ ] Phase 5: Worktree Setup (if implementing)
-- [ ] Phase 6: Planning Handoff (if implementing)
+- [ ] Phase 4: Design Documentation (design written to project design documen folder)
 ```
 
 ### Prep: Autonomous Recon
@@ -49,7 +51,7 @@ Brainstorming Progress:
 ### Phase 1: Understanding
 - Share your synthesized understanding first, then invite corrections or additions.
 - Ask one focused question at a time, only for gaps you cannot close yourself.
-- **Use AskUserQuestion tool** only when you need the human to make a decision among real alternatives.
+- **Use `AskUserQuestion` tool** only when you need the human to make a decision among real alternatives.
 - Gather: Purpose, constraints, success criteria (confirmed or amended by your partner)
 
 **Example summary + targeted question:**

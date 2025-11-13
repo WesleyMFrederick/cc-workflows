@@ -111,6 +111,24 @@ if git rev-parse --git-dir &>/dev/null 2>&1; then
     fi
 fi
 
+# Process denied paths from environment variable
+denied_paths=()
+if [[ -n "${DENY_PATHS:-}" ]]; then
+	echo "🚫 Processing denied paths:" >&2
+	while IFS= read -r path; do
+		[[ -z "$path" ]] && continue
+
+		# Validate path exists (warn if not, but continue - matches CCO)
+		if [[ ! -e "$path" ]]; then
+			echo "   ⚠️  Warning: deny-path doesn't exist: $path" >&2
+		else
+			denied_paths+=("$path")
+			echo "   🚫 Denying access: $path" >&2
+		fi
+	done <<< "$DENY_PATHS"
+	echo "" >&2
+fi
+
 # Detect Claude config directories
 claude_config_dirs=()
 if [[ -n "${CLAUDE_CONFIG_DIR:-}" ]]; then
@@ -132,6 +150,19 @@ trap 'rm -f "$policy_file"' EXIT
 
     # === DENY all file writes by default ===
     echo "(deny file-write*)"
+
+    # === DENY specified paths (read + write) ===
+    for denied_path in "${denied_paths[@]}"; do
+        if [[ -d "$denied_path" ]]; then
+            # Directory: use subpath for recursive denial
+            printf '(deny file-read* (subpath "%s"))\n' "$(escape_path "$denied_path")"
+            printf '(deny file-write* (subpath "%s"))\n' "$(escape_path "$denied_path")"
+        else
+            # File: use literal for exact match
+            printf '(deny file-read* (literal "%s"))\n' "$(escape_path "$denied_path")"
+            printf '(deny file-write* (literal "%s"))\n' "$(escape_path "$denied_path")"
+        fi
+    done
 
     # === ALLOW writes to specific locations ===
 

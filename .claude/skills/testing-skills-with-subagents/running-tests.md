@@ -1,6 +1,8 @@
-# Running Tests with cco Sandbox
+# Running Tests with Local Sandbox Wrapper
 
 This file covers the execution mechanics for running skill tests: extracting instructions to prompt files, copying prompts to worktrees, running baseline/green tests, monitoring execution, and maintaining prompt isolation.
+
+**Note**: This skill uses the local `conditional-claude.sh` wrapper (invoked as `claude`) which automatically sandboxes Claude Code in git worktrees. The `--deny-path` flag is now supported in the local wrapper (see `packages/sandbox/design-docs/features/20251113-deny-path-support-requirements.md`).
 
 ## Contents
 
@@ -28,7 +30,7 @@ Before running tests, extract the "## Instructions for Sub-Agent" section and cr
 
 ## Copying Prompt Files to Worktrees
 
-**CRITICAL:** The cco sandbox restricts filesystem access. You MUST copy prompt files into each worktree:
+**CRITICAL:** The local sandbox wrapper restricts filesystem access. You MUST copy prompt files into each worktree:
 
 ```bash
 # Copy baseline prompt to baseline worktree
@@ -39,7 +41,7 @@ cp .claude/skills/skill-name/evals/scenario-N/green-prompt.md .worktrees/scenari
 ```
 
 **Why this is required:**
-- Native cco sandbox blocks access to files outside worktree directory
+- Native sandbox blocks access to files outside worktree directory
 - Using `--deny-path` for skill files makes sandbox more restrictive
 - Copying prompt files into worktree makes them accessible to sandboxed agent
 
@@ -49,13 +51,13 @@ Run from baseline fixture using **local prompt file** and **absolute path** for 
 
 ```bash
 cd .worktrees/scenario-N-baseline
-cco --deny-path /absolute/path/to/main-repo/.claude/skills/skill-being-tested \
+claude --deny-path /absolute/path/to/main-repo/.claude/skills/skill-being-tested \
   --output-format stream-json --verbose \
   baseline-prompt.md 2>&1 | \
   tee /absolute/path/to/main-repo/.claude/skills/skill-name/evals/scenario-N/logs/baseline-YYYY-MM-DD.jsonl
 ```
 
-**CRITICAL:** Use `--deny-path` to prevent the agent from reading the skill file directly via Read tool. Native cco sandbox exposes entire host filesystem as read-only by default.
+**CRITICAL:** Use `--deny-path` to prevent the agent from reading the skill file directly via Read tool. Native sandbox exposes entire host filesystem as read-only by default.
 
 **Why this approach:**
 - Prompt file is local to worktree (accessible within sandbox)
@@ -79,7 +81,7 @@ Run from green fixture (skill present) using **local prompt file**:
 
 ```bash
 cd .worktrees/scenario-N-green
-cco --output-format stream-json --verbose \
+claude --output-format stream-json --verbose \
   green-prompt.md 2>&1 | \
   tee /absolute/path/to/main-repo/.claude/skills/skill-name/evals/scenario-N/logs/green-YYYY-MM-DD.jsonl
 ```
@@ -93,7 +95,7 @@ cco --output-format stream-json --verbose \
 **Workflow:**
 
 ```bash
-# After launching cco in background:
+# After launching claude in background:
 sleep 15  # Wait for initial agent actions
 # Check output with BashOutput
 sleep 15  # Continue waiting for more actions
@@ -102,7 +104,7 @@ sleep 15  # Continue waiting for more actions
 ```
 
 **Why this is required:**
-- Background cco processes run asynchronously
+- Background claude processes run asynchronously
 - You need to capture agent's actual choices and rationalizations
 - Checking too early misses critical behavior
 - Checking too late wastes time
@@ -116,7 +118,7 @@ sleep 15  # Continue waiting for more actions
 ```bash
 # Launch baseline test in background
 cd .worktrees/scenario-N-baseline
-cco --output-format stream-json --verbose baseline-prompt.md 2>&1 | \
+claude --output-format stream-json --verbose baseline-prompt.md 2>&1 | \
   tee /path/to/logs/baseline.jsonl &
 
 # Wait and monitor
@@ -131,8 +133,8 @@ sleep 15
 **NEVER do this (contaminated):**
 
 ```bash
-cco scenario.md  # Contains test metadata
-cco --print "Read scenario.md, extract the Instructions section..."
+claude scenario.md  # Contains test metadata
+claude --print "Read scenario.md, extract the Instructions section..."
 ```
 
 ❌ Subagent sees metadata, knows it's being tested
@@ -141,13 +143,14 @@ cco --print "Read scenario.md, extract the Instructions section..."
 
 ```bash
 # You extract instructions to prompt.md first, then pass that file
-cco /absolute/path/to/prompt.md
+claude /absolute/path/to/prompt.md
 ```
 
 ✅ Subagent sees only the pressure scenario from prompt.md
 
 ## Reference Documentation
 
-See these files for cco command syntax:
-- [cco-sandbox-reference.md](cco-sandbox-reference.md)
+See these files for command syntax:
 - [anthropic-cli-commands-reference.md](anthropic-cli-commands-reference.md)
+- [cco-sandbox-reference.md](cco-sandbox-reference.md) - Reference for CCO (external tool, for comparison only)
+- Local sandbox wrapper: `packages/sandbox/design-docs/features/20251113-deny-path-support-requirements.md`

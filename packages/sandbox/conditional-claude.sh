@@ -32,6 +32,62 @@ find_real_claude() {
 	return 1
 }
 
+# Convert relative path to absolute path
+abs_path() {
+	local p="$1"
+	# Expand tilde
+	if [[ "$p" == "~"* ]]; then
+		p="${p/#\~/$HOME}"
+	fi
+	# Convert to absolute
+	if [[ -e "$p" ]]; then
+		if [[ -d "$p" ]]; then
+			(cd "$p" && pwd -P)
+		else
+			(cd "$(dirname "$p")" && printf '%s/%s\n' "$(pwd -P)" "$(basename "$p")")
+		fi
+	else
+		echo "$p"  # Return as-is if doesn't exist
+	fi
+}
+
+# Parse --deny-path flags from arguments
+# Returns: Sets DENY_PATHS env var, populates remaining_args array
+parse_deny_paths() {
+	local deny_paths=()
+	remaining_args=()
+
+	while [[ $# -gt 0 ]]; do
+		case "$1" in
+			--deny-path)
+				# Check for missing argument
+				if [[ -z "${2:-}" ]]; then
+					echo "Error: --deny-path requires a path argument" >&2
+					exit 1
+				fi
+				# Resolve to absolute path and add to array
+				deny_paths+=("$(abs_path "$2")")
+				shift 2
+				;;
+			--deny-path=*)
+				# Extract path after = and resolve
+				deny_paths+=("$(abs_path "${1#--deny-path=}")")
+				shift
+				;;
+			*)
+				# Not a deny-path flag, keep for Claude
+				remaining_args+=("$1")
+				shift
+				;;
+		esac
+	done
+
+	# Export as newline-separated string
+	if [[ ${#deny_paths[@]} -gt 0 ]]; then
+		export DENY_PATHS="$(printf '%s\n' "${deny_paths[@]}")"
+	fi
+}
+
 # Detect if running in a git worktree
 # Returns 0 if worktree detected, 1 if not in git repo
 detect_worktree() {
@@ -69,6 +125,9 @@ detect_worktree() {
 	return 1
 }
 
+# Parse deny-path flags
+parse_deny_paths "$@"
+
 # Main logic
 if detect_worktree; then
 	echo "🔍 Detected git worktree" >&2
@@ -88,12 +147,12 @@ if detect_worktree; then
 	fi
 	script_dir="$(cd "$(dirname "$script_path")" && pwd)"
 	export REAL_CLAUDE_PATH="$real_claude"
-	exec "$script_dir/claude-worktree-sandbox.sh" "$@"
+	exec "$script_dir/claude-worktree-sandbox.sh" "${remaining_args[@]}"
 else
 	# Route to real claude binary
 	real_claude=$(find_real_claude) || {
 		echo "❌ Real Claude binary not found in PATH" >&2
 		exit 127
 	}
-	exec "$real_claude" "$@"
+	exec "$real_claude" "${remaining_args[@]}"
 fi

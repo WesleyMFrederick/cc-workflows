@@ -269,7 +269,7 @@ Before deploying skill, verify you followed RED-GREEN-REFACTOR:
 - [ ] Created baseline-prompt.md WITHOUT "Use skill" directive
 - [ ] Copied baseline-prompt.md to baseline worktree
 - [ ] Changed to baseline fixture (`cd .worktrees/scenario-N-baseline`)
-- [ ] Ran cco with local prompt: `cco baseline-prompt.md 2>&1 | tee /absolute/path/to/main-repo/.claude/skills/.../logs/baseline.jsonl`
+- [ ] Ran claude with local prompt: `claude baseline-prompt.md 2>&1 | tee /absolute/path/to/main-repo/.claude/skills/.../logs/baseline.jsonl`
 - [ ] Verified SessionStart hook shows skill NOT in skills list
 - [ ] Documented agent failures and rationalizations verbatim
 
@@ -278,7 +278,7 @@ Before deploying skill, verify you followed RED-GREEN-REFACTOR:
 - [ ] Created green-prompt.md WITH "Use skill" directive
 - [ ] Copied green-prompt.md to green worktree
 - [ ] Changed to green fixture (`cd .worktrees/scenario-N-green`)
-- [ ] Ran cco with local prompt: `cco green-prompt.md 2>&1 | tee /absolute/path/to/main-repo/.claude/skills/.../logs/green.jsonl`
+- [ ] Ran claude with local prompt: `claude green-prompt.md 2>&1 | tee /absolute/path/to/main-repo/.claude/skills/.../logs/green.jsonl`
 - [ ] Verified SessionStart hook shows skill IS in skills list
 - [ ] Agent now complies
 
