@@ -335,6 +335,24 @@ _Depends On_: [[#Story 2.1 Implement Fast Variant Core Process|Story 2.1]]
 _Functional Requirements_: [[#^FR9|FR9]]
 _Non-Functional Requirements_: [[#^NFR6|NFR6]]
 
+### Story 2.3: Dynamic Logging Location for Tested Skills
+
+**As a** skill maintainer testing a skill with fast variant,
+**I want** test logs colocated with the skill being tested,
+**so that** test artifacts and skill implementation live together.
+
+#### Acceptance Criteria
+
+1. WHEN the fast variant tests a skill, THEN logs SHALL be saved to `.claude/skills/{tested-skill}/logs/YYYYMMDD-HHMMSS-test-session/`. ^US2-3AC1
+2. WHEN the fast variant is invoked, THEN it SHALL detect which skill is being tested from context. ^US2-3AC2
+3. WHEN logs are created, THEN they SHALL maintain the same structure (baseline/green log files) within the tested skill's directory. ^US2-3AC3
+4. WHEN reviewing test results, THEN the tester SHALL find all test artifacts colocated with the skill being tested. ^US2-3AC4
+
+_Depends On_: [[#Story 2.1 Implement Fast Variant Core Process|Story 2.1]]
+_Functional Requirements_: [[#^FR6|FR6]], [[#^FR10|FR10]], [[#^FR11|FR11]]
+_Non-Functional Requirements_: [[#^NFR1|NFR1]]
+_GitHub Issue_: [#11](https://github.com/WesleyMFrederick/cc-workflows/issues/11)
+
 ## Epic 3 - Slow Variant Implementation
 
 Implement the slow variant with worktree isolation, full infrastructure, and rigorous validation.
