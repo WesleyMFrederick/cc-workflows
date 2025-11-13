@@ -45,28 +45,31 @@ markdownlint "**/*.md" --fix
 
 ```bash
 # Validate citations in a file
-npm run citation:validate <file-path>
+citation-manager validate <file-path>
 
 # Validate with JSON output
-npm run citation:validate <file-path> -- --format json
+citation-manager validate <file-path> --format json
 
 # Validate specific line range
-npm run citation:validate <file-path> -- --lines 150-160
+citation-manager validate <file-path> --lines 150-160
 
-# Validate with folder scope
-npm run citation:validate <file-path> -- --scope /path/to/docs
+# Validate with folder scope and auto-fix
+citation-manager validate <file-path> --fix --scope /path/to/docs
 
-# Auto-fix citation issues
-npm run citation:fix <file-path>
+# Extract content from all citations in a file
+citation-manager extract links <file-path>
 
-# Parse and display AST
-npm run citation:ast <file-path>
+# Extract with full file content (not just sections)
+citation-manager extract links <file-path> --full-files
 
-# Get base paths from citations
-npm run citation:base-paths <file-path>
+# Extract specific header section from a file
+citation-manager extract header <file-path> "Header Name"
 
-# Get base paths as JSON
-npm run citation:base-paths <file-path> -- --format json
+# Extract entire file content
+citation-manager extract file <file-path>
+
+# Display AST for debugging
+citation-manager ast <file-path>
 ```
 
 ## Mock Tool

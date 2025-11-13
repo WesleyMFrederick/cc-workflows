@@ -277,12 +277,14 @@ tools/citation-manager/
 │   └── features/                     # Tool-specific features
 │       └── {{YYYYMMDD}}-{{feature-name}}/
 │           ├── {{feature-name}}-prd.md              # Feature PRD
-│           ├── {{feature-name}}-architecture.md     # Feature architecture
+│           ├── {{feature-name}}-design-plan.md      # Feature architecture and design plan
+│           ├── {{feature-name}}-implement-plan.md   # (Optional) For smaller features that don't need epics and user stories
 │           ├── research/                            # Feature research
-│           └── user-stories/                        # User stories
+│           └── user-stories/                        # (Optional) For larger features that require user stories
 │               └── us{{X.Y}}-{{story-name}}/
 │                   ├── us{{X.Y}}-{{story-name}}.md
-│                   └── tasks/                       # Task implementation details
+│                   └── us{{X.Y}}-{{story-name}}-design-plan.md   # Design plan that bridges generic requirements to specific architectural and technical details
+│                   └── us{{X.Y}}-{{story-name}}-implement-plan.md   # Technical implement and psuedocode of design plan
 ├── src/                              # Source code
 ├── test/                             # Tests
 ├── README.md                         # Quick start and tool summary

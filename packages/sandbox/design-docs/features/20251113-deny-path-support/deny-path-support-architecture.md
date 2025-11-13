@@ -348,15 +348,15 @@ claude --deny-path ~/.ssh "show git status"
 
 ## Implementation Checklist
 
-- [ ] Add `abs_path()` function to conditional-claude.sh
-- [ ] Add `parse_deny_paths()` function to conditional-claude.sh
-- [ ] Modify main execution block to use `remaining_args`
-- [ ] Add deny-path processing block to claude-worktree-sandbox.sh
-- [ ] Add deny rules to Seatbelt policy generation
-- [ ] Run Test 1: Deny skill file access
-- [ ] Run Test 2: Missing argument error handling
-- [ ] Run Test 3: Transparent outside worktree
-- [ ] Update documentation references
+- [x] Add `abs_path()` function to conditional-claude.sh
+- [x] Add `parse_deny_paths()` function to conditional-claude.sh
+- [x] Modify main execution block to use `remaining_args`
+- [x] Add deny-path processing block to claude-worktree-sandbox.sh
+- [x] Add deny rules to Seatbelt policy generation
+- [x] Run Test 1: Deny skill file access
+- [x] Run Test 2: Missing argument error handling
+- [x] Run Test 3: Transparent outside worktree
+- [x] Update documentation references
 
 ## Success Criteria
 

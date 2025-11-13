@@ -5,6 +5,11 @@ description: Use when creating or developing anything, before writing code or im
 
 # Brainstorming Ideas Into Designs
 
+## Inputs
+<critical-instructions>
+- Gather context on project file/folder conventions by using `citation-manager extract header` tool on `ARCHITECTURE.md` in root, header = "Code Organization and Structure"
+</critical-instructions>
+
 ## Overview
 
 Transform rough ideas into fully-formed designs through structured questioning and alternative exploration.
