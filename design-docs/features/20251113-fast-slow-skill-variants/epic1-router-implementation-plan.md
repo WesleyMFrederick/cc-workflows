@@ -465,7 +465,7 @@ Use `create-git-commit` skill to commit
 
 ---
 
-## Task 9 - Implement Context Question
+## Task 9 - Implement Variant Question
 
 ### Files
 - `.claude/skills/testing-skills-with-subagents/SKILL.md` (MODIFY)
@@ -473,42 +473,7 @@ Use `create-git-commit` skill to commit
 ### Step 1: Add Step 1 section after Workflow
 
 ```markdown
-## Step 1: Identify Testing Context
-
-<critical-instruction>
-Use the AskUserQuestion tool with these exact parameters:
-</critical-instruction>
-
-**Question:** "What's your testing context?"
-
-**Options:**
-1. **"New skill (never tested before)"** - First-time testing, establishing baseline
-2. **"Iterating on existing skill (failed previous test)"** - Refining after failures, closing loopholes
-3. **"Final validation (before deployment)"** - Pre-deployment verification, high confidence needed
-4. **"Regression test (skill changed, re-verify)"** - Skill modified, ensuring still works
-
-**Purpose:** Context helps you understand the user's goal but does NOT automatically select variant. User makes explicit choice in Step 2.
-```
-
-### Step 2: Verify section added
-
-Run: `grep -A 15 "Step 1: Identify Testing Context" .claude/skills/testing-skills-with-subagents/SKILL.md`
-Expected: Output shows complete Step 1 with all 4 options
-
-### Step 3: Commit
-Use `create-git-commit` skill to commit
-
----
-
-## Task 10 - Implement Variant Question
-
-### Files
-- `.claude/skills/testing-skills-with-subagents/SKILL.md` (MODIFY)
-
-### Step 1: Add Step 2 section after Step 1
-
-```markdown
-## Step 2: Choose Testing Variant
+## Step 1: Choose Testing Variant
 
 <critical-instruction>
 Use the AskUserQuestion tool with these exact parameters:
@@ -532,26 +497,26 @@ Use the AskUserQuestion tool with these exact parameters:
 
 ### Step 2: Verify section added
 
-Run: `grep -A 20 "Step 2: Choose Testing Variant" .claude/skills/testing-skills-with-subagents/SKILL.md`
-Expected: Output shows complete Step 2 with trade-offs table
+Run: `grep -A 20 "Step 1: Choose Testing Variant" .claude/skills/testing-skills-with-subagents/SKILL.md`
+Expected: Output shows complete Step 1 with trade-offs table
 
 ### Step 3: Commit
 Use `create-git-commit` skill to commit
 
 ---
 
-## Task 11 - Implement Routing Logic
+## Task 10 - Implement Routing Logic
 
 ### Files
 - `.claude/skills/testing-skills-with-subagents/SKILL.md` (MODIFY)
 
-### Step 1: Add Step 3 section after Step 2
+### Step 1: Add Step 2 section after Step 1
 
 ```markdown
-## Step 3: Execute Selected Variant
+## Step 2: Execute Selected Variant
 
 <critical-instruction>
-Based on the user's variant choice from Step 2:
+Based on the user's variant choice from Step 1:
 
 **IF user selected "Fast: Conversational testing":**
 - Read the file: [variants/fast-conversational.md](variants/fast-conversational.md)
@@ -569,7 +534,7 @@ Do NOT proceed without reading the selected variant file.
 
 ### Step 2: Verify routing section added
 
-Run: `grep -A 15 "Step 3: Execute Selected Variant" .claude/skills/testing-skills-with-subagents/SKILL.md`
+Run: `grep -A 15 "Step 2: Execute Selected Variant" .claude/skills/testing-skills-with-subagents/SKILL.md`
 Expected: Output shows complete routing logic with critical instructions
 
 ### Step 3: Commit
@@ -577,7 +542,7 @@ Use `create-git-commit` skill to commit
 
 ---
 
-## Task 12 - Add Error Handling
+## Task 11 - Add Error Handling
 
 ### Files
 - `.claude/skills/testing-skills-with-subagents/SKILL.md` (MODIFY)
@@ -619,7 +584,7 @@ Use `create-git-commit` skill to commit
 
 ---
 
-## Task 13 - Test Fast Variant Selection
+## Task 12 - Test Fast Variant Selection
 
 ### Files
 - None (testing only)
@@ -654,7 +619,7 @@ Use `create-git-commit` skill to commit
 
 ---
 
-## Task 14 - Test Slow Variant Selection
+## Task 13 - Test Slow Variant Selection
 
 ### Files
 - None (testing only)
@@ -689,7 +654,7 @@ Use `create-git-commit` skill to commit
 
 ---
 
-## Task 15 - Test Error Handling
+## Task 14 - Test Error Handling
 
 ### Files
 - `.claude/skills/testing-skills-with-subagents/variants/fast-conversational.md` (TEMPORARILY RENAME)
@@ -731,7 +696,7 @@ Use `create-git-commit` skill to commit
 
 ---
 
-## Task 16 - Verify Shared Content Links
+## Task 15 - Verify Shared Content Links
 
 ### Files
 - `.claude/skills/testing-skills-with-subagents/variants/fast-conversational.md` (READ)
@@ -788,10 +753,10 @@ Use `create-git-commit` skill to commit
 
 ## Execution Complete
 
-All 16 tasks completed. The router implementation is now ready for use.
+All 15 tasks completed. The router implementation is now ready for use.
 
 **What was built:**
-- Router SKILL.md with sequential questions and Mermaid workflow diagram
+- Router SKILL.md with single variant question and Mermaid workflow diagram
 - Variant files (fast and slow) with proper references
 - Shared content (pressure scenarios and rationalization patterns)
 - Complete test coverage (fast selection, slow selection, error handling)

@@ -9,7 +9,7 @@
 
 Add fast and slow testing variants to the testing-skills-with-subagents skill to support different testing workflows. The fast variant enables rapid iteration through conversational testing with subagents and lightweight logging, while the slow variant provides rigorous validation through worktree-based isolation and full infrastructure.
 
-**Solution**: Create an explicit choice router in the main SKILL.md that asks users two questions (context + variant choice), then routes to the appropriate variant implementation file. Both variants share common content (pressure scenarios, rationalization patterns) while implementing distinct testing approaches.
+**Solution**: Create an explicit choice router in the main SKILL.md that asks users to choose between fast and slow variants, then routes to the appropriate variant implementation file. Both variants share common content (pressure scenarios, rationalization patterns) while implementing distinct testing approaches.
 
 **Impact**: Enables developers to choose appropriate testing rigor based on development phase - fast iteration during skill development, rigorous validation before deployment - with clear trade-offs documented and explicit user control.
 
@@ -36,11 +36,10 @@ This requirements document depends on the following context:
 
 ### Router Functionality
 
-- **FR1**: The main SKILL.md SHALL use AskUserQuestion tool to present two sequential questions. ^FR1
-- **FR2**: The first question SHALL ask for testing context with options: "New skill", "Iterating on existing", "Final validation", "Regression test". ^FR2
-- **FR3**: The second question SHALL ask for variant choice with options: "Fast: Conversational testing" and "Slow: Worktree-based testing". ^FR3
-- **FR4**: The router SHALL include the selected variant's content after receiving user answers. ^FR4
-- **FR5**: The router SHALL NOT make automatic routing decisions based on context analysis. ^FR5
+- **FR1**: The main SKILL.md SHALL use AskUserQuestion tool to present variant choice question. ^FR1
+- **FR2**: The question SHALL ask for variant choice with options: "Fast: Conversational testing" and "Slow: Worktree-based testing". ^FR2
+- **FR3**: The router SHALL include the selected variant's content after receiving user answer. ^FR3
+- **FR4**: The router SHALL NOT make automatic routing decisions. ^FR4
 
 ### Fast Variant Requirements
 
@@ -107,18 +106,7 @@ Based on the brainstorming session, we selected an explicit choice router patter
 **Main SKILL.md orchestrates:**
 
 1. **Skill announces usage** (per brainstorming skill pattern)
-2. **First question - Context/Scope:**
-
-   ```yaml
-   Question: "What's your testing context?"
-   Options:
-     - "New skill (never tested before)"
-     - "Iterating on existing skill (failed previous test)"
-     - "Final validation (before deployment)"
-     - "Regression test (skill changed, re-verify)"
-   ```
-
-3. **Second question - Variant choice:**
+2. **Variant choice question:**
 
    ```yaml
    Question: "Which testing variant do you want to use?"
@@ -127,14 +115,14 @@ Based on the brainstorming session, we selected an explicit choice router patter
      - "Slow: Worktree-based isolated testing (rigorous validation)"
    ```
 
-4. **Route to variant file** - Include selected variant content
-5. **Variant executes** its full RED-GREEN-REFACTOR process
+3. **Route to variant file** - Include selected variant content
+4. **Variant executes** its full RED-GREEN-REFACTOR process
 
 ### Router Responsibilities
 
 **SKILL.md handles:**
 - Announce skill usage
-- Ask two questions (scope + variant)
+- Ask variant choice question
 - Route to appropriate variant
 - **Does NOT**: Make automatic decisions, analyze context, or inject logic
 
@@ -228,11 +216,11 @@ logs/20250113-143022-tdd-skill/
 - No "magic" that could route incorrectly
 - Aligns with project's preference for explicit over implicit
 
-**Why two questions instead of one combined?**
-- Separates concerns: context vs. method
-- Easier to add more contexts without expanding variant options
-- Clearer logging: "Context: X, Variant: Y"
-- First question primes thinking about goal
+**Why single question instead of multiple?**
+- User knows what they need (fast iteration vs rigorous validation)
+- Reduces friction - get to testing faster
+- Variant descriptions contain enough information to choose appropriately
+- Simpler implementation and user experience
 
 **Why control scenarios for fast variant?**
 - Mitigates test pollution (performative vs. genuine compliance)
@@ -259,30 +247,29 @@ logs/20250113-143022-tdd-skill/
 - Becomes `variants/fast-conversational.md`
 
 **New main SKILL.md:**
-- Implements router with two AskUserQuestion calls
+- Implements router with single AskUserQuestion call
 - Routes to variants based on explicit choice
 - Minimal orchestration logic
 
 ## Epic 1 - Router Implementation
 
-Implement the main SKILL.md router that presents context and variant questions, then routes to the appropriate variant file.
+Implement the main SKILL.md router that presents variant choice question, then routes to the appropriate variant file.
 
 ### Story 1.1: Create Router with Question Flow
 
 **As a** skill tester,
-**I want** the skill to ask me context and variant questions,
+**I want** the skill to ask me which variant to use,
 **so that** I can explicitly choose the appropriate testing approach.
 
 #### Acceptance Criteria
 
 1. WHEN I invoke the skill, THEN it SHALL announce "I'm using the testing-skills-with-subagents skill". ^US1-1AC1
-2. WHEN the skill starts, THEN it SHALL present the context question with 4 options via AskUserQuestion tool. ^US1-1AC2
-3. AFTER I answer the context question, THEN it SHALL present the variant question with 2 options via AskUserQuestion tool. ^US1-1AC3
-4. WHEN I select a variant, THEN the skill SHALL include the content from the selected variant file. ^US1-1AC4
-5. IF the variant file doesn't exist, THEN the skill SHALL display a clear error message. ^US1-1AC5
+2. WHEN the skill starts, THEN it SHALL present the variant question with 2 options via AskUserQuestion tool. ^US1-1AC2
+3. WHEN I select a variant, THEN the skill SHALL include the content from the selected variant file. ^US1-1AC3
+4. IF the variant file doesn't exist, THEN the skill SHALL display a clear error message. ^US1-1AC4
 
 _Depends On_: None
-_Functional Requirements_: [[#^FR1|FR1]], [[#^FR2|FR2]], [[#^FR3|FR3]], [[#^FR4|FR4]], [[#^FR5|FR5]]
+_Functional Requirements_: [[#^FR1|FR1]], [[#^FR2|FR2]], [[#^FR3|FR3]], [[#^FR4|FR4]]
 _Non-Functional Requirements_: [[#^NFR2|NFR2]], [[#^NFR8|NFR8]]
 
 ### Story 1.2: Create Variant Directory Structure

@@ -8,13 +8,13 @@
 
 ## Overview
 
-Implement the main SKILL.md router that presents context and variant questions using two sequential AskUserQuestion calls, then directs the LLM to read the appropriate variant file. The router enforces workflow with a Mermaid flowchart to ensure proper sequencing and prevent skipping steps.
+Implement the main SKILL.md router that presents a variant choice question using AskUserQuestion, then directs the LLM to read the appropriate variant file. The router enforces workflow with a Mermaid flowchart to ensure proper sequencing and prevent skipping steps.
 
-**Primary Use Case:** Enable skill testers to explicitly choose between fast conversational testing (15-30 min iteration) and slow isolated testing (45-90 min deployment validation) based on their testing context and time constraints.
+**Primary Use Case:** Enable skill testers to explicitly choose between fast conversational testing (15-30 min iteration) and slow isolated testing (45-90 min deployment validation) based on their time constraints and validation needs.
 
 ## Architecture Decision
 
-**Selected Approach:** Sequential AskUserQuestion with directive-based routing
+**Selected Approach:** Single AskUserQuestion with directive-based routing
 
 **Rationale (Architecture Evaluation Results):**
 
@@ -89,65 +89,37 @@ Follow this workflow exactly - do not skip steps:
 ````mermaid
 graph TD
     a@{ shape: stadium, label: "Start: Announce Skill Usage" }
-    b@{ shape: rect, label: "Ask Context Question" }
-    c@{ shape: rect, label: "Ask Variant Question" }
-    d@{ shape: diam, label: "Variant Choice?" }
-    e@{ shape: rect, label: "Read variants/fast-conversational.md" }
-    f@{ shape: rect, label: "Read variants/slow-isolated.md" }
-    g@{ shape: stadium, label: "Execute Variant Workflow" }
+    b@{ shape: rect, label: "Ask Variant Question" }
+    c@{ shape: diam, label: "Variant Choice?" }
+    d@{ shape: rect, label: "Read variants/fast-conversational.md" }
+    e@{ shape: rect, label: "Read variants/slow-isolated.md" }
+    f@{ shape: stadium, label: "Execute Variant Workflow" }
 
     a --> b
     b --> c
-    c --> d
-    d -->|Fast| e
-    d -->|Slow| f
-    e --> g
-    f --> g
+    c -->|Fast| d
+    c -->|Slow| e
+    d --> f
+    e --> f
 
     classDef start fill:#ccffcc
     classDef decision fill:#ffffcc
     classDef action fill:#ccccff
 
     a:::start
-    d:::decision
+    c:::decision
     b:::action
-    c:::action
+    d:::action
     e:::action
-    f:::action
-    g:::start
+    f:::start
 ````
 
-**Design Rationale:** Mermaid flowchart provides visual enforcement of workflow sequence, preventing LLM from skipping announcement or questions.
+**Design Rationale:** Mermaid flowchart provides visual enforcement of workflow sequence, preventing LLM from skipping announcement or question.
 
-#### Section 3: Context Question
-
-```markdown
-## Step 1: Identify Testing Context
-
-<critical-instruction>
-Use the AskUserQuestion tool with these exact parameters:
-</critical-instruction>
-
-**Question:** "What's your testing context?"
-
-**Options:**
-1. **"New skill (never tested before)"** - First-time testing, establishing baseline
-2. **"Iterating on existing skill (failed previous test)"** - Refining after failures, closing loopholes
-3. **"Final validation (before deployment)"** - Pre-deployment verification, high confidence needed
-4. **"Regression test (skill changed, re-verify)"** - Skill modified, ensuring still works
-
-**Purpose:** Context helps you understand the user's goal but does NOT automatically select variant. User makes explicit choice in Step 2.
-```
-
-**Design Notes:**
-- Four options cover complete testing lifecycle
-- Descriptions provide clarity without being verbose
-- Context is informational only - routing happens in Step 2
-
-#### Section 4: Variant Question
+#### Section 3: Variant Question
 
 ```markdown
-## Step 2: Choose Testing Variant
+## Step 1: Choose Testing Variant
 
 <critical-instruction>
 Use the AskUserQuestion tool with these exact parameters:
@@ -174,13 +146,13 @@ Use the AskUserQuestion tool with these exact parameters:
 - Trade-off table helps user make informed choice
 - No automatic routing - user has full control
 
-#### Section 5: Routing with Critical Instructions
+#### Section 4: Routing with Critical Instructions
 
 ```markdown
-## Step 3: Execute Selected Variant
+## Step 2: Execute Selected Variant
 
 <critical-instruction>
-Based on the user's variant choice from Step 2:
+Based on the user's variant choice from Step 1:
 
 **IF user selected "Fast: Conversational testing":**
 - Read the file: [variants/fast-conversational.md](variants/fast-conversational.md)
