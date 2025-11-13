@@ -54,18 +54,26 @@ This requirements document depends on the following context:
 ### Slow Variant Requirements
 
 - **FR13**: The slow variant SHALL create eval directories in `evals/scenario-N-{name}/` format. ^FR13
-- **FR14**: The slow variant SHALL create baseline worktrees using `git worktree add .worktrees/scenario-N-baseline`. ^FR14
-- **FR15**: The slow variant SHALL create green worktrees using `git worktree add .worktrees/scenario-N-green`. ^FR15
-- **FR16**: The slow variant SHALL remove the skill being tested from baseline worktrees. ^FR16
-- **FR17**: The slow variant SHALL verify skill presence/absence via SessionStart hook output. ^FR17
+- **FR14**: The slow variant SHALL create test worktrees using `.worktrees/{skill-name}/scenario-N-{name}` pattern. ^FR14
+- **FR16**: The slow variant SHALL use --deny-path flag to block skill access during baseline tests. ^FR16
+- **FR17**: The slow variant SHALL verify skill accessibility by observing permission denied errors (baseline) or successful access (green). ^FR17
 - **FR18**: The slow variant SHALL run Claude in isolated worktrees with logs piped to main repo. ^FR18
 - **FR19**: The slow variant SHALL provide cleanup commands to remove worktrees and branches after testing. ^FR19
+- **FR23**: The slow variant SHALL use a single worktree for both baseline and green tests. ^FR23
+- **FR24**: The slow variant SHALL use --deny-path with absolute skill path for baseline tests. ^FR24
+- **FR25**: The slow variant SHALL NOT use --deny-path for green tests in the same worktree. ^FR25
+- **FR26**: The slow variant worktree mechanics SHALL be documented in `infrastructure/running-isolated-tests.md` reference file. ^FR26
+- **FR27**: The slow variant policy reference file SHALL link to mechanism reference file for execution details. ^FR27
+- **FR28**: The worktree naming pattern SHALL enable concurrent scenario testing by isolating each scenario in its own worktree. ^FR28
 
 ### Shared Content Requirements
 
 - **FR20**: Both variants SHALL reference shared pressure scenarios from `shared/pressure-scenarios.md`. ^FR20
 - **FR21**: Both variants SHALL reference shared rationalization patterns from `shared/rationalization-patterns.md`. ^FR21
 - **FR22**: Shared content SHALL eliminate duplication between variants. ^FR22
+- **FR29**: Both variants SHALL use consistent logging pattern: `.claude/skills/{tested-skill}/[logs|evals]/` for test artifacts. ^FR29
+- **FR30**: The slow variant SHALL log to `.claude/skills/{tested-skill}/evals/scenario-N-{name}/logs/` with baseline.jsonl and green.jsonl files. ^FR30
+- **FR31**: Logging guidance SHALL be extracted to shared content (Epic 4) after both variants are tested and working. ^FR31
 
 ## Non-Functional Requirements
 
@@ -77,6 +85,9 @@ This requirements document depends on the following context:
 - **NFR6**: Control scenarios SHALL mitigate test pollution by testing genuine understanding vs performative compliance. ^NFR6
 - **NFR7**: The design SHALL enable easy addition of new variants without modifying existing variants. ^NFR7
 - **NFR8**: Error messages SHALL clearly indicate which variant is executing. ^NFR8
+- **NFR9**: The slow variant SHALL follow Policy/Mechanism separation pattern from writing-skills. ^NFR9
+- **NFR10**: The mechanism reference file SHALL contain no enforcement logic or rationalization counters. ^NFR10
+- **NFR11**: The policy reference file SHALL contain RED-GREEN-REFACTOR workflow and rationalization tables. ^NFR11
 
 ## Whiteboard: Design Discussion
 
@@ -300,6 +311,8 @@ _status_: ✅ Completed 11-13-2025
 
 Implement the fast variant with conversational testing, control scenarios, and lightweight logging.
 
+_git Commit_: db76ae7d4d5cb26de9523906eb72d012204c3306
+_Status_: ✅ Completed 11-13-2025
 ### Story 2.1: Implement Fast Variant Core Process
 
 **As a** skill tester doing rapid iteration,
@@ -317,6 +330,8 @@ Implement the fast variant with conversational testing, control scenarios, and l
 _Depends On_: [[#Story 1.1 Create Router with Question Flow|Story 1.1]]
 _Functional Requirements_: [[#^FR6|FR6]], [[#^FR7|FR7]], [[#^FR8|FR8]], [[#^FR10|FR10]], [[#^FR11|FR11]], [[#^FR12|FR12]]
 _Non-Functional Requirements_: [[#^NFR3|NFR3]], [[#^NFR4|NFR4]]
+_git Commit_: 07a2b2b471797e10b5e4695d9eeb25c9e0ee4e59
+_status_: ✅ Completed 11-13-2025
 
 ### Story 2.2: Add Control Scenario Guidance
 
@@ -334,6 +349,8 @@ _Non-Functional Requirements_: [[#^NFR3|NFR3]], [[#^NFR4|NFR4]]
 _Depends On_: [[#Story 2.1 Implement Fast Variant Core Process|Story 2.1]]
 _Functional Requirements_: [[#^FR9|FR9]]
 _Non-Functional Requirements_: [[#^NFR6|NFR6]]
+_git Commit_: 07a2b2b471797e10b5e4695d9eeb25c9e0ee4e59
+_status_: ✅ Completed 11-13-2025
 
 ### Story 2.3: Dynamic Logging Location for Tested Skills
 
@@ -352,6 +369,7 @@ _Depends On_: [[#Story 2.1 Implement Fast Variant Core Process|Story 2.1]]
 _Functional Requirements_: [[#^FR6|FR6]], [[#^FR10|FR10]], [[#^FR11|FR11]]
 _Non-Functional Requirements_: [[#^NFR1|NFR1]]
 _GitHub Issue_: [#11](https://github.com/WesleyMFrederick/cc-workflows/issues/11)
+_status_: ✅ Completed 11-13-2025
 
 ## Epic 3 - Slow Variant Implementation
 
@@ -365,18 +383,39 @@ Implement the slow variant with worktree isolation, full infrastructure, and rig
 
 #### Acceptance Criteria
 
-1. WHEN the migration is complete, THEN the current SKILL.md content SHALL exist in `variants/slow-isolated.md`. ^US3-1AC1
-2. WHEN the slow variant executes, THEN it SHALL create eval directories and worktrees as before. ^US3-1AC2
-3. WHEN supporting files are needed, THEN they SHALL be referenced from their current locations. ^US3-1AC3
-4. WHEN the migration is complete, THEN existing tests SHALL pass without modification. ^US3-1AC4
+1. WHEN the migration is complete, THEN policy content SHALL exist in `variants/slow-isolated.md` AND mechanism content SHALL exist in `infrastructure/running-isolated-tests.md`. ^US3-1AC1
+2. WHEN the slow variant executes, THEN it SHALL create ONE test worktree (not two). ^US3-1AC2
+3. WHEN baseline tests run, THEN --deny-path SHALL block skill access. ^US3-1AC3
+4. WHEN green tests run, THEN skill SHALL be accessible without --deny-path. ^US3-1AC4
+5. WHEN policy reference file is read, THEN it SHALL link to mechanism reference file for worktree operations. ^US3-1AC5
 
 _Depends On_: [[#Story 1.1 Create Router with Question Flow|Story 1.1]]
-_Functional Requirements_: [[#^FR13|FR13]], [[#^FR14|FR14]], [[#^FR15|FR15]], [[#^FR16|FR16]], [[#^FR17|FR17]], [[#^FR18|FR18]], [[#^FR19|FR19]]
-_Non-Functional Requirements_: [[#^NFR3|NFR3]], [[#^NFR5|NFR5]]
+_Functional Requirements_: [[#^FR13|FR13]], [[#^FR14|FR14]], [[#^FR16|FR16]], [[#^FR17|FR17]], [[#^FR18|FR18]], [[#^FR19|FR19]], [[#^FR23|FR23]], [[#^FR24|FR24]], [[#^FR25|FR25]], [[#^FR26|FR26]], [[#^FR27|FR27]]
+_Non-Functional Requirements_: [[#^NFR3|NFR3]], [[#^NFR5|NFR5]], [[#^NFR9|NFR9]], [[#^NFR10|NFR10]], [[#^NFR11|NFR11]]
 
 ## Epic 4 - Shared Content
 
-Extract and organize shared content used by both variants.
+Extract and organize shared content used by both variants. This epic runs AFTER Epic 3 to avoid duplication and enable faster testing of the slow variant.
+
+**Rationale:** Both variants will initially have inline content (like fast variant currently has). After both are tested and working, Epic 4 extracts common content to eliminate duplication.
+
+### Story 4.0: Extract Shared Logging Guidance
+
+**As a** skill tester using either variant,
+**I want** unified logging guidance in shared content,
+**so that** both variants use consistent logging patterns without duplication.
+
+#### Acceptance Criteria
+
+1. WHEN shared logging is extracted, THEN it SHALL exist in `shared/logging-guidance.md`. ^US4-0AC1
+2. WHEN I read the logging guidance, THEN it SHALL document log location patterns for both variants. ^US4-0AC2
+3. WHEN I read the logging guidance, THEN it SHALL explain how to determine tested skill name from context. ^US4-0AC3
+4. WHEN I read the logging guidance, THEN it SHALL document what to capture and logging format (.jsonl). ^US4-0AC4
+5. WHEN variants reference logging, THEN they SHALL link to shared logging guidance instead of duplicating content. ^US4-0AC5
+
+_Depends On_: [[#Story 2.1 Implement Fast Variant Core Process|Story 2.1]], [[#Story 3.1 Migrate Existing Slow Variant to New Structure|Story 3.1]]
+_Functional Requirements_: [[#^FR29|FR29]], [[#^FR30|FR30]], [[#^FR31|FR31]]
+_Non-Functional Requirements_: [[#^NFR10|NFR10]]
 
 ### Story 4.1: Create Shared Pressure Scenarios Library
 
@@ -391,9 +430,10 @@ Extract and organize shared content used by both variants.
 3. WHEN I need scenario templates, THEN the file SHALL provide templates for common scenarios. ^US4-1AC3
 4. WHEN I combine pressures, THEN the file SHALL provide guidelines for 3+ pressure combinations. ^US4-1AC4
 
-_Depends On_: None
+_Depends On_: [[#Story 4.0 Extract Shared Logging Guidance|Story 4.0]]
 _Functional Requirements_: [[#^FR20|FR20]], [[#^FR22|FR22]]
 _Non-Functional Requirements_: None
+_Status_: Pressure scenarios already exist in shared/ directory
 
 ### Story 4.2: Create Shared Rationalization Patterns Library
 
@@ -408,6 +448,7 @@ _Non-Functional Requirements_: None
 3. WHEN I need to counter rationalizations, THEN the file SHALL provide counter-argument templates. ^US4-2AC3
 4. WHEN I need to detect rationalization language, THEN the file SHALL provide red flag patterns. ^US4-2AC4
 
-_Depends On_: None
+_Depends On_: [[#Story 4.0 Extract Shared Logging Guidance|Story 4.0]]
 _Functional Requirements_: [[#^FR21|FR21]], [[#^FR22|FR22]]
 _Non-Functional Requirements_: None
+_Status_: Rationalization patterns already exist in shared/ directory
