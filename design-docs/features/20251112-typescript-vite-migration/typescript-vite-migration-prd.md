@@ -252,15 +252,16 @@ _Status_: ❌ **REMOVED** - Vite not applicable for Node.js CLI tools. TypeScrip
 
 ---
 
-### Epic 4: Systematic Conversion (TDD Pairs)
+### Epic 4 - Systematic Conversion (TDD Pairs)
+
+**Inputs**:
+- [epic3-poc-results](user-stories/epic3-poc-validation/epic3-poc-results.md) %% force-extract %%
 
 **Goal:** Convert all citation-manager source and test files to TypeScript following RED-GREEN-REFACTOR discipline.
 
 **Deliverable:** All 58 files (10 source + 48 tests) converted to TypeScript in dependency order (leaf → root).
 
-**Validation Reference:** See [Epic 3 POC Validation Results](./user-stories/epic3-poc-validation/epic3-poc-results.md) for proven patterns and infrastructure validation.
-
-**Approach:** For each component:
+**Approach:** For each component/module:
 1. Convert test file to `.test.ts` (REFACTOR - stay GREEN)
 2. Convert source file to `.ts` (REFACTOR - stay GREEN)
 3. Validate types and tests both pass
@@ -283,9 +284,110 @@ _Status_: ❌ **REMOVED** - Vite not applicable for Node.js CLI tools. TypeScrip
 **Required Skills:**
 - `test-driven-development` - Mandatory for all conversions (REFACTOR with continuous GREEN)
 - `requesting-code-review` - Review after each major component conversion batch
-- `finishing-a-development-branch` - Complete epic and integrate to main
+- `finishing-a-development-branch` - Complete epic and integrate to feature branch
 
-**User Stories:** TBD
+#### Story 4.1: Build Conversion Automation & Type Library
+
+**As a** developer converting 58 files to TypeScript,
+**I want** automation scripts and reusable type definitions established upfront,
+**so that** systematic conversion is efficient and consistent across all modules.
+
+##### Acceptance Criteria
+
+1. WHEN automation is complete, THEN a validation checkpoint script SHALL verify type safety for any converted file. ^US4-1AC1
+2. WHEN type library is complete, THEN shared type definitions SHALL be documented in `citationTypes.ts` and `validationTypes.ts`. ^US4-1AC2
+3. WHEN a file conversion completes, THEN the checkpoint script SHALL validate zero `any` escapes, explicit return types, and strict null checking. ^US4-1AC3
+4. WHEN type patterns are documented, THEN they SHALL include discriminated unions, error handling contracts, and null handling strategies from Epic 3. ^US4-1AC4
+5. WHEN automation runs, THEN it SHALL output pass/fail for all 7 checkpoints from Epic 3 POC. ^US4-1AC5
+
+_Depends On_: Epic 3 POC Validation (completed)
+_Functional Requirements_: [[#^FR5|FR5]], [[#^FR6|FR6]]
+_Non-Functional Requirements_: [[#^NFR5|NFR5]], [[#^NFR12|NFR12]]
+_git Commit_: TBD
+_status_: Pending
+
+#### Story 4.2: Convert ContentExtractor Module
+
+**As a** developer following dependency order conversion,
+**I want** the ContentExtractor module (helpers + strategies + component) converted as a cohesive unit,
+**so that** related operations maintain tight cohesion during migration.
+
+##### Acceptance Criteria
+
+1. WHEN conversion begins, THEN all ContentExtractor test files SHALL be converted to `.test.ts` before source files. ^US4-2AC1
+2. WHEN helpers are converted, THEN `generateContentId.ts`, `analyzeEligibility.ts`, and `extractLinksContent.ts` SHALL have explicit type signatures. ^US4-2AC2
+3. WHEN strategies are converted, THEN all 5 eligibility strategy files SHALL extend typed `ExtractionStrategy` interface. ^US4-2AC3
+4. WHEN ContentExtractor component is converted, THEN it SHALL use typed helper functions and strategy interfaces. ^US4-2AC4
+5. WHEN validation runs, THEN all tests SHALL pass and `tsc --noEmit` SHALL show zero errors. ^US4-2AC5
+6. WHEN module conversion completes, THEN CLI SHALL execute successfully from compiled `dist/` directory. ^US4-2AC6
+
+_Depends On_: [[#Story 4.1 Build Conversion Automation & Type Library|Story 4.1]]
+_Functional Requirements_: [[#^FR7|FR7]], [[#^FR8|FR8]]
+_Non-Functional Requirements_: [[#^NFR5|NFR5]], [[#^NFR12|NFR12]], [[#^NFR13|NFR13]]
+_git Commit_: TBD
+_status_: Pending
+
+#### Story 4.3: Convert Core Components
+
+**As a** developer converting foundational components,
+**I want** MarkdownParser, FileCache, and ParsedDocument converted with full type safety,
+**so that** consuming components inherit strong type contracts.
+
+##### Acceptance Criteria
+
+1. WHEN MarkdownParser is converted, THEN `MarkdownParser.Output.DataContract` SHALL be fully typed with no `any` escapes. ^US4-3AC1
+2. WHEN FileCache is converted, THEN resolution result types SHALL use discriminated unions for found/not_found/duplicate states. ^US4-3AC2
+3. WHEN ParsedDocument is converted, THEN facade query methods SHALL have explicit return type annotations. ^US4-3AC3
+4. WHEN core components are complete, THEN marked library integration SHALL maintain type safety. ^US4-3AC4
+5. WHEN validation runs, THEN all component tests SHALL pass with continuous GREEN. ^US4-3AC5
+
+_Depends On_: [[#Story 4.1 Build Conversion Automation & Type Library|Story 4.1]]
+_Functional Requirements_: [[#^FR7|FR7]], [[#^FR8|FR8]]
+_Non-Functional Requirements_: [[#^NFR5|NFR5]], [[#^NFR8|NFR8]], [[#^NFR12|NFR12]], [[#^NFR13|NFR13]]
+_git Commit_: TBD
+_status_: Pending
+
+#### Story 4.4: Convert Integration Layer
+
+**As a** developer converting integration components,
+**I want** ParsedFileCache and CitationValidator converted with typed dependencies,
+**so that** component integration maintains type safety across boundaries.
+
+##### Acceptance Criteria
+
+1. WHEN ParsedFileCache is converted, THEN it SHALL wrap `MarkdownParser.Output.DataContract` in typed `ParsedDocument` instances. ^US4-4AC1
+2. WHEN CitationValidator is converted, THEN validation result types SHALL include typed suggestions and error messages. ^US4-4AC2
+3. WHEN integration is complete, THEN all component interactions SHALL use typed interfaces (no implicit any). ^US4-4AC3
+4. WHEN validation runs, THEN integration tests SHALL verify typed data flows between components. ^US4-4AC4
+5. WHEN story completes, THEN full validation workflow SHALL execute with type safety end-to-end. ^US4-4AC5
+
+_Depends On_: [[#Story 4.3 Convert Core Components|Story 4.3]]
+_Functional Requirements_: [[#^FR7|FR7]], [[#^FR8|FR8]]
+_Non-Functional Requirements_: [[#^NFR5|NFR5]], [[#^NFR8|NFR8]], [[#^NFR12|NFR12]], [[#^NFR13|NFR13]]
+_git Commit_: TBD
+_status_: Pending
+
+#### Story 4.5: Convert Factories & CLI Orchestrator
+
+**As a** developer completing the TypeScript migration,
+**I want** factories and CLI entry point converted as the final integration step,
+**so that** the entire citation-manager tool executes as TypeScript.
+
+##### Acceptance Criteria
+
+1. WHEN LinkObjectFactory is converted, THEN factory methods SHALL return typed LinkObject instances. ^US4-5AC1
+2. WHEN componentFactory is converted, THEN all factory functions SHALL return correctly typed component instances. ^US4-5AC2
+3. WHEN CLI Orchestrator is converted, THEN Commander.js integration SHALL maintain type safety for options and arguments. ^US4-5AC3
+4. WHEN conversion completes, THEN NO `.js` source files SHALL remain in `src/` directory. ^US4-5AC4
+5. WHEN final validation runs, THEN all 304 tests SHALL pass with zero failures. ^US4-5AC5
+6. WHEN build completes, THEN CLI SHALL execute all commands successfully from compiled `dist/` directory. ^US4-5AC6
+7. WHEN migration is complete, THEN `npm link` execution SHALL work correctly with TypeScript compiled output. ^US4-5AC7
+
+_Depends On_: [[#Story 4.4 Convert Integration Layer|Story 4.4]]
+_Functional Requirements_: [[#^FR5|FR5]], [[#^FR6|FR6]], [[#^FR7|FR7]], [[#^FR8|FR8]], [[#^FR9|FR9]]
+_Non-Functional Requirements_: [[#^NFR5|NFR5]], [[#^NFR8|NFR8]], [[#^NFR12|NFR12]], [[#^NFR13|NFR13]]
+_git Commit_: TBD
+_status_: Pending
 
 ---
 
@@ -426,8 +528,8 @@ _Status_: ❌ **REMOVED** - Vite not applicable for Node.js CLI tools. TypeScrip
 
 ### References
 
-- **Project Architecture:** [ARCHITECTURE.md](../../../ARCHITECTURE.md)
-- **Architecture Principles:** [ARCHITECTURE-PRINCIPLES.md](../../../ARCHITECTURE-PRINCIPLES.md)
+- **Project Architecture:** [ARCHITECTURE.md](../../../ARCHITECTURE.md) %% force-extract %%
+- **Architecture Principles:** [ARCHITECTURE-PRINCIPLES.md](../../../ARCHITECTURE-PRINCIPLES.md) %% force-extract %%
 ~~- **Reference Implementation:** cc-workflows-site project (`/Users/wesleyfrederick/Documents/ObsidianVault/0_SoftwareDevelopment/cc-workflows-site`)~~
 
 ### Required Skills by Phase
