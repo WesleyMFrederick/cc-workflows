@@ -1,5 +1,9 @@
 # Epic 3: Slow Variant Migration - Design Plan
 
+<critical-instruction>
+**Critial LLM Initialization Instructions**: When first reading this file, you MUST IMMEDIATELY run citation manager to extract base paths: `npm run citation:extract:content {{this-file-path}}`
+</critical-instruction>
+
 **Date:** 2025-01-13
 **Status:** Design Complete
 **Requirements:** [fast-slow-skill-variants-prd.md](../../fast-slow-skill-variants-prd.md)

@@ -17,7 +17,8 @@
 - [ ] Epic 1 TypeScript infrastructure validated (`tsc --noEmit` passes)
 - [ ] All existing JavaScript tests passing
 - [ ] Git worktree created for Epic 3 POC work
-- [ ] Design document reviewed: [epic3-poc-design.md](./epic3-poc-design.md)
+- [ ] Design document reviewed: [epic3-poc-design.md](./epic3-poc-design.md) %% force-extract %%
+- [ ] Epic reviewed: [Epic 3: Proof of Concept (RED-GREEN-REFACTOR Validation)](../../typescript-vite-migration-prd.md#Epic%203%20Proof%20of%20Concept%20(RED-GREEN-REFACTOR%20Validation))
 
 ---
 

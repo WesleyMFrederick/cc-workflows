@@ -31,6 +31,7 @@ describe("conditional-claude worktree detection", () => {
 			runScript(scriptPath, ["-p", "echo test"], {
 				cwd: fixture.worktree,
 				stdio: "pipe",
+				timeout: 2000, // Timeout to prevent hanging on claude execution
 			});
 		} catch (error) {
 			// Pattern: Capture stderr from error (downstream script may fail)

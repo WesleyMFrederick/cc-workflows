@@ -46,6 +46,7 @@ describe("conditional-claude --deny-path support", () => {
 			runScript(scriptPath, ["--deny-path", secretPath, "show git status"], {
 				cwd: fixture.worktree,
 				stdio: "pipe",
+				timeout: 2000, // Timeout to prevent hanging on claude execution
 			});
 		} catch (error) {
 			// Pattern: Capture stderr (may fail downstream but should process flag)
@@ -73,6 +74,7 @@ describe("conditional-claude --deny-path support", () => {
 			runScript(scriptPath, [`--deny-path=${secretPath}`, "show git status"], {
 				cwd: fixture.worktree,
 				stdio: "pipe",
+				timeout: 2000, // Timeout to prevent hanging on claude execution
 			});
 		} catch (error) {
 			stderr = error.stderr || "";
@@ -109,6 +111,7 @@ describe("conditional-claude --deny-path support", () => {
 				{
 					cwd: fixture.worktree,
 					stdio: "pipe",
+					timeout: 2000, // Timeout to prevent hanging on claude execution
 				},
 			);
 		} catch (error) {

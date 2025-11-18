@@ -258,6 +258,8 @@ _Status_: ❌ **REMOVED** - Vite not applicable for Node.js CLI tools. TypeScrip
 
 **Deliverable:** All 58 files (10 source + 48 tests) converted to TypeScript in dependency order (leaf → root).
 
+**Validation Reference:** See [Epic 3 POC Validation Results](./user-stories/epic3-poc-validation/epic3-poc-results.md) for proven patterns and infrastructure validation.
+
 **Approach:** For each component:
 1. Convert test file to `.test.ts` (REFACTOR - stay GREEN)
 2. Convert source file to `.ts` (REFACTOR - stay GREEN)

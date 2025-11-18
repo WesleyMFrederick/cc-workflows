@@ -27,6 +27,7 @@ describe("conditional-claude flag pass-through", () => {
 			runScript(scriptPath, ["-p", "echo TESTOUTPUT"], {
 				cwd: fixture.worktree,
 				stdio: "pipe",
+				timeout: 2000, // Timeout to prevent hanging on claude execution
 			});
 		} catch (error) {
 			// Pattern: Capture stderr from error (script may fail downstream)
@@ -57,6 +58,7 @@ describe("conditional-claude flag pass-through", () => {
 				{
 					cwd: fixture.worktree,
 					stdio: "pipe",
+					timeout: 2000, // Timeout to prevent hanging on claude execution
 				},
 			);
 		} catch (error) {

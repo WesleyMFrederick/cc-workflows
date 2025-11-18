@@ -1,5 +1,9 @@
 # Epic 3: Slow Variant Migration - Implementation Plan
 
+<critical-instruction>
+**Critial LLM Initialization Instructions**: When first reading this file, you MUST IMMEDIATELY run citation manager to extract base paths: `npm run citation:extract:content {{this-file-path}}`
+</critical-instruction>
+
 > **For Claude:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task.
 
 **Goal:** Migrate slow variant to Policy/Mechanism separation with single worktree + --deny-path flag approach.

@@ -7,10 +7,10 @@ export default defineConfig({
 
 		// Test file patterns - support both existing and new test locations
 		include: [
-			"src/tests/**/*.test.js",
-			"test/**/*.test.js",
-			"tools/**/test/**/*.test.js",
-			"packages/**/test/**/*.test.js",
+			"src/tests/**/*.test.{js,ts}",
+			"test/**/*.test.{js,ts}",
+			"tools/**/test/**/*.test.{js,ts}",
+			"packages/**/test/**/*.test.{js,ts}",
 		],
 		exclude: ["node_modules/**", "dist/**"],
 
