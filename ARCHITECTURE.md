@@ -1,7 +1,7 @@
 # CC Workflows Workspace - Architecture
 
 <critical-instruction>
-**Critial LLM Initialization Instructions**: When first reading this file, you MUST IMMEDIATELY run citation manager to extract related context: `npm run citation:extract <this-file-path>`
+**Critial LLM Initialization Instructions**: When first reading this file, you MUST IMMEDIATELY run citation manager to extract base paths: `npm run citation:extract:content {{this-file-path}}`
 </critical-instruction>
 
 **Purpose**:
@@ -24,33 +24,11 @@
 - **Community Members**: Adapt patterns for their own workflows
 
 ---
-## Core Architectural Principles
+## Core Architectural  Style and Principles
 
 The system's design is guided by core principles that prioritize **simplicity, maintainability, and extensibility** through a **modular, CLI-first architecture.**
 
-### [Minimum Viable Product (MVP) Principles](<../resume-coach/design-docs/Architecture Principles.md#Minimum Viable Product (MVP) Principles>)
-
-- **Key Concept**: **Validate the core concept** of a centralized workspace by delivering value quickly. Every architectural decision is weighed against the goal of avoiding over-engineering to accelerate learning and iteration.
-  
-- **Implementation Approach**: We are implementing this by choosing **native, low-overhead tooling** like NPM Workspaces and focusing strictly on the functionality required to migrate and enhance a single tool, `citation-manager`, as defined in the PRD.
-
-### [Modular Design Principles](<../resume-coach/design-docs/Architecture Principles.md#Modular Design Principles>)
-
-- **Key Concept**: The system's architecture must support a collection of **independent, reusable, and replaceable tools**. This modularity is foundational to achieving the project's long-term goals of maintainability and extensibility as new tools are added to the workspace.
-  
-- **Implementation Approach**: We are enforcing modularity by structuring the workspace with **NPM Workspaces**, where each tool lives in an isolated package with its own explicit dependencies and API boundaries.
-
-### [Foundation Reuse](<../resume-coach/design-docs/Architecture Principles.md#^foundation-reuse>)
-
-- **Key Concept**: This principle directly addresses the core business problem of **eliminating duplicated effort and inconsistent quality**. The workspace must serve as the single, authoritative repository for all development tools and workflows.
-
-- **Implementation Approach**: The **centralized mono-repository structure** is the direct implementation of this principle, ensuring that any improvements to a tool like `citation-manager` are immediately available to all consumers without manual porting.
-
-### [Deterministic Offloading Principles](<../resume-coach/design-docs/Architecture Principles.md#Deterministic Offloading Principles>)
-
-- **Key Concept**: The tools within this workspace are defined as **predictable, mechanical processors** that handle repeatable tasks. This clarifies their role and boundaries within a larger development workflow that may also involve non-deterministic AI agents.
-
-- **Implementation Approach**: The `citation-manager` exemplifies this by performing verifiable, deterministic operations like **parsing markdown and validating file paths**, leaving semantic interpretation to other systems.
+Read [ARCHITECTURE-PRINCIPLES](ARCHITECTURE-PRINCIPLES.md) %% force-extract %%
 
 ### TypeScript Strengthens Core Principles
 
@@ -66,26 +44,14 @@ The system's design is guided by core principles that prioritize **simplicity, m
 
 **Implementation**: TypeScript compilation (`tsc`) is integrated into the build pipeline, with strict type checking enabled to maximize these benefits. Type definitions (`.d.ts`) are generated alongside compiled output, enabling type-safe consumption by other tools and projects.
 
----
-## Document Overview
-
-This document captures the baseline architecture of the CC Workflows Workspace to enable centralized development, testing, and deployment of semantic and deterministic tooling. When implementing improvements or new capabilities, this baseline serves as the reference point for identifying which containers, components, and code files require modification.
-
-### C4 Methodology
-
-The C4 model decomposes complex architecture by drilling down through four levels: **Context** (system boundaries), **Containers** (deployable units), **Components** (grouped functionality), and **Code** (implementation details). This structured approach enables understanding of the system at appropriate levels of detail, from high-level system interactions down to specific file and class implementations.
-
----
-## Core Architectural Style
-
 ### Architectural and System Design
 
 - **Architecture Pattern:** Monorepo (multi-package workspace) — a single repo acting as a [centralized, single source of truth](<../resume-coach/design-docs/Architecture Principles.md#^foundation-reuse>) for multiple, distinct development utilities. The first tool is the `citation-manager`.
 
-- **System Design:** tooling monorepo hosting a multi-command CLI with shared packages for test/build. This is a toolkit of independent tools that consume common services like [testing (FR2)](design-docs/cc-workflows-workspace-prd.md#^FR2) and [builds (FR3)](design-docs/cc-workflows-workspace-prd.md#^FR3)—not a single linear pipeline.
+- **System Design:** tooling monorepo hosting a multi-command CLI with shared packages for test/build. This is a toolkit of independent tools that consume common services like [testing (FR2)](design-docs/features/20250928-cc-workflows-workspace-scaffolding/cc-workflows-workspace-prd.md#^FR2)and [builds (FR3)](design-docs/features/20250928-cc-workflows-workspace-scaffolding/cc-workflows-workspace-prd.md#^FR3)—not a single linear pipeline.
 
 #### Architectural Pattern Implementations
-- `Monorepo` implemented via `npm workspaces` ([NPM Workspaces vs Alternatives](<design-docs/research/content-aggregation-research.md#2.1 NPM Workspaces vs Alternatives>))
+- `Monorepo` implemented via `npm workspaces` ([NPM Workspaces vs Alternatives](design-docs/features/20250928-cc-workflows-workspace-scaffolding/research/content-aggregation-research.md#2.1%20NPM%20Workspaces%20vs%20Alternatives))
 - `cli multi-command` implemented via `commander` (initial). Clear upgrade path to `oclif` if/when plugin-based extensibility is required.
 - `TypeScript` as primary development language with strict type checking
 - `Vite` for shared development infrastructure (HMR, dev server, bundling)
@@ -108,6 +74,15 @@ The C4 model decomposes complex architecture by drilling down through four level
 - **Right-Sized Performance:** Optimized for ~5–10 tools/packages—fast installs/builds without premature complexity.
 - **Less Meta-Work:** Shared dependencies and scripts reduce coordination cost while keeping each tool|package independently maintainable.
 - [ADR-001: NPM Workspaces for Monorepo Management](#ADR-001%20NPM%20Workspaces%20for%20Monorepo%20Management)
+
+---
+## Document Overview
+
+This document captures the baseline architecture of the CC Workflows Workspace to enable centralized development, testing, and deployment of semantic and deterministic tooling. When implementing improvements or new capabilities, this baseline serves as the reference point for identifying which containers, components, and code files require modification.
+
+### C4 Methodology
+
+The C4 model decomposes complex architecture by drilling down through four levels: **Context** (system boundaries), **Containers** (deployable units), **Components** (grouped functionality), and **Code** (implementation details). This structured approach enables understanding of the system at appropriate levels of detail, from high-level system interactions down to specific file and class implementations.
 
 ---
 ## Level 1 - System Context Diagram
@@ -233,7 +208,7 @@ graph LR
 
 Component-level architecture (C4 Level 3) is defined within each tool's own architecture documentation, not at the workspace level. This approach enforces our **Modular Design Principles** by treating each tool as a self-contained container, keeping the workspace architecture focused on system-level boundaries.
 
-See the [content-aggregation-architecture](../../tools/citation-manager/design-docs/features/20251003-content-aggregation/content-aggregation-architecture.md)  for a reference implementation.
+See the [content-aggregation-architecture](tools/citation-manager/design-docs/features/20251003-content-aggregation/content-aggregation-architecture.md)  for a reference implementation.
 
 ---
 ## Component Interfaces and Data Contracts
@@ -574,7 +549,7 @@ This project follows TypeScript naming conventions aligned with our [Action-Base
 
 ### Workspace Testing Approach
 
-The workspace provides a **shared Vitest configuration** and **common testing principles**, but each tool maintains its own independent test suite. Fulfills the requirement for a shared, centralized testing framework \[[FR2](design-docs/cc-workflows-workspace-prd.md#^FR2)\]
+The workspace provides a **shared Vitest configuration** and **common testing principles**, but each tool maintains its own independent test suite. Fulfills the requirement for a shared, centralized testing framework [FR2](design-docs/features/20250928-cc-workflows-workspace-scaffolding/cc-workflows-workspace-prd.md#^FR2)
 
 **Test Files:**
 - Test files use **`.test.ts`** extension (TypeScript)
@@ -730,7 +705,7 @@ describe('Citation Manager Integration Tests', () => {
 - Reserve subprocess testing for true E2E scenarios (argument parsing, exit codes)
 - Aligns test architecture with production architecture (both use same code path)
 
-**Reference**: [Bug 3: Buffer Limit Resolution](../../tools/citation-manager/design-docs/features/20251003-content-aggregation/user-stories/us1.8-implement-validation-enrichment-pattern/bug3-buffer-limit-resolution.md)
+**Reference**: [Bug 3: Buffer Limit Resolution](tools/citation-manager/design-docs/features/20251003-content-aggregation/user-stories/us1.8-implement-validation-enrichment-pattern/bug3-buffer-limit-resolution.md)
 
 ###### CLI Testing: stdout/stderr Separation Pattern
 
@@ -802,7 +777,7 @@ it('should validate with JSON format', () => {
 
 When testing component collaboration, use constructor dependency injection to pass in real dependencies (not mocks).
 
-**Note:** This example represents the target architecture after refactoring citation-manager to implement DI ([technical debt](<../../tools/citation-manager/design-docs/features/20251003-content-aggregation/content-aggregation-architecture.md#Lack of Dependency Injection>)) and factory pattern ([mitigation strategy](#Constructor-Based%20DI%20Wiring%20Overhead)).
+**Note:** This example represents the target architecture after refactoring citation-manager to implement DI ([technical debt](tools/citation-manager/design-docs/features/20251003-content-aggregation/content-aggregation-architecture.md#Dependency%20Management)) and factory pattern ([mitigation strategy](#Constructor-Based%20DI%20Wiring%20Overhead)).
 
 **Production Code - USES Factory:**
 
@@ -886,7 +861,7 @@ describe('CitationValidator Integration Tests', () => {
 
 ### Citation-Manager: Reference Test Structure
 
-The citation-manager tool provides the established pattern for tool-level testing within the workspace. See [Citation Manager Testing Strategy](<../../tools/citation-manager/design-docs/features/20251003-content-aggregation/content-aggregation-architecture.md#Testing Strategy>) for complete test structure and principles.
+The citation-manager tool provides the established pattern for tool-level testing within the workspace. See [Citation Manager Testing Strategy](tools/citation-manager/design-docs/features/20251003-content-aggregation/content-aggregation-architecture.md#Testing%20Strategy) for complete test structure and principles.
 
 ---
 
@@ -919,13 +894,10 @@ Workspace behavior is configured through root-level configuration files that pro
 | Key | Type | Description |
 |-----|------|-------------|
 | `compilerOptions.target` | `string` | ECMAScript target version (ES2022). Modern JavaScript features for Node.js >=18. |
-| `compilerOptions.module` | `string` | Module system (NodeNext). Best for modern Node.js - handles both ESM and CommonJS correctly. |
+| `compilerOptions.module` | `string` | Module system (ES2022). Native ESM support. |
 | `compilerOptions.strict` | `boolean` | Enables all strict type checking options for maximum type safety. |
 | `compilerOptions.declaration` | `boolean` | Generates `.d.ts` type definition files alongside compiled JavaScript. |
 | `compilerOptions.sourceMap` | `boolean` | Generates source maps for debugging compiled code. |
-| `compilerOptions.moduleResolution` | `string` | Module resolution (NodeNext). Matches module setting for proper resolution. |
-| `compilerOptions.composite` | `boolean` | Enables project references for fast incremental builds in monorepo. |
-| `compilerOptions.noUncheckedIndexedAccess` | `boolean` | Array access returns T \| undefined, forcing null checks to prevent runtime crashes. |
 
 **Key settings within `vite.config.ts`:**
 
@@ -1024,7 +996,7 @@ Use **Dependency Injection (DI)** as a foundational pattern to achieve a modular
 
 While DI makes it possible to inject mock dependencies for isolated unit testing, our testing philosophy explicitly prioritizes integration tests that verify real component interactions. Therefore, the workspace adheres to the **"Real Systems, Fake Fixtures"** principle, which includes a **"zero-tolerance policy for mocking"** application components. Our strategy is to use DI to inject _real_ dependencies during testing to gain the highest confidence that our components work together correctly.
 
-For example, the `CitationValidator` should receive its `MarkdownParser` dependency via its constructor. During testing, we will pass in the _real_ `MarkdownParser` to ensure the validation logic works with the actual parsing output. This gives us confidence that the integrated system functions as expected. The existing `citation-manager` code, which does not fully use DI, has been [identified as technical debt](<../../tools/citation-manager/design-docs/features/20251003-content-aggregation/content-aggregation-architecture.md#Lack of Dependency Injection>) to be refactored to align with this principle.
+For example, the `CitationValidator` should receive its `MarkdownParser` dependency via its constructor. During testing, we will pass in the _real_ `MarkdownParser` to ensure the validation logic works with the actual parsing output. This gives us confidence that the integrated system functions as expected. The existing `citation-manager` code, which does not fully use DI, has been [identified as technical debt](tools/citation-manager/design-docs/features/20251003-content-aggregation/content-aggregation-architecture.md#Dependency%20Management) to be refactored to align with this principle.
 
 ### Tool Distribution and Linking
 
@@ -1164,10 +1136,10 @@ if (import.meta.url === realPathAsUrl) {
 
 **Related Architecture Documents:**
 - [TypeScript + Vite Migration PRD](design-docs/features/20251112-typescript-vite-migration/typescript-vite-migration-prd.md): Requirements document for TypeScript and Vite adoption
-- [CC Workflows PRD](design-docs/cc-workflows-workspace-prd.md): Product requirements and epic breakdown for MVP implementation
-- [Content Aggregation Research](design-docs/research/content-aggregation-research.md): Industry patterns and technical recommendations for workspace management
+- [CC Workflows PRD](design-docs/features/20250928-cc-workflows-workspace-scaffolding/cc-workflows-workspace-prd.md): Product requirements and epic breakdown for MVP implementation
+- [Content Aggregation Research](design-docs/features/20250928-cc-workflows-workspace-scaffolding/research/content-aggregation-research.md): Industry patterns and technical recommendations for workspace management
 - [C4 Model Framework Overview](/Users/wesleyfrederick/Documents/ObsidianVaultNew/Technical KnowledgeBase/AI Coding Assistants/Concepts/C4 Framework Overview.md): Architectural documentation methodology used in this document
-- [Psuedocode Style Guide](<design-docs/Psuedocode Style Guide.md>): Pseudocode syntax reference used in this document
+- [Psuedocode Style Guide](design-docs/Psuedocode%20Style%20Guide.md): Pseudocode syntax reference used in this document
 - [citation-guidelines](../../agentic-workflows/rules/citation-guidelines.md): Citation and reference formatting standards used in this document
 - [WORKSPACE-SETUP](../../WORKSPACE-SETUP.md): Validated workspace patterns for workspace configuration and development
 
