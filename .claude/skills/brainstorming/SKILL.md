@@ -14,9 +14,100 @@ description: Use when creating or developing anything, before writing code or im
 
 Transform rough ideas into fully-formed designs through structured questioning and alternative exploration.
 
-**Core principle:** Research first, ask targeted questions to fill gaps, explore alternatives, present design incrementally for validation.
+**Core principle:** Research first, ask targeted questions to fill gaps, explore alternatives, validate decisions in chat, write details to document.
+
+**Audience assumption:** Solo founder CEO (non-technical). Chat window = decision validation only. Design document = complete technical details.
 
 **Announce at start:** "I'm using the brainstorming skill to refine your idea into a design."
+
+## Progressive Disclosure Protocol
+
+### CRITICAL: Chat window vs Document separation
+
+| Output Type | Purpose | Content | Token Budget |
+|-------------|---------|---------|--------------|
+| **Chat Window** | Decision validation | What CEO needs to validate. Options with 1-2 sentence trade-offs, your recommendation with brief rationale. | <150 words per phase |
+| **Design Document** | Implementation guide | Complete technical details, architecture diagrams, code examples, validation procedures, step-by-step instructions. | Unlimited |
+
+**Rules:**
+1. If CEO doesn't need to validate it → Goes in document, NOT chat
+2. Implementation details (bash commands, validation steps, config changes) → ALWAYS in document
+3. Chat window output must be **scannable in 30 seconds** - CEO should grasp options and recommendation at a glance
+4. If CEO says "idk, does it?" → Add 2-3 sentence "why" explanation, stay high-level
+5. If CEO says "too much detail" → You violated protocol. Apologize and simplify immediately.
+6. If CEO requests more detail → You can expand in chat, but default is scannable summary
+
+<critical-instruction>
+**BEFORE sending Phase 2 output:**
+1. Count your bullet points per option - if >3 bullets, you're including implementation details
+2. Check for config file names (tsconfig, package.json, vitest.config) - DELETE them
+3. Check for validation procedures ("Run tests", "Verify imports") - DELETE them
+4. Check total word count - if >150 words, CUT IN HALF
+5. Read your output as if you have 30 seconds - is it scannable? If no, DELETE AND RESTART
+
+**This is not optional. Check ALL 5 items before sending.**
+</critical-instruction>
+
+**Example - VIOLATION (466 words in chat):**
+
+```text
+Option 1: TypeScript with Dual Export Strategy
+
+What it does:
+- Convert normalizeAnchor.js → normalizeAnchor.ts with proper TypeScript types
+- Use TypeScript compilation to emit both .js and .d.ts files
+- JavaScript files import from the compiled .js output
+- No changes needed to existing .js importers
+
+Validation approach:
+- Convert test file to normalize-anchor.test.ts
+- Run existing Vitest suite to confirm tests pass
+- Add import validation test in ContentExtractor.js
+
+[continues with 300+ more words...]
+```
+
+**Example - CORRECT (<100 words in chat):**
+
+```text
+Two options for Epic 3 POC:
+
+Option 1 (Recommended): Standard TypeScript compilation
+- .js files import from compiled output (no changes needed)
+- Validates no-touch migration pattern for Epic 4
+
+Option 2: Direct .ts imports
+- Faster but requires changing import paths in .js files
+- Riskier for scaling to 58 files
+
+Recommendation: Option 1 validates the critical requirement (incremental conversion without breaking existing code).
+
+Your decision: Approve Option 1?
+```
+
+### Common Rationalizations (STOP These)
+
+| Excuse | Reality |
+|--------|---------|
+| "CEO needs these details to decide" | CEO needs trade-offs to decide. Implementation details go in document. |
+| "Options need complete descriptions" | Options need 1-2 sentence descriptions. Complete = document. |
+| "This is 'core architecture' not 'details'" | tsconfig settings, validation checklists, build steps = details. Architecture = approach. |
+| "'What we validate' helps understanding" | 5-item validation checklist = implementation details. 1 sentence validation goal = architecture. |
+| "Current skill says 200-300 words Phase 3" | That's for Phase 3 design presentation, NOT Phase 2 exploration. Phase 2 = <150 words. |
+| "I'm just being thorough" | Thorough = document. Chat = decision validation only. |
+
+### Red Flags - You're About to Violate
+
+**STOP immediately if you find yourself:**
+- Writing "What we validate:" subsections with 3+ bullet points
+- Mentioning specific config files (tsconfig.json, vitest.config.js)
+- Including "What we skip" or "What we document" sections
+- Writing 100+ words per option (3 options × 100 words = already over budget)
+- Adding detailed pros/cons lists (4-5 items each)
+- Using technical jargon (source maps, type inference, circular dependencies)
+- Explaining validation procedures ("Run Vitest suite", "Add import test")
+
+**If you hit ANY red flag:** Delete what you wrote. Restart with decision focus only.
 
 ## User Interface
 
