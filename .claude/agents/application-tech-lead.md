@@ -85,7 +85,7 @@ BEFORE beginning any architectural analysis or recommendations:
 
 ✓ **Citation Context**: If document contains citation instructions, have you run `citation-manager extract links` and read all base paths? (Required by `evaluate-against-architecture-principles` skill)
 ✓ **Evidence Requirement**: Do you have concrete code examples, measurements, and/or validated POCs to support your recommendations? (Use `brainstorm-proof-of-concept-plan` skill for unproven assumptions)
-✓ **Architecture Compliance**: You MUST use the `evaluate-against-architecture-principles` skill to validate against ALL 9 principle categories (Modular Design, Data-First Design, Action-Based File Organization, Format/Interface Design, MVP Principles, Deterministic Offloading, Self-Contained Naming, Safety-First Design, Anti-Patterns)
+✓ **Architecture Compliance**: You MUST use the `evaluate-against-architecture-principles` skill to validate against ALL principle categories (Modular Design, Data-First Design, Action-Based File Organization, Format/Interface Design, MVP Principles, Deterministic Offloading, Self-Contained Naming, Safety-First Design, Anti-Patterns)
 ✓ **Scope Validation**: Have you confirmed the solution stays within application boundaries?
 ✓ **Implementation Reality**: Can the team actually execute this within project constraints?
 ✓ **Workflow Adherence**: Are you following project-specific workflow instructions? You MUST use:

@@ -10,19 +10,20 @@
 
 ## Executive Summary
 
-Migrate the cc-workflows workspace from JavaScript to TypeScript with Vite as shared development infrastructure. This migration establishes TypeScript + Vite as the standard build and development environment for all workspace tools, starting with citation-manager as the pilot implementation.
+~~Migrate the cc-workflows workspace from JavaScript to TypeScript with Vite as shared development infrastructure. This migration establishes TypeScript + Vite as the standard build and development environment for all workspace tools, starting with citation-manager as the pilot implementation.~~
+Migrate the cc-workflows workspace from JavaScript to TypeScript. This migration establishes TypeScript as the standard development language for all workspace tools, starting with citation-manager as the pilot implementation.
 
 **Business Value:**
 - **Type Safety:** Catch errors at compile-time rather than runtime, reducing bugs in production tools
 - **Developer Experience:** IDE autocomplete, refactoring support, and inline documentation via types
-- **Shared Infrastructure:** Vite provides HMR and unified dev experience across all workspace tools
+~~- **Shared Infrastructure:** Vite provides HMR and unified dev experience across all workspace tools~~
 - **Maintainability:** Explicit type contracts serve as living documentation and reduce cognitive load
 - **Foundation for Growth:** Establishes scalable patterns for future tools in the workspace
 
 **Success Criteria:**
 - citation-manager fully converted to TypeScript with zero test failures
 - All existing functionality preserved (no breaking changes)
-- Architecture documentation updated to reflect TypeScript + Vite as standard
+- Architecture documentation updated to reflect TypeScript as standard
 - Build and development infrastructure validated and documented
 
 ---
@@ -35,7 +36,7 @@ The cc-workflows workspace currently operates with:
 - Pure JavaScript codebase (no static type checking)
 - Vitest for testing (working well)
 - Biome for linting/formatting (working well)
-- No unified development server infrastructure
+~~- No unified development server infrastructure~~
 - No type-driven development patterns
 
 ### Pain Points
@@ -44,7 +45,7 @@ The cc-workflows workspace currently operates with:
 2. **Refactoring Risk:** Large refactors (like DI implementation) carry high risk without type safety
 3. **Documentation Decay:** Function signatures and data structures documented only in comments
 4. **IDE Support:** Limited autocomplete and inline documentation without type definitions
-5. **Development Friction:** No HMR or dev server for rapid iteration
+~~5. **Development Friction:** No HMR or dev server for rapid iteration~~
 
 ### Why Now?
 
@@ -68,8 +69,8 @@ The workspace has successfully established its foundation (architecture, testing
 ### Goals
 
 1. Migrate citation-manager to TypeScript as pilot (validates pattern)
-2. Establish TypeScript + Vite as workspace standard infrastructure
-3. Update architecture documentation to reflect TypeScript + Vite baseline
+2. Establish TypeScript as workspace standard infrastructure
+3. Update architecture documentation to reflect TypeScript baseline
 4. Maintain all existing functionality (zero breaking changes)
 5. Validate RED-GREEN-REFACTOR workflow with TypeScript conversion
 
@@ -87,11 +88,11 @@ The workspace has successfully established its foundation (architecture, testing
 
 ### Approach: Infrastructure-First Migration
 
-**Strategy:** Establish and validate TypeScript + Vite infrastructure independently, then systematically convert citation-manager source and tests following TDD principles.
+**Strategy:** Establish and validate TypeScript infrastructure independently, then systematically convert citation-manager source and tests following TDD principles.
 
 **Key Decisions:**
 - **Pilot Tool:** citation-manager (58 files: 10 source, 48 tests)
-- **Build System:** TypeScript compiler (tsc) + Vite for development
+- **Build System:** TypeScript compiler (tsc)
 - **Migration Order:** Infrastructure → POC validation → Systematic TDD-paired conversion
 - **Test Strategy:** Maintain continuous GREEN throughout (no "broken until complete" state)
 
@@ -99,9 +100,8 @@ The workspace has successfully established its foundation (architecture, testing
 
 ```mermaid
 graph TD
-    subgraph "TypeScript + Vite Infrastructure"
+    subgraph "TypeScript Infrastructure"
         tsconfig[tsconfig.base.json<br/>Shared TS Config]
-        vite[vite.config.ts<br/>Dev Infrastructure]
         vitest[vitest.config.ts<br/>Test Runner]
     end
 
@@ -113,19 +113,17 @@ graph TD
 
     tsconfig --> src
     tsconfig --> tests
-    vite --> src
     vitest --> tests
     src --> dist
 
     style tsconfig fill:#438dd5
-    style vite fill:#438dd5
     style vitest fill:#438dd5
 ```
 
 **Architecture Alignment:**
 - **MVP Principles:** Validates infrastructure before converting code (risky part first)
 - **Modular Design:** Each tool has independent tsconfig extending shared base
-- **Foundation Reuse:** tsconfig.base.json and vite.config.ts are single source of truth
+- **Foundation Reuse:** tsconfig.base.json is single source of truth
 - **Safety-First:** Existing code untouched during infrastructure setup
 
 ---
@@ -134,35 +132,33 @@ graph TD
 
 ### Epic 0: Architecture Documentation (North Star)
 
-**Goal:** Document the complete ideal TypeScript + Vite state across ALL architecture sections to serve as implementation north star.
+**Goal:** Document the complete ideal TypeScript state across ALL architecture sections to serve as implementation north star.
 
-**Deliverable:** Comprehensive updates to ARCHITECTURE.md reflecting TypeScript + Vite as established standard.
+**Deliverable:** Comprehensive updates to ARCHITECTURE.md reflecting TypeScript as established standard.
 
 **Sections Requiring Updates:**
 
 1. **Core Architectural Principles** - How TypeScript strengthens adherence to principles
-2. **Core Architectural Style** - TypeScript as primary language, Vite as shared dev infrastructure
+2. **Core Architectural Style** - TypeScript as primary language
 3. **Level 2 - Containers** - Updated technology stack for Tool Packages and Workspace containers
 4. **Level 4 - Code Organization** - TypeScript file naming (`.ts`), type definition patterns
 5. **Coding Standards and Conventions** - TypeScript naming conventions, type annotation guidelines
 6. **Testing Strategy** - Test file patterns (`.test.ts`), type checking as validation step
-7. **Technology Stack** - Add TypeScript >=5.3.0, Vite >=5.0.0, update Vitest to 4.x
+7. **Technology Stack** - Add TypeScript >=5.3.0, update Vitest to 4.x
 8. **Cross-Cutting Concerns**
-   - Configuration Management: tsconfig.base.json, vite.config.ts
-   - Build Pipeline: TypeScript compilation, Vite bundling
-   - Dev Infrastructure: HMR via Vite
+   - Configuration Management: tsconfig.base.json
+   - Build Pipeline: TypeScript compilation
    - CLI Execution Pattern: Execution from compiled `dist/`
    - Tool Distribution: npm link with compiled output and `.d.ts` files
 9. **Development Workflow** - Add type checking step, update build process
 10. **Known Risks and Technical Debt** - Document migration risks and trade-offs
 11. **Architecture Decision Records (ADRs)**
-    - ADR-00X: TypeScript as Primary Language
-    - ADR-00X: Vite for Development Infrastructure
-12. **References & Further Reading** - Add TypeScript and Vite documentation links
+    - ADR-002: TypeScript as Primary Language
+12. **References & Further Reading** - Add TypeScript documentation links
 13. **Architecture Change Log** - New entry documenting this baseline change
 
 **Validation:**
-- Architecture document comprehensively represents TypeScript + Vite as established standard
+- Architecture document comprehensively represents TypeScript as established standard
 - All cross-references between sections remain valid
 - Document passes citation-manager validation
 
@@ -172,7 +168,7 @@ graph TD
 
 **User Stories:** TBD (to be decomposed during implementation planning)
 
-*Status*: ✅ Completed 11-12-25
+_Status_: ✅ Completed 11-12-25
 
 ---
 
@@ -200,29 +196,33 @@ graph TD
 
 **User Stories:** TBD
 
+_Status_: ✅ Completed 11-18-25
+
 ---
 
-### Epic 2: Vite Development Infrastructure
+~~### Epic 2: Vite Development Infrastructure~~
 
-**Goal:** Add Vite for dev server and HMR capabilities without impacting existing functionality.
+~~**Goal:** Add Vite for dev server and HMR capabilities without impacting existing functionality.~~
 
-**Deliverable:** Working Vite configuration for Node.js library development with dev server operational.
+~~**Deliverable:** Working Vite configuration for Node.js library development with dev server operational.~~
 
-**Components:**
-- Root `vite.config.ts` (shared infrastructure)
-- Dev server configuration for Node.js library mode
-- Integration with existing npm scripts
-- HMR configuration for development iteration
+~~**Components:**~~
+~~- Root `vite.config.ts` (shared infrastructure)~~
+~~- Dev server configuration for Node.js library mode~~
+~~- Integration with existing npm scripts~~
+~~- HMR configuration for development iteration~~
 
-**Validation:**
-- `npm run dev` starts dev server successfully
-- All existing tests still pass
-- Vite builds produce valid output
+~~**Validation:**~~
+~~- `npm run dev` starts dev server successfully~~
+~~- All existing tests still pass~~
+~~- Vite builds produce valid output~~
 
-**Required Skills:**
-- `requesting-code-review` - Review Vite integration before proceeding
+~~**Required Skills:**~~
+~~- `requesting-code-review` - Review Vite integration before proceeding~~
 
-**User Stories:** TBD
+~~**User Stories:** TBD~~
+
+_Status_: ❌ **REMOVED** - Vite not applicable for Node.js CLI tools. TypeScript from Epic 1 is sufficient.
 
 ---
 
@@ -294,7 +294,7 @@ graph TD
 - FR1: The workspace SHALL support TypeScript as the primary development language. ^FR1
 - FR2: The workspace SHALL provide shared TypeScript configuration via `tsconfig.base.json`. ^FR2
 - FR3: Each tool SHALL extend the shared TypeScript configuration with tool-specific overrides. ^FR3
-- FR4: The workspace SHALL provide Vite as shared development infrastructure for HMR and dev server capabilities. ^FR4
+~~- FR4: The workspace SHALL provide Vite as shared development infrastructure for HMR and dev server capabilities. ^FR4~~
 - FR5: The build system SHALL compile TypeScript to JavaScript in tool-specific `dist/` directories. ^FR5
 - FR6: The build system SHALL generate `.d.ts` type definition files alongside compiled JavaScript. ^FR6
 - FR7: All existing citation-manager functionality SHALL be preserved during migration (zero breaking changes). ^FR7
@@ -308,7 +308,8 @@ graph TD
 
 - NFR1: The migration SHALL follow MVP Principles by validating infrastructure before converting code. ^NFR1
 - NFR2: The migration SHALL maintain Modular Design with independent tool configurations extending shared base. ^NFR2
-- NFR3: The migration SHALL implement Foundation Reuse via shared TypeScript and Vite configurations. ^NFR3
+~~- NFR3: The migration SHALL implement Foundation Reuse via shared TypeScript and Vite configurations. ^NFR3~~
+- NFR3: The migration SHALL implement Foundation Reuse via shared TypeScript configuration. ^NFR3
 - NFR4: The migration SHALL follow Safety-First Design by keeping existing code untouched during infrastructure setup. ^NFR4
 
 #### Quality Attributes
@@ -320,7 +321,7 @@ graph TD
 
 #### Development Experience
 
-- NFR9: The development server SHALL provide hot module reloading (HMR) for rapid iteration. ^NFR9
+~~- NFR9: The development server SHALL provide hot module reloading (HMR) for rapid iteration. ^NFR9~~
 - NFR10: IDE autocomplete and inline documentation SHALL be available via TypeScript type information. ^NFR10
 - NFR11: Type errors SHALL be surfaced at compile-time, not runtime. ^NFR11
 
@@ -348,7 +349,7 @@ graph TD
 
 **Adoption Metrics:**
 - Pattern validated and documented for future tool migrations
-- TypeScript + Vite established as workspace standard
+- TypeScript established as workspace standard
 - Development workflow updated and validated
 
 ---
@@ -402,9 +403,9 @@ graph TD
 
 **Phase 1:** Epic 0 (Architecture Documentation) - **Prerequisites complete before coding starts**
 **Phase 2:** Epic 1 (TypeScript Infrastructure) - **Foundation validated independently**
-**Phase 3:** Epic 2 (Vite Development Infrastructure) - **Dev infrastructure operational**
-**Phase 4:** Epic 3 (POC Validation) - **End-to-end pattern proven**
-**Phase 5:** Epic 4 (Systematic Conversion) - **Full migration with TDD discipline**
+~~**Phase 3:** Epic 2 (Vite Development Infrastructure) - **Dev infrastructure operational**~~
+**Phase 3:** Epic 3 (POC Validation) - **End-to-end pattern proven**
+**Phase 4:** Epic 4 (Systematic Conversion) - **Full migration with TDD discipline**
 
 **Estimated Duration:** TBD (dependent on decomposition into user stories and tasks)
 
@@ -425,7 +426,7 @@ graph TD
 
 - **Project Architecture:** [ARCHITECTURE.md](../../../ARCHITECTURE.md)
 - **Architecture Principles:** [ARCHITECTURE-PRINCIPLES.md](../../../ARCHITECTURE-PRINCIPLES.md)
-- **Reference Implementation:** cc-workflows-site project (`/Users/wesleyfrederick/Documents/ObsidianVault/0_SoftwareDevelopment/cc-workflows-site`)
+~~- **Reference Implementation:** cc-workflows-site project (`/Users/wesleyfrederick/Documents/ObsidianVault/0_SoftwareDevelopment/cc-workflows-site`)~~
 
 ### Required Skills by Phase
 
@@ -439,9 +440,9 @@ graph TD
 - `using-git-worktrees` - Set up isolated workspace for infrastructure changes
 - `requesting-code-review` - Review infrastructure setup before proceeding to conversion
 
-#### Epic 2: Vite Infrastructure
+~~#### Epic 2: Vite Infrastructure~~
 
-- `requesting-code-review` - Review Vite integration before proceeding to conversion
+~~- `requesting-code-review` - Review Vite integration before proceeding to conversion~~
 
 #### Epic 3: POC Validation
 
