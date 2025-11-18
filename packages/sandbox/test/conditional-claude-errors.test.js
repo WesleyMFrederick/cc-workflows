@@ -21,7 +21,7 @@ describe("conditional-claude error handling", () => {
 		// Integration: Run conditional-claude.sh with minimal PATH that excludes real claude
 		const scriptPath = join(
 			process.cwd(),
-			"packages/sandbox/conditional-claude.sh"
+			"packages/sandbox/conditional-claude.sh",
 		);
 
 		// Decision: Use minimal PATH without system directories where claude might exist

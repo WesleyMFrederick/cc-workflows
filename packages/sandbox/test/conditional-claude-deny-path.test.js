@@ -1,5 +1,9 @@
 import { describe, it, expect, afterEach, beforeEach } from "vitest";
-import { runScript, createTestWorktree, createTempDir } from "./helpers/test-helpers.js";
+import {
+	runScript,
+	createTestWorktree,
+	createTempDir,
+} from "./helpers/test-helpers.js";
 import { join } from "node:path";
 import { mkdirSync, writeFileSync } from "node:fs";
 
@@ -32,7 +36,7 @@ describe("conditional-claude --deny-path support", () => {
 		// Integration: Run conditional-claude.sh with --deny-path
 		const scriptPath = join(
 			process.cwd(),
-			"packages/sandbox/conditional-claude.sh"
+			"packages/sandbox/conditional-claude.sh",
 		);
 
 		const secretPath = join(denyFixture.path, "secret-file.txt");
@@ -59,7 +63,7 @@ describe("conditional-claude --deny-path support", () => {
 
 		const scriptPath = join(
 			process.cwd(),
-			"packages/sandbox/conditional-claude.sh"
+			"packages/sandbox/conditional-claude.sh",
 		);
 
 		const secretPath = join(denyFixture.path, "secret-dir");
@@ -85,7 +89,7 @@ describe("conditional-claude --deny-path support", () => {
 
 		const scriptPath = join(
 			process.cwd(),
-			"packages/sandbox/conditional-claude.sh"
+			"packages/sandbox/conditional-claude.sh",
 		);
 
 		const secretFile = join(denyFixture.path, "secret-file.txt");
@@ -96,14 +100,16 @@ describe("conditional-claude --deny-path support", () => {
 			runScript(
 				scriptPath,
 				[
-					"--deny-path", secretFile,
-					"--deny-path", secretDir,
-					"show git status"
+					"--deny-path",
+					secretFile,
+					"--deny-path",
+					secretDir,
+					"show git status",
 				],
 				{
 					cwd: fixture.worktree,
 					stdio: "pipe",
-				}
+				},
 			);
 		} catch (error) {
 			stderr = error.stderr || "";
@@ -120,7 +126,7 @@ describe("conditional-claude --deny-path support", () => {
 
 		const scriptPath = join(
 			process.cwd(),
-			"packages/sandbox/conditional-claude.sh"
+			"packages/sandbox/conditional-claude.sh",
 		);
 
 		// Integration: Run with --deny-path but no path argument
@@ -146,7 +152,7 @@ describe("conditional-claude --deny-path support", () => {
 
 		const scriptPath = join(
 			process.cwd(),
-			"packages/sandbox/conditional-claude.sh"
+			"packages/sandbox/conditional-claude.sh",
 		);
 
 		const secretPath = join(denyFixture.path, "secret-file.txt");
@@ -154,10 +160,14 @@ describe("conditional-claude --deny-path support", () => {
 		let stderr = "";
 		let stdout = "";
 		try {
-			const result = runScript(scriptPath, ["--deny-path", secretPath, "--help"], {
-				cwd: nonWorktree.path,
-				stdio: "pipe",
-			});
+			const result = runScript(
+				scriptPath,
+				["--deny-path", secretPath, "--help"],
+				{
+					cwd: nonWorktree.path,
+					stdio: "pipe",
+				},
+			);
 			stdout = result.stdout;
 			stderr = result.stderr;
 		} catch (error) {

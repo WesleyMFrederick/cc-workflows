@@ -19,7 +19,7 @@ describe("conditional-claude flag pass-through", () => {
 		// Integration: Run conditional-claude.sh in worktree with -p flag
 		const scriptPath = join(
 			process.cwd(),
-			"packages/sandbox/conditional-claude.sh"
+			"packages/sandbox/conditional-claude.sh",
 		);
 
 		let stderr = "";
@@ -46,7 +46,7 @@ describe("conditional-claude flag pass-through", () => {
 		// Integration: Run conditional-claude.sh with multiple flags
 		const scriptPath = join(
 			process.cwd(),
-			"packages/sandbox/conditional-claude.sh"
+			"packages/sandbox/conditional-claude.sh",
 		);
 
 		let stderr = "";
@@ -57,7 +57,7 @@ describe("conditional-claude flag pass-through", () => {
 				{
 					cwd: fixture.worktree,
 					stdio: "pipe",
-				}
+				},
 			);
 		} catch (error) {
 			// Pattern: Capture stderr from error (script may fail downstream)

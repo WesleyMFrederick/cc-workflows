@@ -1,6 +1,8 @@
 # CC Workflows Workspace - Architecture
 
-**Critial LLM Initialization Instructions**: When first reading this file, you MUST IMMEDIATELY run citation manager to extract base paths: `npm run citation:base-paths <this-file-path> -- --format json`. Read ALL discovered base path files to gather complete architectural context before proceeding.
+<critical-instruction>
+**Critial LLM Initialization Instructions**: When first reading this file, you MUST IMMEDIATELY run citation manager to extract related context: `npm run citation:extract <this-file-path>`
+</critical-instruction>
 
 **Purpose**:
 - Provide a **centralized** **workspace** that acts as a **single source of truth** for development tools by establishing shared infrastructure for testing and builds.
@@ -917,10 +919,13 @@ Workspace behavior is configured through root-level configuration files that pro
 | Key | Type | Description |
 |-----|------|-------------|
 | `compilerOptions.target` | `string` | ECMAScript target version (ES2022). Modern JavaScript features for Node.js >=18. |
-| `compilerOptions.module` | `string` | Module system (ES2022). Native ESM support. |
+| `compilerOptions.module` | `string` | Module system (NodeNext). Best for modern Node.js - handles both ESM and CommonJS correctly. |
 | `compilerOptions.strict` | `boolean` | Enables all strict type checking options for maximum type safety. |
 | `compilerOptions.declaration` | `boolean` | Generates `.d.ts` type definition files alongside compiled JavaScript. |
 | `compilerOptions.sourceMap` | `boolean` | Generates source maps for debugging compiled code. |
+| `compilerOptions.moduleResolution` | `string` | Module resolution (NodeNext). Matches module setting for proper resolution. |
+| `compilerOptions.composite` | `boolean` | Enables project references for fast incremental builds in monorepo. |
+| `compilerOptions.noUncheckedIndexedAccess` | `boolean` | Array access returns T \| undefined, forcing null checks to prevent runtime crashes. |
 
 **Key settings within `vite.config.ts`:**
 
