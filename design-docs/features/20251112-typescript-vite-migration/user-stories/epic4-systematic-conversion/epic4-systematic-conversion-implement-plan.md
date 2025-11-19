@@ -198,7 +198,7 @@ function validateTestsPassing(filePath: string): ValidationResult {
   // Decision: Find corresponding test file
   const testFilePath = /* convert src/path/file.ts to test/path/file.test.ts */;
 
-  // Integration: Run npm test for specific test file
+  // Integration: Execute npm test for specific test file
   try {
     execSync(`npm test -- ${testFilePath}`, {
       cwd: /* tools/citation-manager */,
@@ -214,13 +214,13 @@ function validateTestsPassing(filePath: string): ValidationResult {
     return {
       checkpoint: "All Tests Pass",
       passed: false,
-      message: /* extract test failure details */
+      message: /* extract test failure details from stderr */
     };
   }
 }
 
 function validateConsumerCompatibility(filePath: string): ValidationResult {
-  // Integration: Run full test suite to check JavaScript consumers
+  // Integration: Execute full test suite to verify all consumers work
   try {
     execSync("npm test", {
       cwd: /* tools/citation-manager */,
@@ -236,7 +236,7 @@ function validateConsumerCompatibility(filePath: string): ValidationResult {
     return {
       checkpoint: "JavaScript Consumers Work",
       passed: false,
-      message: /* extract test failure count */
+      message: /* extract test failure count from stderr */
     };
   }
 }
@@ -285,18 +285,40 @@ function validateCompiledOutput(filePath: string): ValidationResult {
 Run: `npm test -- validate-typescript-conversion.test.ts`
 Expected: PASS
 
-#### Step 5: Add npm script for validation
+#### Step 5: Ensure TypeScript compilation includes scripts directory
+
+Verify `tsconfig.json` includes `scripts/**/*` in compilation:
+
+```json
+{
+  "include": [
+    "src/**/*",
+    "scripts/**/*"  // Add if missing
+  ]
+}
+```
+
+Run build: `npm run build`
+Verify: `dist/scripts/validate-typescript-conversion.js` exists
+
+#### Step 6: Add npm scripts for validation
+
+Following workspace architecture ([CLI Execution Pattern](../../../../../ARCHITECTURE.md#CLI%20Execution%20Pattern)), use compile-then-run:
 
 ```json
 // package.json
 {
   "scripts": {
-    "validate:ts-conversion": "node --loader ts-node/esm scripts/validate-typescript-conversion.ts"
+    "validate:ts-conversion": "node dist/scripts/validate-typescript-conversion.js",
+    "validate:ts-conversion:dev": "tsx scripts/validate-typescript-conversion.ts"
   }
 }
 ```
 
-#### Step 6: Commit
+**Production script:** Runs compiled JavaScript (requires build step)
+**Development script:** Runs TypeScript directly with tsx (faster iteration)
+
+#### Step 7: Commit
 
 Use `create-git-commit` skill to commit:
 - Message: "feat(typescript): [Epic 4.1] create validation checkpoint script with 7 automated checks"

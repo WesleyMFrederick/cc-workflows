@@ -48,9 +48,10 @@ Task tool (
     You are implementing Task {{task-number}} from {{plan-file-path}}.
 
     Use `citation extract header` tool to extract {{Task N}} context:
-    
+
     ```bash
     npm run citation:extract:header {{plan-file-path}} {{task-number-section-header}}
+    ```
 
     Your job is to:
     1. Navigate to and work in {{worktree directory | feature-branch if worktree missing}}
@@ -58,9 +59,36 @@ Task tool (
     3. Write tests (following TDD if task says to)
     4. Verify implementation works
     5. Commit your work
-    6. Report back
+    6. Write results to {{results-file-path}}
+    7. Report back
 
-    Report: What you implemented, what you tested, test results, files changed, any issues
+    DO NOT install dependencies - work with existing dependencies only.
+
+    Write your results to: {{results-file-path}}
+
+    Results format (markdown):
+    # Task {{task-number}} - Implementation Results
+    **Date:** {{date}}
+    **Commit:** {{commit-sha}}
+
+    ## What Was Implemented
+    [Description + files created/modified with line counts]
+
+    ## What Was Tested
+    [Test files + test counts + test output]
+
+    ## Verification
+    - [ ] TypeScript compiles
+    - [ ] Tests pass
+    - [ ] Committed
+
+    ## Files Changed
+    [List absolute paths]
+
+    ## Issues
+    [Any blockers or "None"]
+
+    Report back: Summary of what you implemented, test results, results file written
   model: haiku
 ```
 
@@ -72,23 +100,68 @@ Task tool (
 
 ```plaintext
 Task tool (superpowers:code-reviewer):
-  Use template at requesting-code-review/code-reviewer.md
+  Review Task {{task-number}} implementation.
 
-  WHAT_WAS_IMPLEMENTED: [from subagent's report]
-  PLAN_OR_REQUIREMENTS: Task N from [plan-file]
-  BASE_SHA: [commit before task]
-  HEAD_SHA: [current commit]
-  DESCRIPTION: [task summary]
-```
+  Read implementation results from: {{results-file-path}}
 
-**Code reviewer returns:** Strengths, Issues (Critical/Important/Minor), Assessment
+  Extract task requirements using:
+  ```bash
+  npm run citation:extract:header {{plan-file-path}} {{task-number-section-header}}
+  ```
+
+  **BASE_SHA:** {{commit-before-task}}
+  **HEAD_SHA:** {{current-commit}}
+
+  Review the implementation against requirements.
+
+  Write review results to: {{review-results-file-path}}
+
+  Review format (markdown):
+## Strengths
+  [What was done well]
+
+## Issues Found
+
+### BLOCKING
+  [Issues requiring application-tech-lead review - missing dependencies, technology additions, architectural changes not in plan]
+
+### Critical
+  [Blockers that must be fixed by dev]
+
+### Important
+  [Should fix before next task]
+
+### Minor
+  [Nice to have fixes]
+
+## Assessment
+  Status: READY / NEEDS WORK / NEEDS ARCHITECTURE REVIEW
+  [Rationale]
+
+  If BLOCKING issues found, escalate to application-tech-lead for architecture review.
+
+  Report back: Review summary + status + results file written
+
+```plaintext
+
+**Code reviewer returns:** Strengths, Issues (Blocking/Critical/Important/Minor), Assessment
 
 ### 4. Apply Review Feedback
 
-**If issues found:**
-- Fix Critical issues immediately
-- Fix Important issues before next task
-- Note Minor issues
+**If BLOCKING issues found:**
+- Escalate to application-tech-lead immediately
+- Tech lead reviews ARCHITECTURE docs, design plan, implement plan
+- Tech lead suggests modifications to plans
+- User validates changes before proceeding
+
+**If Critical issues found:**
+- Fix immediately with follow-up dev subagent
+
+**If Important issues found:**
+- Fix before next task
+
+**If Minor issues found:**
+- Note for later
 
 **Dispatch follow-up subagent if needed:**
 

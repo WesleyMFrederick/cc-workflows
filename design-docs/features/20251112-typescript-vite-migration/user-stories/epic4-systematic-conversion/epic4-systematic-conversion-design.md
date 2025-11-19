@@ -6,7 +6,7 @@
 
 **Date:** 2024-11-18
 **Status:** Draft
-**Requirements:** 
+**Requirements:**
 - [Epic 4 - Systematic Conversion (TDD Pairs)](../../typescript-vite-migration-prd.md#Epic%204%20-%20Systematic%20Conversion%20(TDD%20Pairs)) - Epic 4
 - [Requirements](../../typescript-vite-migration-prd.md#Requirements)
 
@@ -175,14 +175,97 @@ function validateExplicitReturnTypes(filePath: string): ValidationResult {
   };
 }
 
-// ... remaining checkpoint implementations
+function validateTestsPassing(filePath: string): ValidationResult {
+  // Pattern: Find corresponding test file and execute tests
+  // Expected: All tests pass
+  // Implementation: Convert src path to test path, run npm test
+
+  const testFilePath = /* convert src/path/file.ts to test/path/file.test.ts */;
+
+  try {
+    execSync(`npm test -- ${testFilePath}`, {
+      cwd: /* tools/citation-manager */,
+      stdio: "pipe"
+    });
+
+    return {
+      checkpoint: "All Tests Pass",
+      passed: true,
+      message: "Tests passing"
+    };
+  } catch (error) {
+    return {
+      checkpoint: "All Tests Pass",
+      passed: false,
+      message: /* extract test failure details from stderr */
+    };
+  }
+}
+
+function validateConsumerCompatibility(filePath: string): ValidationResult {
+  // Pattern: Execute full test suite to verify all consumers work
+  // Expected: All 304 tests pass
+  // Implementation: Run npm test, check for zero failures
+
+  try {
+    execSync("npm test", {
+      cwd: /* tools/citation-manager */,
+      stdio: "pipe"
+    });
+
+    return {
+      checkpoint: "JavaScript Consumers Work",
+      passed: true,
+      message: "All 304 tests pass"
+    };
+  } catch (error) {
+    return {
+      checkpoint: "JavaScript Consumers Work",
+      passed: false,
+      message: /* extract test failure count from stderr */
+    };
+  }
+}
+
+function validateCompiledOutput(filePath: string): ValidationResult {
+  // Pattern: Check for .js and .d.ts in dist/
+  // Expected: Compiled JavaScript and type definitions exist
+  // Implementation: fs.existsSync for corresponding dist files
+
+  return {
+    checkpoint: "Compiled Output Generated",
+    passed: /* check dist files exist */,
+    message: /* list missing files or "Output generated" */
+  };
+}
+```
+
+**Script Execution Pattern:**
+
+Following workspace architecture ([CLI Execution Pattern](../../../../../ARCHITECTURE.md#CLI%20Execution%20Pattern)), validation script uses compile-then-run:
+
+**Build:** TypeScript compiles to `dist/scripts/validate-typescript-conversion.js`
+**Execute:** Run via `node dist/scripts/validate-typescript-conversion.js`
+
+**npm scripts:**
+
+```json
+{
+  "scripts": {
+    "validate:ts-conversion": "node dist/scripts/validate-typescript-conversion.js",
+    "validate:ts-conversion:dev": "tsx scripts/validate-typescript-conversion.ts"
+  }
+}
 ```
 
 **Usage:**
 
 ```bash
-# Validate single file after conversion
+# Production: Run compiled script
 npm run validate:ts-conversion -- tools/citation-manager/src/core/ContentExtractor/generateContentId.ts
+
+# Development: Run TypeScript directly (faster iteration)
+npm run validate:ts-conversion:dev -- tools/citation-manager/src/core/ContentExtractor/generateContentId.ts
 
 # Validate entire module after Story 4.2
 npm run validate:ts-conversion -- tools/citation-manager/src/core/ContentExtractor/**/*.ts
