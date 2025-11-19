@@ -59,40 +59,22 @@ Task tool (
     3. Write tests (following TDD if task says to)
     4. Verify implementation works
     5. Commit your work
-    6. Write results to {{results-file-path}}
+    6. Write results to file
     7. Report back
 
-    DO NOT install dependencies - work with existing dependencies only.
+    CRITICAL: Write your results to {{user-stories-folder}}/task-{{task-number}}-dev-results.md with:
+    - Task number and name
+    - What you implemented
+    - Tests written and test results
+    - Files changed
+    - Any issues encountered
+    - Commit SHA
 
-    Write your results to: {{results-file-path}}
-
-    Results format (markdown):
-    # Task {{task-number}} - Implementation Results
-    **Date:** {{date}}
-    **Commit:** {{commit-sha}}
-
-    ## What Was Implemented
-    [Description + files created/modified with line counts]
-
-    ## What Was Tested
-    [Test files + test counts + test output]
-
-    ## Verification
-    - [ ] TypeScript compiles
-    - [ ] Tests pass
-    - [ ] Committed
-
-    ## Files Changed
-    [List absolute paths]
-
-    ## Issues
-    [Any blockers or "None"]
-
-    Report back: Summary of what you implemented, test results, results file written
+    Report: Summary + confirm results file written
   model: haiku
 ```
 
-**Subagent reports back** with summary of work.
+**Subagent reports back** with summary and results file location.
 
 ### 3. Review Subagent's Work
 
@@ -100,73 +82,228 @@ Task tool (
 
 ```plaintext
 Task tool (superpowers:code-reviewer):
-  Review Task {{task-number}} implementation.
+  Use template at requesting-code-review/code-reviewer.md
 
-  Read implementation results from: {{results-file-path}}
+  prompt: |
+    You are reviewing Task {{task-number}} implementation.
 
-  Extract task requirements using:
-  ```bash
-  npm run citation:extract:header {{plan-file-path}} {{task-number-section-header}}
-  ```
+    CRITICAL: Extract task context from plan using citation tool:
 
-  **BASE_SHA:** {{commit-before-task}}
-  **HEAD_SHA:** {{current-commit}}
+    ```bash
+    citation-manager extract header {{plan-file-path}} "{{task-header-name}}"
+    ```
 
-  Review the implementation against requirements.
+    Read implementation results:
+    - Dev results: {{user-stories-folder}}/task-{{task-number}}-dev-results.md
 
-  Write review results to: {{review-results-file-path}}
+    Your job:
+    1. Read plan task to understand requirements
+    2. Read dev results to understand what was implemented
+    3. Review code changes (BASE_SHA to HEAD_SHA)
+    4. Identify issues (BLOCKING/Critical/Important/Minor)
+    5. Write review results
 
-  Review format (markdown):
-## Strengths
-  [What was done well]
+    CRITICAL: Write your review to {{user-stories-folder}}/task-{{task-number}}-review-results.md with:
+    - Task number and name
+    - Review date
+    - Strengths
+    - Issues (categorized as BLOCKING/Critical/Important/Minor)
+    - Overall assessment
+    - Recommendation (approve/fix required)
 
-## Issues Found
+    BASE_SHA: [commit before task]
+    HEAD_SHA: [current commit]
+```
 
-### BLOCKING
-  [Issues requiring application-tech-lead review - missing dependencies, technology additions, architectural changes not in plan]
-
-### Critical
-  [Blockers that must be fixed by dev]
-
-### Important
-  [Should fix before next task]
-
-### Minor
-  [Nice to have fixes]
-
-## Assessment
-  Status: READY / NEEDS WORK / NEEDS ARCHITECTURE REVIEW
-  [Rationale]
-
-  If BLOCKING issues found, escalate to application-tech-lead for architecture review.
-
-  Report back: Review summary + status + results file written
-
-```plaintext
-
-**Code reviewer returns:** Strengths, Issues (Blocking/Critical/Important/Minor), Assessment
+**Code reviewer returns:** Summary + review results file location.
 
 ### 4. Apply Review Feedback
 
 **If BLOCKING issues found:**
-- Escalate to application-tech-lead immediately
-- Tech lead reviews ARCHITECTURE docs, design plan, implement plan
-- Tech lead suggests modifications to plans
-- User validates changes before proceeding
+- See section 4a below (requires app-tech-lead escalation)
+- Do NOT proceed to section 4b until BLOCKING resolved
 
-**If Critical issues found:**
-- Fix immediately with follow-up dev subagent
+**If Critical/Important/Minor issues found:**
+- See section 4b below (standard fix workflow)
 
-**If Important issues found:**
-- Fix before next task
+### 4a. Handle Blocking Issues (Architectural Decisions)
 
-**If Minor issues found:**
-- Note for later
+**CRITICAL: BLOCKING issues MUST be resolved by app-tech-lead subagent. NEVER escalate to user.**
 
-**Dispatch follow-up subagent if needed:**
+**Foundational principle:** Architectural decisions require research, principle evaluation, and documentation. App-tech-lead subagent provides this. User escalation without context and recomendations breaks the workflow and annoys ceo/user by asking for their attention when you could do research to clarify the issue yourself. Once App-tech-lead does research and a MAJOR change is needed, then involve the user. Otherwise provide additional context to fixing agent.
+
+Code-reviewer may identify BLOCKING when:
+- Implementation made architectural choice not specified in plan
+- Multiple valid approaches exist, choice affects codebase architecture
+- Decision requires evaluation against architecture principles
+- Cannot be "fixed" with code changes alone
+
+**When code-reviewer returns BLOCKING issues:**
+
+1. **MANDATORY - Launch app-tech-lead subagent**
+
+   You MUST launch app-tech-lead. This is NOT optional. This is NOT a suggestion.
+
+   **DO NOT:**
+   - ❌ Ask user "What should I do?"
+   - ❌ Ask user "Is Redux OK?"
+   - ❌ "Escalate to user for architectural decision"
+   - ❌ "Present options to user and wait for their choice"
+   - ❌ Dispatch fix subagent to "just pick one"
+   - ❌ Proceed to next task
+
+   **Why NO user escalation:**
+   - User expects app-tech-lead to handle architectural decisions
+   - App-tech-lead provides research, evaluation, documentation
+   - User escalation = undocumented decision without principle evaluation
+   - Interrupts workflow unnecessarily
+
+2. **Launch app-tech-lead with this task:**
+
+   ```plaintext
+   Task tool (application-tech-lead):
+     description: "Resolve blocking architectural decision from Task N"
+     prompt: |
+       A code review identified a blocking architectural decision for Task {{task-number}}.
+
+       CRITICAL: Extract task context from plan using citation tool:
+
+       ```bash
+       citation-manager extract header {{plan-file-path}} "{{task-header-name}}"
+       ```
+
+       Read context files:
+       - Dev results: {{user-stories-folder}}/task-{{task-number}}-dev-results.md
+       - Review results: {{user-stories-folder}}/task-{{task-number}}-review-results.md
+
+       BLOCKING ISSUE:
+       [paste full BLOCKING issue from code-reviewer]
+
+       Your job:
+       1. Read plan task to understand context
+       2. Read dev results to understand what was implemented
+       3. Read review results to understand the blocking issue
+       4. Read architecture documentation to understand context
+       5. Read PRD to understand requirements and scope
+       6. Research options using Perplexity with "{{query}} best practices 2025"
+       7. Evaluate options against architecture principles using evaluate-against-architecture-principles skill
+       8. Update implementation plan with specific choice
+       9. Write decision document
+       10. Report back
+
+       CRITICAL: Write your decision to {{user-stories-folder}}/task-{{task-number}}-arch-decision.md with:
+       - Task number and name
+       - Decision date
+       - BLOCKING issue summary
+       - Options considered (2-3 options minimum)
+       - Evaluation against architecture principles
+       - Perplexity research findings
+       - Recommendation with clear rationale
+       - Plan update confirmation
+
+       Critical: Your decision must be grounded in architecture principles, not just "best practice" popularity.
+   ```
+
+3. **After app-tech-lead returns:**
+   - Review decision rationale
+   - Verify plan updated with specific choice
+   - Determine if change is MAJOR (see criteria below)
+
+   **MAJOR Change Criteria:**
+   - Adds new external dependency/library
+   - Changes fundamental architecture pattern (state management, data flow, auth)
+   - Adds new infrastructure (database, cache, queue)
+   - Switches frameworks or core technologies
+   - Impacts bundle size significantly (>10KB)
+   - Requires team learning curve
+   - High migration cost if reversed
+
+   **If MAJOR change:**
+   - Present decision to CEO/user with full context:
+     - Options evaluated
+     - Architecture principle evaluation
+     - Perplexity research findings
+     - App-tech-lead recommendation
+     - Impact summary (bundle size, learning curve, migration cost)
+   - Wait for CEO approval before proceeding
+   - If approved: Continue to implementation
+   - If rejected: Ask app-tech-lead to reconsider with CEO feedback
+
+   **If minor change (built-in APIs, internal refactoring, no new dependencies):**
+   - Proceed autonomously to implementation
+
+   **Then proceed to implementation:**
+   - Either: Approve existing implementation (if matches decision)
+   - Or: Dispatch fix subagent to implement chosen approach
+   - Re-run code-reviewer to verify BLOCKING resolved
+
+4. **Then proceed to section 4b** for any remaining Critical/Important/Minor issues
+
+### 4b. Handle Standard Issues (Implementation Fixes)
+
+**If Critical/Important/Minor issues found:**
+- Fix Critical issues immediately
+- Fix Important issues before next task
+- Note Minor issues
+
+**Orchestrator Dynamic Decision (YOU):**
+
+Before dispatching fix agent, determine which files to include:
+
+1. Check if `task-{{task-number}}-arch-decision.md` exists (BLOCKING was resolved)
+2. Build file list for fix agent:
+   - Always include: plan task, dev results, review results
+   - Conditionally include: arch decision (if exists)
+
+**Dispatch follow-up subagent with context files:**
 
 ```plaintext
-"Fix issues from code review: [list issues]"
+Task tool (general-purpose):
+  description: "Fix Task {{task-number}} issues from review"
+  prompt: |
+    You are fixing issues found in code review for Task {{task-number}}.
+
+    CRITICAL: Extract task context from plan using citation tool:
+
+    ```bash
+    citation-manager extract header {{plan-file-path}} "{{task-header-name}}"
+    ```
+
+    Read context files:
+    - Plan task (via citation extraction above)
+    - Dev results: {{user-stories-folder}}/task-{{task-number}}-dev-results.md
+    - Review results: {{user-stories-folder}}/task-{{task-number}}-review-results.md
+    {{#if arch-decision-exists}}
+    - Arch decision: {{user-stories-folder}}/task-{{task-number}}-arch-decision.md
+    {{/if}}
+
+    Issues to fix:
+    [paste issues from review-results.md]
+
+    Your job:
+    1. Read plan task to understand requirements
+    2. Read dev results to understand what was implemented
+    3. Read review results to understand issues
+    {{#if arch-decision-exists}}
+    4. Read arch decision to understand architectural choice
+    5. Implement fixes following architectural decision
+    {{else}}
+    4. Implement fixes for all issues
+    {{/if}}
+    6. Verify fixes work (run tests)
+    7. Commit your work
+    8. Write fix results
+
+    CRITICAL: Write your results to {{user-stories-folder}}/task-{{task-number}}-fix-results.md with:
+    - Task number and name
+    - Issues addressed
+    - Changes made
+    - Test results
+    - Files changed
+    - Commit SHA
+
+    Report: Summary + confirm results file written
+  model: haiku
 ```
 
 ### 5. Mark Complete, Next Task
@@ -196,28 +333,39 @@ You: I'm using Subagent-Driven Development to execute this plan.
 
 [Load plan, create TodoWrite]
 
-Task 1: Hook installation script
+Task 4.1.1: Validation script
 
 [Dispatch implementation subagent]
-Subagent: Implemented install-hook with tests, 5/5 passing
+Subagent: Implemented validation script with 7 checkpoints, wrote task-4.1.1-dev-results.md
 
 [Get git SHAs, dispatch code-reviewer]
-Reviewer: Strengths: Good test coverage. Issues: None. Ready.
+Reviewer: Read task-4.1.1-dev-results.md, wrote task-4.1.1-review-results.md
+         Strengths: Good test coverage. Issues: None. Ready.
 
-[Mark Task 1 complete]
+[Mark Task 4.1.1 complete]
 
-Task 2: Recovery modes
+Task 4.1.2: Type library
 
 [Dispatch implementation subagent]
-Subagent: Added verify/repair, 8/8 tests passing
+Subagent: Created citationTypes.ts, wrote task-4.1.2-dev-results.md
 
 [Dispatch code-reviewer]
-Reviewer: Strengths: Solid. Issues (Important): Missing progress reporting
+Reviewer: Read task-4.1.2-dev-results.md, wrote task-4.1.2-review-results.md
+         Issues (BLOCKING): No architectural decision on type organization pattern
 
-[Dispatch fix subagent]
-Fix subagent: Added progress every 100 conversations
+[Launch app-tech-lead]
+App-tech-lead: Evaluated options, wrote task-4.1.2-arch-decision.md
+               Recommendation: Colocation pattern (minor change)
 
-[Verify fix, mark Task 2 complete]
+[Check: arch decision exists, minor change - proceed autonomously]
+
+[Dispatch fix subagent with arch decision file]
+Fix agent: Read arch decision, reorganized types, wrote task-4.1.2-fix-results.md
+
+[Dispatch code-reviewer for fixes]
+Reviewer: BLOCKING resolved, implementation matches decision. Approved.
+
+[Mark Task 4.1.2 complete]
 
 ...
 
