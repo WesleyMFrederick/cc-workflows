@@ -71,9 +71,12 @@ if [[ -z "$session_id" || "$session_id" == "null" ]]; then
     session_id="no-session"
 fi
 
-# Create cache key: session_id + file_path hash
-cache_key="${session_id}_$(echo -n "$file_path" | md5 2>/dev/null || echo -n "$file_path" | shasum -a 256 | cut -d' ' -f1)"
+# Create cache key: session_id + file content hash
+# This ensures cache is invalidated if file content changes
+file_content_hash=$(md5 < "$file_path" 2>/dev/null || shasum -a 256 < "$file_path" 2>/dev/null | cut -d' ' -f1)
+cache_key="${session_id}_${file_content_hash}"
 cache_file="${CACHE_DIR}/${cache_key}"
+echo "cache_key: $cache_key" >> "$DEBUG_LOG"
 
 # Check if we've already extracted this file in this session
 if [[ -f "$cache_file" ]]; then
