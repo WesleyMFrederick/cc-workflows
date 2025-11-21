@@ -58,6 +58,19 @@
 					{
 						"type": "command",
 						"command": "/Users/wesleyfrederick/.claude/scripts/smart-lint/smart-lint.sh"
+					},
+					{
+						"type": "command",
+						"command": "$CLAUDE_PROJECT_DIR/.claude/hooks/citation-validator.sh"
+					}
+				]
+			},
+			{
+				"matcher": "Read",
+				"hooks": [
+					{
+						"type": "command",
+						"command": "$CLAUDE_PROJECT_DIR/.claude/hooks/citation-extractor.sh"
 					}
 				]
 			}

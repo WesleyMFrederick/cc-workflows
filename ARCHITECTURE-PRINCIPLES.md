@@ -73,6 +73,7 @@
 
 - **Simplicity First**: Make interfaces as simple as possible. Favor one good, simple way over multiple complex options. ^simplicity-first
 - **Progressive Defaults**: Design with sensible defaults for the 80% use case. Provide clear customization paths for specialists. This reduces initial complexity while retaining flexibility. ^progressive-defaults
+- **Progressive Disclosure**: Reveal information, context, or instructions to LLMs gradually as needed, rather than loading everything upfront. This optimizes token usage, maintains focus on relevant information, and manages limited context windows effectively. ^progressive-disclosure
 - **Interface Segregation**: Design small, role-specific interfaces, not broad, catch-all ones. ^interface-segregation
 
 ---
