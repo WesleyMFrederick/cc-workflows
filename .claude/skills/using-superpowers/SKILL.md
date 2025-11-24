@@ -3,6 +3,8 @@ name: using-superpowers
 description: Use when starting any conversation - establishes mandatory workflows for finding and using skills, including using Skill tool before announcing usage, following brainstorming before coding, and creating TodoWrite todos for checklists
 ---
 
+# Using Superpowers
+
 <EXTREMELY-IMPORTANT>
 If you think there is even a 1% chance a skill might apply to what you are doing, you ABSOLUTELY MUST read the skill.
 
@@ -11,9 +13,9 @@ IF A SKILL APPLIES TO YOUR TASK, YOU DO NOT HAVE A CHOICE. YOU MUST USE IT.
 This is not negotiable. This is not optional. You cannot rationalize your way out of this.
 </EXTREMELY-IMPORTANT>
 
-# Getting Started with Skills
+## Getting Started with Skills
 
-## MANDATORY FIRST RESPONSE PROTOCOL
+### MANDATORY FIRST RESPONSE PROTOCOL
 
 Before responding to ANY user message, you MUST complete this checklist:
 
@@ -25,13 +27,13 @@ Before responding to ANY user message, you MUST complete this checklist:
 
 **Responding WITHOUT completing this checklist = automatic failure.**
 
-## Critical Rules
+### Critical Rules
 
 1. **Follow mandatory workflows.** Brainstorming before coding. Check for relevant skills before ANY task.
 
 2. Execute skills with the Skill tool
 
-## Common Rationalizations That Mean You're About To Fail
+### Common Rationalizations That Mean You're About To Fail
 
 If you catch yourself thinking ANY of these thoughts, STOP. You are rationalizing. Check for and use the skill.
 
@@ -48,7 +50,7 @@ If you catch yourself thinking ANY of these thoughts, STOP. You are rationalizin
 
 If a skill for your task exists, you must use it or you will fail at your task.
 
-## Skills with Checklists
+### Skills with Checklists
 
 If a skill has a checklist, YOU MUST create TodoWrite todos for EACH item.
 
@@ -60,7 +62,7 @@ If a skill has a checklist, YOU MUST create TodoWrite todos for EACH item.
 
 **Why:** Checklists without TodoWrite tracking = steps get skipped. Every time. The overhead of TodoWrite is tiny compared to the cost of missing steps.
 
-## Announcing Skill Usage
+### Announcing Skill Usage
 
 Before using a skill, announce that you are using it.
 "I'm using [Skill Name] to [what you're doing]."
@@ -71,7 +73,7 @@ Before using a skill, announce that you are using it.
 
 **Why:** Transparency helps your human partner understand your process and catch errors early. It also confirms you actually read the skill.
 
-# About these skills
+## About these skills
 
 **Many skills contain rigid rules (TDD, debugging, verification).** Follow them exactly. Don't adapt away the discipline.
 
@@ -79,7 +81,7 @@ Before using a skill, announce that you are using it.
 
 The skill itself tells you which type it is.
 
-## Instructions ≠ Permission to Skip Workflows
+### Instructions ≠ Permission to Skip Workflows
 
 Your human partner's specific instructions describe WHAT to do, not HOW.
 
@@ -89,12 +91,12 @@ Your human partner's specific instructions describe WHAT to do, not HOW.
 
 **Why:** Specific instructions mean clear requirements, which is when workflows matter MOST. Skipping process on "simple" tasks is how simple tasks become complex problems.
 
-## Summary
+### Summary
 
 **Starting any task:**
 1. If relevant skill exists → Use the skill
-3. Announce you're using it
-4. Follow what it says
+2. Announce you're using it
+3. Follow what it says
 
 **Skill has checklist?** TodoWrite for every item.
 
