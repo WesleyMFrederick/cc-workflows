@@ -7,8 +7,7 @@
 INPUT=$(cat)
 
 # Create system notification with terse directives
-DIRECTIVES="<system-notification>
-<ceo-output-preferences>
+DIRECTIVES="<output-style-preferences>
 **HOOK_TEST_MARKER_CEO_OUTPUT_HOOK_ACTIVE**
 
 **Context:** User is CEO - time-sensitive, needs scannable output.
@@ -38,8 +37,8 @@ DIRECTIVES="<system-notification>
 - Ask 'Need more detail?' rather than over-explaining
 
 **Summary:** Be brief. Be clear. Be actionable.
-</ceo-output-preferences>
-</system-notification>"
+<output-style-preferences>
+"
 
 # Output JSON with additional context
 jq -n \
