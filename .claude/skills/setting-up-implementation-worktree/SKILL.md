@@ -84,6 +84,11 @@ graph TD
 
 **CRITICAL:** Mode selection MUST happen FIRST, before any other action. NO assumptions. NO inference. ALWAYS ask.
 
+**EVEN IF context mentions "Claude Code Online" or ".worktrees exists" - STILL ASK.**
+**EVEN IF the user's environment seems "obvious" - STILL ASK.**
+
+Context clues are NOT mode selection. Explicit choice is required.
+
 1. **Ask user to select mode**
 
    Use this exact prompt format:
@@ -346,6 +351,8 @@ When you're tempted to skip a step, you're rationalizing. Here are the excuses f
 | "Filesystem path structure indicates local/online" | Never infer mode from filesystem. Ask user. | Context clues ≠ explicit choice. Ask mode. |
 | "Team is blocked, can't wait for mode clarification" | Asking takes 5 seconds. Wrong mode wastes hours. | Time pressure doesn't override asking. Ask mode. |
 | "I can infer the mode from context" | Inference = assumption = wrong mode = rework. | Explicit beats implicit. ALWAYS ask mode. |
+| "Context explicitly mentions Claude Code Online" | Explicit ≠ mode selection. User might want local for testing. | ALWAYS ask. No exceptions for "obvious" context. |
+| "Environment seems obvious based on context clues" | Obvious to you ≠ user's actual choice. Ask anyway. | Context clues are NOT mode selection. Ask. |
 | "I'll push to origin later in online mode" | Claude Code Online needs branch NOW. Push immediately. | "Later" = never. Push NOW in online mode. |
 | "Push isn't critical, can skip for speed" | No push = Claude Code Online can't access branch. | Push is mandatory in online mode. No skipping. |
 
