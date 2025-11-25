@@ -43,7 +43,7 @@ class ParsedDocument {
 	hasAnchor(anchorId: string): boolean {
 		// Check both id and urlEncodedId for match
 		return this._data.anchors.some(
-			(a) => a.id === anchorId || a.urlEncodedId === anchorId,
+			(a) => a.id === anchorId || (a as any).urlEncodedId === anchorId,
 		);
 	}
 
@@ -90,7 +90,7 @@ class ParsedDocument {
 	 * Extract full file content
 	 * @returns {string} Full content of parsed file
 	 */
-	extractFullContent() {
+	extractFullContent(): string {
 		// Return content string from parser output
 		return this._data.content;
 	}
@@ -107,7 +107,7 @@ class ParsedDocument {
 	 * @param {number} [headingLevel] - Optional heading level (1-6). If not provided, looked up from headings array
 	 * @returns {string|null} Section content string or null if not found
 	 */
-	extractSection(headingText, headingLevel) {
+	extractSection(headingText: string, headingLevel: number): string | null {
 		// Phase 0: Look up heading level if not provided
 		let targetLevel = headingLevel;
 		if (targetLevel === undefined) {
@@ -116,14 +116,14 @@ class ParsedDocument {
 			);
 			if (!headingMeta) return null;
 			targetLevel =
-				headingMeta.level !== undefined ? headingMeta.level : headingMeta.depth;
+				headingMeta.level !== undefined ? headingMeta.level : (headingMeta as any).depth;
 		}
 
 		// Phase 1: Flatten token tree and locate target heading
-		const orderedTokens = [];
+		const orderedTokens: any[] = [];
 		let targetIndex = -1;
 
-		const walkTokens = (tokenList) => {
+		const walkTokens = (tokenList: any) => {
 			for (const token of tokenList) {
 				const currentIndex = orderedTokens.length;
 				orderedTokens.push(token);
@@ -177,7 +177,7 @@ class ParsedDocument {
 	 * @param {string} anchorId - Block anchor ID without ^ prefix
 	 * @returns {string|null} Single line content string or null if not found
 	 */
-	extractBlock(anchorId) {
+	extractBlock(anchorId: string): string | null {
 		// Find anchor with matching ID and anchorType === "block"
 		const anchor = this._data.anchors.find(
 			(a) => a.anchorType === "block" && a.id === anchorId,
@@ -194,7 +194,7 @@ class ParsedDocument {
 		if (lineIndex < 0 || lineIndex >= lines.length) return null;
 
 		// Extract single line containing block anchor
-		return lines[lineIndex];
+		return lines[lineIndex]!;
 	}
 
 	// === PRIVATE HELPER METHODS ===
@@ -213,7 +213,7 @@ class ParsedDocument {
 	 * @param {string} tokenType - Token type from marked.js
 	 * @returns {boolean} True if token.raw includes all child content
 	 */
-	_tokenIncludesChildrenInRaw(tokenType) {
+	_tokenIncludesChildrenInRaw(tokenType: string): boolean {
 		// Token types where .raw includes full content (skip recursion)
 		const inclusiveTypes = new Set([
 			"heading", // "## Title\n" includes inline text
@@ -235,17 +235,17 @@ class ParsedDocument {
 	 * @private
 	 * @returns {string[]} Array of all anchor IDs
 	 */
-	_getAnchorIds() {
+	_getAnchorIds(): string[] {
 		// Check if cache exists
 		if (this._cachedAnchorIds === null) {
 			// Build Set of unique IDs
-			const ids = new Set();
+			const ids = new Set<string>();
 			for (const anchor of this._data.anchors) {
 				ids.add(anchor.id);
 
 				// Add urlEncodedId if different from id
-				if (anchor.urlEncodedId && anchor.urlEncodedId !== anchor.id) {
-					ids.add(anchor.urlEncodedId);
+				if ((anchor as any).urlEncodedId && (anchor as any).urlEncodedId !== anchor.id) {
+					ids.add((anchor as any).urlEncodedId);
 				}
 			}
 
@@ -268,7 +268,7 @@ class ParsedDocument {
 	 * @param {string[]} candidates - Array of candidate strings
 	 * @returns {string[]} Array of similar strings sorted by similarity (max 5)
 	 */
-	_fuzzyMatch(target, candidates) {
+	_fuzzyMatch(target: string, candidates: string[]): string[] {
 		// Calculate similarity scores for all candidates
 		const matches = [];
 		for (const candidate of candidates) {
@@ -298,7 +298,7 @@ class ParsedDocument {
 	 * @param {string} str2 - Second string
 	 * @returns {number} Similarity score between 0 and 1 (1 = identical)
 	 */
-	_calculateSimilarity(str1, str2) {
+	_calculateSimilarity(str1: string, str2: string): number {
 		// Handle edge cases
 		if (str1 === str2) return 1.0;
 		if (str1.length === 0 || str2.length === 0) return 0.0;
@@ -308,31 +308,31 @@ class ParsedDocument {
 		const b = str2.toLowerCase();
 
 		// Initialize matrix for dynamic programming
-		const matrix = [];
+		const matrix: number[][] = [];
 		for (let i = 0; i <= b.length; i++) {
 			matrix[i] = [i];
 		}
 		for (let j = 0; j <= a.length; j++) {
-			matrix[0][j] = j;
+			matrix[0]![j] = j;
 		}
 
 		// Fill matrix with Levenshtein distance calculation
 		for (let i = 1; i <= b.length; i++) {
 			for (let j = 1; j <= a.length; j++) {
 				if (b.charAt(i - 1) === a.charAt(j - 1)) {
-					matrix[i][j] = matrix[i - 1][j - 1];
+					matrix[i]![j] = matrix[i - 1]![j - 1]!;
 				} else {
-					matrix[i][j] = Math.min(
-						matrix[i - 1][j - 1] + 1, // substitution
-						matrix[i][j - 1] + 1, // insertion
-						matrix[i - 1][j] + 1, // deletion
+					matrix[i]![j] = Math.min(
+						matrix[i - 1]![j - 1]! + 1, // substitution
+						matrix[i]![j - 1]! + 1, // insertion
+						matrix[i - 1]![j]! + 1, // deletion
 					);
 				}
 			}
 		}
 
 		// Get final distance
-		const distance = matrix[b.length][a.length];
+		const distance = matrix[b.length]![a.length]!;
 
 		// Normalize to 0-1 range (1 = identical, 0 = completely different)
 		const maxLength = Math.max(a.length, b.length);
