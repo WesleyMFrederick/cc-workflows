@@ -55,7 +55,7 @@ export class ParsedFileCache {
 		// 2. Decision point: Check cache for existing Promise
 		if (this.cache.has(cacheKey)) {
 			// Cache hit: Return existing ParsedDocument Promise
-			return this.cache.get(cacheKey);
+			return this.cache.get(cacheKey)!;
 		}
 
 		// 3. Cache miss: Create parse operation
