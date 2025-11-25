@@ -9,7 +9,9 @@ description: Use when starting implementation work that needs isolation, before 
 
 Before writing a single line of implementation code, create an isolated worktree with a verified, working environment. No shortcuts. No assumptions. No "we'll handle it later."
 
-**CRITICAL ASSUMPTION:** This skill creates a FRESH worktree starting from scratch. If a worktree already exists for the current branch, it will be REMOVED and recreated. This ensures a clean baseline every time.
+**CRITICAL ASSUMPTION:** This skill creates a FRESH worktree starting from scratch. If a worktree already exists for the current epic/user-story, it will be REMOVED and recreated. Other epic/user-story worktrees are preserved to enable concurrent work.
+
+**REQUIRED INPUT:** Plan file path must be provided to enable epic/user-story-specific naming. Set `PLAN_FILE_PATH` environment variable with path to implementation plan before using this skill.
 
 **IMPORTANT: Worktrees are for development work, not production deployment.** This skill verifies that the development environment works (tests pass, dependencies install correctly) but does NOT require production builds to succeed. Production build issues (like SSR incompatibilities) are irrelevant for development-focused worktrees. The worktree must support iterative development and testing, not production readiness.
 
@@ -52,38 +54,71 @@ Before writing a single line of implementation code, create an isolated worktree
    - NO "we can skip tests" - broken tests now = broken worktree
    - NO "senior engineer says skip" - engineers are fallible, tests are not
 
-### Phase 1.5: Clean Up Existing Worktrees
+### Phase 1.5: Clean Up Existing Worktree for Current Epic/User-Story
 
-**ASSUMPTION:** We start from scratch. If a worktree already exists, remove it completely.
+**ASSUMPTION:** We start from scratch for this specific epic/user-story. Remove only its worktree.
 
-1. **Check for existing worktrees for current branch**
+**IMPORTANT:** This is epic/user-story-specific cleanup. Other epic/user-story worktrees are preserved.
+
+1. **Extract epic/user-story context from plan file path**
 
    ```bash
    current_branch=$(git branch --show-current)
-   worktree_branch="${current_branch}-worktree"
+
+   # Parse epic/user-story identifier from plan file path
+   # Example: .../user-stories/epic2-leaf-components/... → epic2-leaf-components
+   if [[ -n "$PLAN_FILE_PATH" ]]; then
+     context_identifier=$(echo "$PLAN_FILE_PATH" | grep -oP 'user-stories/\K[^/]+')
+
+     if [[ -n "$context_identifier" ]]; then
+       worktree_branch="${current_branch}-${context_identifier}-worktree"
+     else
+       worktree_branch="${current_branch}-worktree"  # Fallback
+     fi
+   else
+     worktree_branch="${current_branch}-worktree"  # Fallback for backward compatibility
+   fi
+   ```
+
+2. **Check for existing worktree**
+
+   ```bash
    git worktree list | grep "$worktree_branch"
    ```
 
-2. **If worktree exists, remove it completely**
+3. **If this specific worktree exists, remove it completely**
 
    ```bash
    # Remove worktree directory and entry
-   git worktree remove .worktrees/$worktree_branch --force
+   git worktree remove .worktrees/$worktree_branch --force 2>/dev/null || true
 
    # Delete the branch
-   git branch -D $worktree_branch
+   git branch -D $worktree_branch 2>/dev/null || true
    ```
 
+   - ONLY removes worktree for current epic/user-story
+   - Other epic/user-story worktrees are preserved (enables concurrent work)
    - ALWAYS clean up completely before creating new worktree
    - NO "reuse existing worktree" - fresh start every time
-   - NO "preserve work in progress" - commit to main branch first
+   - NO "preserve work in progress" - commit to feature branch first
 
 ### Phase 2: Worktree Creation
 
 1. **Create worktree using `using-git-worktrees` skill**
+   - Pass `PLAN_FILE_PATH` to enable epic/user-story naming
    - Follow that skill's process exactly
    - Let it handle directory selection and safety verification
    - NO manual worktree creation - use the skill
+
+   **Example:**
+
+   ```bash
+   # Set plan file path for epic/user-story context extraction
+   export PLAN_FILE_PATH="/path/to/user-stories/epic2-leaf-components/epic2-filecache-plan.md"
+
+   # Call using-git-worktrees skill (it will parse epic context automatically)
+   # Result: typescript-refactor-epic2-leaf-components-worktree
+   ```
 
 ### Phase 3: Environment Verification
 

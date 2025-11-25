@@ -13,7 +13,7 @@ Write comprehensive implementation plans assuming the engineer has zero context 
 Assume they are a skilled developer, but know almost nothing about our toolset or problem domain. Assume they don't know good test design very well.
 
 **Announce at start:** "I'm using the writing-plans skill to create the implementation plan."
-**Save plans to:** [Save to the same location as the design plan. Display location to user]
+**Save plans to:** [Save implementation plan to the epic/user-story folder. Display location to user]
 
 ## Required Pre-Flight Checklist
 1. Make sure [test-driven-development skill](../test-driven-development/SKILL.md) %% force-extract %% is in your context window

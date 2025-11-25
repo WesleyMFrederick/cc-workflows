@@ -29,6 +29,10 @@ Execute plan by dispatching fresh subagent per task, with code review after each
 
 ## The Process
 
+**File Organization:**
+- Task result files save to `{{epic-or-user-story-folder}}/tasks/` subfolder
+- This pattern applies to BOTH epic-level (`epic{{X}}-{{name}}/tasks/`) AND user-story-level (`us{{X.Y}}-{{name}}/tasks/`) implementations
+
 ### 1. Load Plan
 
 Read plan file, create TodoWrite with all tasks.
@@ -62,7 +66,7 @@ Task tool (
     6. Write results to file
     7. Report back
 
-    CRITICAL: Write your results to {{user-stories-folder}}/task-{{task-number}}-dev-results.md with:
+    CRITICAL: Write your results to {{epic-or-user-story-folder}}/tasks/task-{{task-number}}-dev-results.md with:
     - Task number and name
     - What you implemented
     - Tests written and test results
@@ -94,7 +98,7 @@ Task tool (superpowers:code-reviewer):
     ```
 
     Read implementation results:
-    - Dev results: {{user-stories-folder}}/task-{{task-number}}-dev-results.md
+    - Dev results: {{epic-or-user-story-folder}}/tasks/task-{{task-number}}-dev-results.md
 
     Your job:
     1. Read plan task to understand requirements
@@ -103,7 +107,7 @@ Task tool (superpowers:code-reviewer):
     4. Identify issues (BLOCKING/Critical/Important/Minor)
     5. Write review results
 
-    CRITICAL: Write your review to {{user-stories-folder}}/task-{{task-number}}-review-results.md with:
+    CRITICAL: Write your review to {{epic-or-user-story-folder}}/tasks/task-{{task-number}}-review-results.md with:
     - Task number and name
     - Review date
     - Strengths
@@ -116,6 +120,43 @@ Task tool (superpowers:code-reviewer):
 ```
 
 **Code reviewer returns:** Summary + review results file location.
+
+### 3a. Cleanup Background Processes
+
+**MANDATORY: After each task review, before proceeding to fixes.**
+
+Subagents may spawn vitest test processes (watch mode, UI mode) that don't cleanup automatically. Each orphaned process consumes ~14GB memory.
+
+**Check for orphaned processes:**
+
+```bash
+# Check for running vitest processes
+ps aux | grep -i vitest | grep -v grep
+```
+
+**If vitest processes found:**
+
+```bash
+# Kill vitest processes
+pkill -f "vitest" || true
+
+# Verify cleanup succeeded
+ps aux | grep -i vitest | grep -v grep
+# Should return nothing
+```
+
+**VERIFICATION REQUIRED:** Process list must be empty before proceeding to Step 4.
+
+**Common sources:**
+- Subagent used `npm run test:watch` instead of `npm test`
+- Subagent ran tests in background without cleanup
+- Test failures left worker processes hanging
+
+**Red flags indicating you're about to skip this:**
+- "No processes showing up now" → Verify EVERY time, evidence before assumptions
+- "Cleanup can wait until end" → 14GB × 4 processes × N tasks = exponential waste
+- "forceExit handles this" → Only works when vitest completes normally, not watch/UI modes
+- "Process will timeout eventually" → No timeout configured, runs indefinitely
 
 ### 4. Apply Review Feedback
 
@@ -173,8 +214,8 @@ Code-reviewer may identify BLOCKING when:
        ```
 
        Read context files:
-       - Dev results: {{user-stories-folder}}/task-{{task-number}}-dev-results.md
-       - Review results: {{user-stories-folder}}/task-{{task-number}}-review-results.md
+       - Dev results: {{epic-or-user-story-folder}}/tasks/task-{{task-number}}-dev-results.md
+       - Review results: {{epic-or-user-story-folder}}/tasks/task-{{task-number}}-review-results.md
 
        BLOCKING ISSUE:
        [paste full BLOCKING issue from code-reviewer]
@@ -191,7 +232,7 @@ Code-reviewer may identify BLOCKING when:
        9. Write decision document
        10. Report back
 
-       CRITICAL: Write your decision to {{user-stories-folder}}/task-{{task-number}}-arch-decision.md with:
+       CRITICAL: Write your decision to {{epic-or-user-story-folder}}/tasks/task-{{task-number}}-arch-decision.md with:
        - Task number and name
        - Decision date
        - BLOCKING issue summary
@@ -271,10 +312,10 @@ Task tool (general-purpose):
 
     Read context files:
     - Plan task (via citation extraction above)
-    - Dev results: {{user-stories-folder}}/task-{{task-number}}-dev-results.md
-    - Review results: {{user-stories-folder}}/task-{{task-number}}-review-results.md
+    - Dev results: {{epic-or-user-story-folder}}/tasks/task-{{task-number}}-dev-results.md
+    - Review results: {{epic-or-user-story-folder}}/tasks/task-{{task-number}}-review-results.md
     {{#if arch-decision-exists}}
-    - Arch decision: {{user-stories-folder}}/task-{{task-number}}-arch-decision.md
+    - Arch decision: {{epic-or-user-story-folder}}/tasks/task-{{task-number}}-arch-decision.md
     {{/if}}
 
     Issues to fix:
@@ -294,7 +335,7 @@ Task tool (general-purpose):
     7. Commit your work
     8. Write fix results
 
-    CRITICAL: Write your results to {{user-stories-folder}}/task-{{task-number}}-fix-results.md with:
+    CRITICAL: Write your results to {{epic-or-user-story-folder}}/tasks/task-{{task-number}}-fix-results.md with:
     - Task number and name
     - Issues addressed
     - Changes made
@@ -396,9 +437,16 @@ Done!
 
 **Never:**
 - Skip code review between tasks
+- Skip process cleanup after task review (Step 3a)
 - Proceed with unfixed Critical issues
 - Dispatch multiple implementation subagents in parallel (conflicts)
 - Implement without reading plan task
+
+**Process cleanup rationalizations to reject:**
+- "No processes showing up now" → Verify EVERY time with evidence
+- "Cleanup can wait until end" → Memory waste compounds across tasks
+- "forceExit handles this" → Only works when vitest exits normally
+- "Process will timeout eventually" → No timeout configured, runs indefinitely
 
 **If subagent fails task:**
 - Dispatch fix subagent with specific instructions

@@ -46,7 +46,7 @@ Read [ARCHITECTURE-PRINCIPLES](ARCHITECTURE-PRINCIPLES.md) %% force-extract %%
 
 ### Architectural and System Design
 
-- **Architecture Pattern:** Monorepo (multi-package workspace) — a single repo acting as a [centralized, single source of truth](<../resume-coach/design-docs/Architecture Principles.md#^foundation-reuse>) for multiple, distinct development utilities. The first tool is the `citation-manager`.
+- **Architecture Pattern:** Monorepo (multi-package workspace) — a single repo acting as a [centralized, single source of truth](ARCHITECTURE-PRINCIPLES.md#^foundation-reuse) for multiple, distinct development utilities. The first tool is the `citation-manager`.
 
 - **System Design:** tooling monorepo hosting a multi-command CLI with shared packages for test/build. This is a toolkit of independent tools that consume common services like [testing (FR2)](design-docs/features/20250928-cc-workflows-workspace-scaffolding/cc-workflows-workspace-prd.md#^FR2)and [builds (FR3)](design-docs/features/20250928-cc-workflows-workspace-scaffolding/cc-workflows-workspace-prd.md#^FR3)—not a single linear pipeline.
 
@@ -58,7 +58,7 @@ Read [ARCHITECTURE-PRINCIPLES](ARCHITECTURE-PRINCIPLES.md) %% force-extract %%
 
 ### Key Software Design Patterns
 
-- [**Modular Component Design**](<../resume-coach/design-docs/Architecture Principles.md#Modular Design Principles>): - each tool (e.g., citation-manager) is isolated for independent evolution and migration, while shared utilities live in shared packages.
+- [**Modular Component Design**](ARCHITECTURE-PRINCIPLES.md#^modular-design-principles-definition): - each tool (e.g., citation-manager) is isolated for independent evolution and migration, while shared utilities live in shared packages.
 
 ### Key Characteristics
 - **Primary Language**: TypeScript with strict type checking, compiled to JavaScript for execution
@@ -70,7 +70,7 @@ Read [ARCHITECTURE-PRINCIPLES](ARCHITECTURE-PRINCIPLES.md) %% force-extract %%
 - **Scaling Approach**: Scales by adding new, isolated tool packages to the workspace, with a clear migration path to more advanced tooling if the package count grows significantly. Start with `npm workspaces`; if growth demands, adopt `Nx/Turborepo` for caching & task orchestration.
 
 ### Rationale
-- [**Simplicity First:**](<../resume-coach/design-docs/Architecture Principles.md#^simplicity-first>) Native Node.js + npm integration minimizes tooling overhead.
+- [**Simplicity First:**](ARCHITECTURE-PRINCIPLES.md#^simplicity-first) Native Node.js + npm integration minimizes tooling overhead.
 - **Right-Sized Performance:** Optimized for ~5–10 tools/packages—fast installs/builds without premature complexity.
 - **Less Meta-Work:** Shared dependencies and scripts reduce coordination cost while keeping each tool|package independently maintainable.
 - [ADR-001: NPM Workspaces for Monorepo Management](#ADR-001%20NPM%20Workspaces%20for%20Monorepo%20Management)
@@ -307,7 +307,9 @@ tools/citation-manager/
 │           └── user-stories/                        # Epic or user story implementations
 │               ├── epic{{X}}-{{epic-name}}/         # FAST/SIMPLE: Epic-level organization
 │               │   ├── epic{{X}}-{{epic-name}}-design.md
-│               │   └── epic{{X}}-{{epic-name}}-plan.md
+│               │   ├── epic{{X}}-{{epic-name}}-plan.md
+│               │   └── tasks/                             # Task implementation details (optional)
+│               │       └── task-{{task-number}}-dev-results.md
 │               └── us{{X.Y}}-{{story-name}}/        # SLOW/COMPLEX: User-story-level organization
 │                   ├── us{{X.Y}}-{{story-name}}.md
 │                   ├── us{{X.Y}}-{{story-name}}-design-plan.md
@@ -322,7 +324,7 @@ tools/citation-manager/
 
 #### File Naming Patterns
 
-**Action-Based Organization:** Following our [Action-Based File Organization](<../resume-coach/design-docs/Architecture Principles.md#^action-based-file-organization-definition>) principle, files should be named by their primary transformation or operation on data.
+**Action-Based Organization:** Following our [Action-Based File Organization](ARCHITECTURE-PRINCIPLES.md#^action-based-file-organization-definition) principle, files should be named by their primary transformation or operation on data.
 
 ##### Core File Types
 
@@ -482,19 +484,19 @@ Use for complex features requiring staged delivery, unclear requirements, or iso
 ---
 ## Coding Standards and Conventions
 
-This project follows JavaScript/TypeScript naming conventions with one strategic exception for test methods, aligned with our [Self-Contained Naming Principles](<../resume-coach/design-docs/Architecture Principles.md#^self-contained-naming-principles-definition>).
+This project follows JavaScript/TypeScript naming conventions with one strategic exception for test methods, aligned with our [Self-Contained Naming Principles](ARCHITECTURE-PRINCIPLES.md#^self-contained-naming-principles-definition).
 
 ### TypeScript Naming Conventions
 
-This project follows TypeScript naming conventions aligned with our [Action-Based File Organization](<../resume-coach/design-docs/Architecture Principles.md#^action-based-file-organization-definition>) principle.
+This project follows TypeScript naming conventions aligned with our [Action-Based File Organization](ARCHITECTURE-PRINCIPLES.md#^action-based-file-organization-definition) principle.
 
 - **Files**: File naming depends on purpose:
   - **Tool Scripts** (executable entry points): Use **kebab-case.ts** (e.g., `citation-manager.ts`, `ask-enhanced.ts`)
   - **Implementation Modules** (transformation operations): Use **camelCase.ts** named by their primary transformation (e.g., `parseMarkdown.ts`, `validateCitations.ts`, `extractContent.ts`)
-  - **Rationale**: File names describe operations that transform data, following [Transformation Naming](<../resume-coach/design-docs/Architecture Principles.md#^transformation-naming>)
+  - **Rationale**: File names describe operations that transform data, following [Transformation Naming](ARCHITECTURE-PRINCIPLES.md#^transformation-naming)
 
 - **Functions & Variables**: Use **camelCase** for all functions and variables (e.g., `parseMarkdown`, `extractContent`, `validationResult`)
-  - **Primary Exports**: Each file's main export should match or closely relate to the file name ([Primary Export Pattern](<../resume-coach/design-docs/Architecture Principles.md#^primary-export-pattern>))
+  - **Primary Exports**: Each file's main export should match or closely relate to the file name ([Primary Export Pattern](ARCHITECTURE-PRINCIPLES.md#^primary-export-pattern))
   - **Type Annotations**: Include explicit type annotations for function parameters and return types
 
 - **Constants**: Use **UPPER_SNAKE_CASE** for constants (e.g., `MAX_DEPTH`, `DEFAULT_ENCODING`)
@@ -507,7 +509,7 @@ This project follows TypeScript naming conventions aligned with our [Action-Base
 - **Type Aliases**: Use **TitleCase** for type aliases (e.g., `ValidationError`, `CitationTarget`)
 
 - **Type Files**: Use **camelCase.ts** with `Types` suffix for shared type definitions (e.g., `citationTypes.ts`, `validationTypes.ts`)
-  - **Rationale**: Separates data contracts (WHAT) from operations (HOW) per [Data Contracts Separate](<../resume-coach/design-docs/Architecture Principles.md#^data-contracts-separate>)
+  - **Rationale**: Separates data contracts (WHAT) from operations (HOW) per [Data Contracts Separate](ARCHITECTURE-PRINCIPLES.md#^data-contracts-separate)
 
 - **Enums**: Use **TitleCase** for enum names and **UPPER_SNAKE_CASE** for enum values (e.g., `enum LogLevel { DEBUG = "DEBUG", INFO = "INFO" }`)
 
@@ -521,14 +523,14 @@ This project follows TypeScript naming conventions aligned with our [Action-Base
 
 ### Code Organization
 
-- **Modular Structure**: Each module should have a single, clear responsibility ([Single Responsibility](<../resume-coach/design-docs/Architecture Principles.md#^single-responsibility>))
-- **Interface Boundaries**: Define clear APIs between components ([Black Box Interfaces](<../resume-coach/design-docs/Architecture Principles.md#^black-box-interfaces>))
-- **Error Handling**: Implement fail-fast principles with clear error messages ([Fail Fast](<../resume-coach/design-docs/Architecture Principles.md#^fail-fast>))
+- **Modular Structure**: Each module should have a single, clear responsibility ([Single Responsibility](ARCHITECTURE-PRINCIPLES.md#^single-responsibility))
+- **Interface Boundaries**: Define clear APIs between components ([Black Box Interfaces](ARCHITECTURE-PRINCIPLES.md#^black-box-interfaces))
+- **Error Handling**: Implement fail-fast principles with clear error messages ([Fail Fast](ARCHITECTURE-PRINCIPLES.md#^fail-fast))
 
 ### Documentation Requirements
 
-- **Self-Documenting Code**: Names should provide immediate understanding without lookup ([Immediate Understanding](<../resume-coach/design-docs/Architecture Principles.md#immediate-understanding>))
-- **Inline Comments**: Include contextual comments for complex logic ([Contextual Comments](<../resume-coach/design-docs/Architecture Principles.md#contextual-comments>))
+- **Self-Documenting Code**: Names should provide immediate understanding without lookup ([Immediate Understanding](ARCHITECTURE-PRINCIPLES.md#immediate-understanding))
+- **Inline Comments**: Include contextual comments for complex logic ([Contextual Comments](ARCHITECTURE-PRINCIPLES.md#contextual-comments))
 - **Function Documentation**: Use docstrings to document public APIs and their contracts
 
 ---
@@ -595,7 +597,7 @@ Our strategy distinguishes between cross-cutting workspace functionality and too
 
 #### Testing Naming Conventions
 
-Test method names follow our [Self-Contained Naming Principles](<../resume-coach/design-docs/Architecture Principles.md#^self-contained-naming-principles-definition>) with a specific exception to optimize for readability and clarity:
+Test method names follow our [Self-Contained Naming Principles](ARCHITECTURE-PRINCIPLES.md#^self-contained-naming-principles-definition) with a specific exception to optimize for readability and clarity:
 
 ##### Test Description Naming: Natural Language Convention
 - **Convention**: Use **natural language with spaces** for test descriptions in `it()` method strings
@@ -629,7 +631,7 @@ describe('PaymentProcessor', () => {
 });
 ```
 
-This naming convention aligns with our **"Names as Contracts"** philosophy ([Descriptive Labels](<../resume-coach/design-docs/Architecture Principles.md#^descriptive-labels>), [Immediate Understanding](<../resume-coach/design-docs/Architecture Principles.md#^immediate-understanding>)) by prioritizing communication clarity and natural readability.
+This naming convention aligns with our **"Names as Contracts"** philosophy ([Descriptive Labels](ARCHITECTURE-PRINCIPLES.md#^descriptive-labels), [Immediate Understanding](ARCHITECTURE-PRINCIPLES.md#^immediate-understanding)) by prioritizing communication clarity and natural readability.
 
 #### BDD-Style Test Structure (Given-When-Then)
 
