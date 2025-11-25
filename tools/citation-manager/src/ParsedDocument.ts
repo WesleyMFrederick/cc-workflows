@@ -68,7 +68,7 @@ class ParsedDocument {
 	 * Get all links in the document
 	 * @returns {Array<Object>} Array of all link objects from parser output
 	 */
-	getLinks() {
+	getLinks(): LinkObject[] {
 		// Return links array from parser output
 		return this._data.links;
 	}
