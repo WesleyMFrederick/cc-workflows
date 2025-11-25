@@ -15,7 +15,31 @@ Guide completion of development work by presenting clear options and handling ch
 
 ## The Process
 
-### Step 1: Verify Tests
+### Step 1: Check Dirty State and Commit
+
+**Check for unstaged/uncommitted changes:**
+
+```bash
+git status --porcelain
+```
+
+**If dirty (has unstaged/uncommitted changes):**
+
+```bash
+# Stage all changes
+git add .
+
+# Create final commit
+git commit -m "feat: final changes before merge
+
+🤖 Generated with [Claude Code](https://claude.com/claude-code)
+
+Co-Authored-By: Claude <noreply@anthropic.com>"
+```
+
+**If clean:** Continue to Step 2.
+
+### Step 2: Verify Tests
 
 **Before presenting options, verify tests pass:**
 
@@ -34,11 +58,11 @@ Tests failing (<N> failures). Must fix before completing:
 Cannot proceed with merge/PR until tests pass.
 ```
 
-Stop. Don't proceed to Step 2.
+Stop. Don't proceed to Step 3.
 
-**If tests pass:** Continue to Step 2.
+**If tests pass:** Continue to Step 3.
 
-### Step 2: Determine Base Branch
+### Step 3: Determine Base Branch
 
 ```bash
 # Try common base branches
@@ -47,7 +71,7 @@ git merge-base HEAD main 2>/dev/null || git merge-base HEAD master 2>/dev/null
 
 Or ask: "This branch split from main - is that correct?"
 
-### Step 3: Present Options
+### Step 4: Present Options
 
 Present exactly these 4 options:
 
@@ -64,7 +88,7 @@ Which option?
 
 **Don't add explanation** - keep options concise.
 
-### Step 4: Execute Choice
+### Step 5: Execute Choice
 
 #### Option 1: Merge Locally
 
@@ -87,7 +111,7 @@ git branch -d <worktree-branch>
 
 **Note:** This is a regular merge (NOT squash) because you're merging worktree → feature branch. Use `merging-feature-branches-to-main` skill later to squash merge feature branch → main after human review.
 
-Then: Cleanup worktree (Step 5)
+Then: Cleanup worktree (Step 6)
 
 #### Option 2: Push and Create PR
 
@@ -106,7 +130,7 @@ EOF
 )"
 ```
 
-Then: Cleanup worktree (Step 5)
+Then: Cleanup worktree (Step 6)
 
 #### Option 3: Keep As-Is
 
@@ -136,9 +160,9 @@ git checkout <base-branch>
 git branch -D <feature-branch>
 ```
 
-Then: Cleanup worktree (Step 5)
+Then: Cleanup worktree (Step 6)
 
-### Step 5: Cleanup Worktree
+### Step 6: Cleanup Worktree
 
 **For Options 1, 2, 4:**
 
@@ -148,10 +172,23 @@ Check if in worktree:
 git worktree list | grep $(git branch --show-current)
 ```
 
-If yes:
+If yes, try to remove:
 
 ```bash
 git worktree remove <worktree-path>
+```
+
+**If removal fails due to dirty state:**
+
+Report error and stop. **NEVER use --force to delete dirty worktrees.**
+
+```text
+❌ Cannot remove worktree - contains uncommitted changes
+Worktree path: <path>
+Branch: <branch-name>
+
+This indicates uncommitted work was not properly saved.
+Please investigate manually before removing.
 ```
 
 **For Option 3:** Keep worktree.
@@ -194,12 +231,16 @@ git worktree remove <worktree-path>
 - Merge without verifying tests on result
 - Delete work without confirmation
 - Force-push without explicit request
+- Use --force to remove dirty worktrees
+- Skip committing unstaged changes before merge
 
 **Always:**
+- Check for and commit dirty state in Step 1
 - Verify tests before offering options
 - Present exactly 4 options
 - Get typed confirmation for Option 4
 - Clean up worktree for Options 1 & 4 only
+- Stop if worktree removal fails (indicates uncommitted work)
 
 ## Integration
 
