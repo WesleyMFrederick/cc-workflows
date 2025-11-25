@@ -1,5 +1,7 @@
 import { normalize, resolve } from "node:path";
 import ParsedDocument from "./ParsedDocument.js";
+import type { ParserOutput } from "./types/citationTypes.js";
+import type MarkdownParser from "./MarkdownParser.js";
 
 /**
  * Promise-based cache for parsed markdown files
@@ -21,14 +23,17 @@ import ParsedDocument from "./ParsedDocument.js";
  * const result2 = await cache.resolveParsedFile('/path/to/file.md'); // Uses cached Promise
  */
 export class ParsedFileCache {
+	private parser: MarkdownParser;
+	private cache: Map<string, Promise<ParsedDocument>>;
+
 	/**
 	 * Initialize cache with markdown parser
 	 *
-	 * @param {MarkdownParser} markdownParser - Parser instance for processing markdown files
+	 * @param markdownParser - Parser instance for processing markdown files
 	 */
-	constructor(markdownParser) {
+	constructor(markdownParser: MarkdownParser) {
 		this.parser = markdownParser;
-		this.cache = new Map();
+		this.cache = new Map<string, Promise<ParsedDocument>>();
 	}
 
 	/**
