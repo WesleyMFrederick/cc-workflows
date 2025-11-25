@@ -235,7 +235,7 @@ class ParsedDocument {
 	 * @private
 	 * @returns {string[]} Array of all anchor IDs
 	 */
-	_getAnchorIds(): string[] {
+	private _getAnchorIds(): string[] {
 		// Check if cache exists
 		if (this._cachedAnchorIds === null) {
 			// Build Set of unique IDs
@@ -268,7 +268,7 @@ class ParsedDocument {
 	 * @param {string[]} candidates - Array of candidate strings
 	 * @returns {string[]} Array of similar strings sorted by similarity (max 5)
 	 */
-	_fuzzyMatch(target: string, candidates: string[]): string[] {
+	private _fuzzyMatch(target: string, candidates: string[]): string[] {
 		// Calculate similarity scores for all candidates
 		const matches = [];
 		for (const candidate of candidates) {
@@ -298,7 +298,7 @@ class ParsedDocument {
 	 * @param {string} str2 - Second string
 	 * @returns {number} Similarity score between 0 and 1 (1 = identical)
 	 */
-	_calculateSimilarity(str1: string, str2: string): number {
+	private _calculateSimilarity(str1: string, str2: string): number {
 		// Handle edge cases
 		if (str1 === str2) return 1.0;
 		if (str1.length === 0 || str2.length === 0) return 0.0;
