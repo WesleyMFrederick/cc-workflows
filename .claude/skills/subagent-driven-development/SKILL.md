@@ -84,6 +84,7 @@ Task tool (
     NEVER skip this step. Orphaned test processes consume ~14GB memory each.
 
     CRITICAL: Write your results to {{epic-or-user-story-folder}}/tasks/task-{{task-number}}-dev-results.md with:
+    - Model used for implementation
     - Task number and name
     - What you implemented
     - Tests written and test results
@@ -108,6 +109,12 @@ Task tool (superpowers:code-reviewer):
   prompt: |
     You are reviewing Task {{task-number}} implementation.
 
+    MANDATORY: Use the `elements-of-style:writing-clearly-and-concisely` skill when writing your review.
+
+    CRITICAL: This is a task-level review. Be concise.
+    - Target 10-30 lines for approved tasks
+    - Target 30-80 lines for tasks with issues
+
     CRITICAL: Extract task context from plan using citation tool:
 
     ```bash
@@ -123,7 +130,7 @@ Task tool (superpowers:code-reviewer):
     3. Review code changes (BASE_SHA to HEAD_SHA)
     4. Identify issues (BLOCKING/Critical/Important/Minor)
     5. Clean up test processes (MANDATORY - see below)
-    6. Write review results
+    6. Write concise review results
 
     CRITICAL - Test Process Cleanup (Step 5):
     Before writing results, you MUST clean up any test processes you spawned:
@@ -141,13 +148,18 @@ Task tool (superpowers:code-reviewer):
 
     NEVER skip this step. Orphaned test processes consume ~14GB memory each.
 
-    CRITICAL: Write your review to {{epic-or-user-story-folder}}/tasks/task-{{task-number}}-review-results.md with:
-    - Task number and name
-    - Review date
-    - Strengths
-    - Issues (categorized as BLOCKING/Critical/Important/Minor)
-    - Overall assessment
-    - Recommendation (approve/fix required)
+    CRITICAL: Write concise review to {{epic-or-user-story-folder}}/tasks/task-{{task-number}}-review-results.md with:
+    - Model used for review
+    - Brief summary (1-2 sentences)
+    - Issues (only include categories with actual issues)
+    - Verdict: APPROVED or FIX REQUIRED
+
+    CRITICAL VERDICT RULE: If you found ANY issues (BLOCKING/Critical/Important/Minor), you MUST set verdict to FIX REQUIRED. NEVER approve tasks that have documented issues.
+
+    Keep it brief:
+    - Skip "Strengths" section for approved tasks (ZERO issues)
+    - Skip empty issue categories (don't write "Critical: None")
+    - No comprehensive analysis - this is task-level, not PR-level
 
     BASE_SHA: [commit before task]
     HEAD_SHA: [current commit]
