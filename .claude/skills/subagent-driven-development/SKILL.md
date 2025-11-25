@@ -63,8 +63,25 @@ Task tool (
     3. Write tests (following TDD if task says to)
     4. Verify implementation works
     5. Commit your work
-    6. Write results to file
-    7. Report back
+    6. Clean up test processes (MANDATORY - see below)
+    7. Write results to file
+    8. Report back
+
+    CRITICAL - Test Process Cleanup (Step 6):
+    Before writing results, you MUST clean up any test processes you spawned:
+
+    ```bash
+    # Check for running vitest processes
+    ps aux | grep -i vitest | grep -v grep
+
+    # If any found, kill them
+    pkill -f "vitest" || true
+
+    # Verify cleanup succeeded (should return nothing)
+    ps aux | grep -i vitest | grep -v grep
+    ```
+
+    NEVER skip this step. Orphaned test processes consume ~14GB memory each.
 
     CRITICAL: Write your results to {{epic-or-user-story-folder}}/tasks/task-{{task-number}}-dev-results.md with:
     - Task number and name
