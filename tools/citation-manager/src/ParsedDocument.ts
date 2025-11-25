@@ -1,3 +1,9 @@
+import type {
+	ParserOutput,
+	LinkObject,
+	AnchorObject,
+} from "./types/citationTypes.js";
+
 /**
  * Facade providing stable query interface over MarkdownParser.Output.DataContract
  *
