@@ -1,3 +1,40 @@
+// Types defined inline: FileCache is leaf component with no consumers needing these types
+// If future components need these types, migrate to src/types/fileCacheTypes.ts
+interface CacheStats {
+	totalFiles: number;
+	duplicates: number;
+	scopeFolder: string;
+	realScopeFolder: string;
+}
+
+interface ResolveResultSuccess {
+	found: true;
+	path: string;
+	fuzzyMatch?: boolean;
+	correctedFilename?: string;
+	message?: string;
+}
+
+interface ResolveResultFailure {
+	found: false;
+	reason: 'duplicate' | 'not_found' | 'duplicate_fuzzy';
+	message: string;
+}
+
+type ResolveResult = ResolveResultSuccess | ResolveResultFailure;
+
+interface FileEntry {
+	filename: string;
+	path: string;
+	isDuplicate: boolean;
+}
+
+interface CacheStatsDetail {
+	totalFiles: number;
+	duplicateCount: number;
+	duplicates: string[];
+}
+
 /**
  * Filename-based cache for smart file resolution
  *
@@ -21,17 +58,22 @@
  * // Returns { found: true, path: '/project/docs/design/architecture.md' }
  */
 export class FileCache {
+	private fs: typeof import('fs');
+	private path: typeof import('path');
+	private cache: Map<string, string>; // filename -> absolute path
+	private duplicates: Set<string>; // filenames that appear multiple times
+
 	/**
 	 * Initialize cache with file system and path dependencies
 	 *
-	 * @param {Object} fileSystem - Node.js fs module (or mock for testing)
-	 * @param {Object} pathModule - Node.js path module (or mock for testing)
+	 * @param fileSystem - Node.js fs module (or mock for testing)
+	 * @param pathModule - Node.js path module (or mock for testing)
 	 */
-	constructor(fileSystem, pathModule) {
+	constructor(fileSystem: typeof import('fs'), pathModule: typeof import('path')) {
 		this.fs = fileSystem;
 		this.path = pathModule;
-		this.cache = new Map(); // filename -> absolute path
-		this.duplicates = new Set(); // filenames that appear multiple times
+		this.cache = new Map<string, string>();
+		this.duplicates = new Set<string>();
 	}
 
 	/**
@@ -44,7 +86,7 @@ export class FileCache {
 	 * @param {string} scopeFolder - Root folder to scan (can be symlink, will be resolved)
 	 * @returns {Object} Cache statistics with { totalFiles, duplicates, scopeFolder, realScopeFolder }
 	 */
-	buildCache(scopeFolder) {
+	buildCache(scopeFolder: string): CacheStats {
 		this.cache.clear();
 		this.duplicates.clear();
 
@@ -78,7 +120,7 @@ export class FileCache {
 	}
 
 	// Recursively scan directory for markdown files
-	scanDirectory(dirPath) {
+	private scanDirectory(dirPath: string): void {
 		try {
 			const entries = this.fs.readdirSync(dirPath);
 
@@ -96,14 +138,15 @@ export class FileCache {
 			}
 		} catch (error) {
 			// Skip directories we can't read (permissions, etc.)
+			const errorMessage = error instanceof Error ? error.message : String(error);
 			console.warn(
-				`Warning: Could not read directory ${dirPath}: ${error.message}`,
+				`Warning: Could not read directory ${dirPath}: ${errorMessage}`,
 			);
 		}
 	}
 
 	// Add file to cache or mark as duplicate if filename already exists
-	addToCache(filename, fullPath) {
+	private addToCache(filename: string, fullPath: string): void {
 		if (this.cache.has(filename)) {
 			// Mark as duplicate
 			this.duplicates.add(filename);
@@ -125,7 +168,7 @@ export class FileCache {
 	 * @param {string} filename - Filename to resolve (with or without .md extension)
 	 * @returns {Object} Result object with { found, path?, reason?, message?, fuzzyMatch?, correctedFilename? }
 	 */
-	resolveFile(filename) {
+	resolveFile(filename: string): ResolveResult {
 		// Check for exact filename match first
 		if (this.cache.has(filename)) {
 			if (this.duplicates.has(filename)) {
@@ -137,7 +180,7 @@ export class FileCache {
 			}
 			return {
 				found: true,
-				path: this.cache.get(filename),
+				path: this.cache.get(filename)!,
 			};
 		}
 
@@ -155,7 +198,7 @@ export class FileCache {
 			}
 			return {
 				found: true,
-				path: this.cache.get(withMdExt),
+				path: this.cache.get(withMdExt)!,
 			};
 		}
 
@@ -186,7 +229,7 @@ export class FileCache {
 	 * @param {string} filename - Original filename that failed exact match
 	 * @returns {Object|null} Fuzzy match result with { found, path, fuzzyMatch: true, correctedFilename, message } or null
 	 */
-	findFuzzyMatch(filename) {
+	private findFuzzyMatch(filename: string): ResolveResult | null {
 		const allFiles = Array.from(this.cache.keys());
 
 		// Strategy 1: Fix double .md extension (e.g., "file.md.md" → "file.md")
@@ -202,7 +245,7 @@ export class FileCache {
 				}
 				return {
 					found: true,
-					path: this.cache.get(fixedFilename),
+					path: this.cache.get(fixedFilename)!,
 					fuzzyMatch: true,
 					correctedFilename: fixedFilename,
 					message: `Auto-corrected double extension: "${filename}" → "${fixedFilename}"`,
@@ -233,7 +276,7 @@ export class FileCache {
 					}
 					return {
 						found: true,
-						path: this.cache.get(correctedFilename),
+						path: this.cache.get(correctedFilename)!,
 						fuzzyMatch: true,
 						correctedFilename: correctedFilename,
 						message: `Auto-corrected typo: "${filename}" → "${correctedFilename}"`,
@@ -262,7 +305,7 @@ export class FileCache {
 			if (closeMatch) {
 				return {
 					found: true,
-					path: this.cache.get(closeMatch),
+					path: this.cache.get(closeMatch)!,
 					fuzzyMatch: true,
 					correctedFilename: closeMatch,
 					message: `Found similar architecture file: "${filename}" → "${closeMatch}"`,
@@ -274,7 +317,7 @@ export class FileCache {
 	}
 
 	// Get all cached files with duplicate status
-	getAllFiles() {
+	getAllFiles(): FileEntry[] {
 		return Array.from(this.cache.entries()).map(([filename, path]) => ({
 			filename,
 			path,
@@ -283,7 +326,7 @@ export class FileCache {
 	}
 
 	// Get cache statistics (total files, duplicates)
-	getCacheStats() {
+	getCacheStats(): CacheStatsDetail {
 		return {
 			totalFiles: this.cache.size,
 			duplicateCount: this.duplicates.size,
