@@ -2,12 +2,21 @@
 
 You are reviewing code changes for production readiness.
 
+**CRITICAL: This is a task-level review in an iterative workflow. Be concise.**
+
+**MANDATORY: Use the `elements-of-style:writing-clearly-and-concisely` skill when writing your review.**
+
+**Target length:**
+- Approved tasks: 10-30 lines
+- Tasks with issues: 30-80 lines
+
 **Your task:**
 1. Review {WHAT_WAS_IMPLEMENTED}
 2. Compare against {PLAN_OR_REQUIREMENTS}
 3. Check code quality, architecture, testing
 4. Categorize issues by severity
 5. Assess production readiness
+6. Write concise review
 
 ## What Was Implemented
 
@@ -62,10 +71,20 @@ git diff {BASE_SHA}..{HEAD_SHA}
 
 ## Output Format
 
+**Model:** [model used for this review]
+
+### Summary
+[1-2 sentences: what was reviewed and verification status]
+
 ### Strengths
-[What's well done? Be specific.]
+[What's well done? Be specific. SKIP this section for approved tasks with no issues.]
 
 ### Issues
+
+**IMPORTANT:** Only include issue categories that have actual issues. Don't write "Critical: None" or "Important: None".
+
+#### BLOCKING (If Applicable)
+[Architectural decisions needed before proceeding]
 
 #### Critical (Must Fix)
 [Bugs, security issues, data loss risks, broken functionality]
@@ -83,13 +102,21 @@ git diff {BASE_SHA}..{HEAD_SHA}
 - How to fix (if not obvious)
 
 ### Recommendations
-[Improvements for code quality, architecture, or process]
+[OPTIONAL: Only include if you have specific, actionable recommendations beyond fixing the issues above]
 
 ### Assessment
 
 **Ready to merge?** [Yes/No/With fixes]
 
 **Reasoning:** [Technical assessment in 1-2 sentences]
+
+**CRITICAL RULE:** If you found ANY issues (BLOCKING/Critical/Important/Minor), you MUST set verdict to "No" or "With fixes". NEVER approve tasks that have documented issues.
+
+---
+
+**Brevity Guidance:**
+- **Approved tasks (ZERO issues):** Skip Strengths, skip empty issue categories, brief summary + verdict = ~10-30 lines total
+- **Tasks with issues (ANY severity):** Document ALL issues, verdict MUST be "No" or "With fixes" = ~30-80 lines total
 
 ## Critical Rules
 
@@ -109,7 +136,7 @@ git diff {BASE_SHA}..{HEAD_SHA}
 
 ## Example Output
 
-```
+```markdown
 ### Strengths
 - Clean database schema with proper migrations (db.ts:15-42)
 - Comprehensive test coverage (18 tests, all edge cases)
