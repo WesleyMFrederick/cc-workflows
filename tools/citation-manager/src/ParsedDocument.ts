@@ -83,7 +83,7 @@ class ParsedDocument {
 	 */
 	getAnchorIds(): string[] {
 		// Return cached anchor IDs (lazy-loaded)
-		return this._getAnchorIds()!;
+		return this._getAnchorIds();
 	}
 
 	/**
