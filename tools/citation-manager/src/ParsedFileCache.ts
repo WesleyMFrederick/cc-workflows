@@ -1,7 +1,7 @@
 import { normalize, resolve } from "node:path";
 import ParsedDocument from "./ParsedDocument.js";
 import type { ParserOutput } from "./types/citationTypes.js";
-import type MarkdownParser from "./MarkdownParser.js";
+import type { MarkdownParser } from "./MarkdownParser.js";
 
 /**
  * Promise-based cache for parsed markdown files
@@ -63,7 +63,7 @@ export class ParsedFileCache {
 
 		// 4. Wrap parser output in ParsedDocument facade before caching
 		const parsedDocPromise = parsePromise.then(
-			(contract) => new ParsedDocument(contract),
+			(contract: ParserOutput) => new ParsedDocument(contract),
 		);
 
 		// 5. Store ParsedDocument Promise IMMEDIATELY (prevents duplicate parses)
