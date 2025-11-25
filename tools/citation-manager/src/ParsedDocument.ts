@@ -15,11 +15,14 @@ import type {
  * @class ParsedDocument
  */
 class ParsedDocument {
+	private _data: ParserOutput;
+	private _cachedAnchorIds: string[] | null;
+
 	/**
 	 * Create a ParsedDocument facade wrapping parser output
-	 * @param {Object} parserOutput - MarkdownParser.Output.DataContract with { filePath, content, tokens, links, headings, anchors }
+	 * @param parserOutput - MarkdownParser.Output.DataContract with filePath, content, tokens, links, headings, anchors
 	 */
-	constructor(parserOutput) {
+	constructor(parserOutput: ParserOutput) {
 		// Store parser output privately for encapsulation
 		this._data = parserOutput;
 
