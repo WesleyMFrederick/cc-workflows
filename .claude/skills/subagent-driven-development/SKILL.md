@@ -122,7 +122,24 @@ Task tool (superpowers:code-reviewer):
     2. Read dev results to understand what was implemented
     3. Review code changes (BASE_SHA to HEAD_SHA)
     4. Identify issues (BLOCKING/Critical/Important/Minor)
-    5. Write review results
+    5. Clean up test processes (MANDATORY - see below)
+    6. Write review results
+
+    CRITICAL - Test Process Cleanup (Step 5):
+    Before writing results, you MUST clean up any test processes you spawned:
+
+    ```bash
+    # Check for running vitest processes
+    ps aux | grep -i vitest | grep -v grep
+
+    # If any found, kill them
+    pkill -f "vitest" || true
+
+    # Verify cleanup succeeded (should return nothing)
+    ps aux | grep -i vitest | grep -v grep
+    ```
+
+    NEVER skip this step. Orphaned test processes consume ~14GB memory each.
 
     CRITICAL: Write your review to {{epic-or-user-story-folder}}/tasks/task-{{task-number}}-review-results.md with:
     - Task number and name
