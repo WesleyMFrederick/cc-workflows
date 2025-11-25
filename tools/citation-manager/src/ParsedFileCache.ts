@@ -45,10 +45,10 @@ export class ParsedFileCache {
 	 *
 	 * Failed parse operations are automatically removed from cache to allow retry.
 	 *
-	 * @param {string} filePath - Path to markdown file (relative or absolute, will be normalized)
-	 * @returns {Promise<ParsedDocument>} ParsedDocument facade instance wrapping parser output
+	 * @param filePath - Path to markdown file (relative or absolute, will be normalized)
+	 * @returns ParsedDocument facade instance wrapping parser output
 	 */
-	async resolveParsedFile(filePath) {
+	async resolveParsedFile(filePath: string): Promise<ParsedDocument> {
 		// 1. Normalize path to absolute for consistent cache keys
 		const cacheKey = resolve(normalize(filePath));
 
