@@ -1,19 +1,67 @@
 ---
 name: setting-up-implementation-worktree
-description: Use when starting implementation work that needs isolation, before executing implementation plans, or when user says to begin development - creates clean worktree with verified environment, committed state, installed dependencies, and passing tests before ANY implementation begins
+description: Use when starting implementation work, before executing implementation plans, or when user says to begin development - supports local worktree mode (isolated development) and online branch mode (Claude Code Online) with verified environment, committed state, and passing tests before ANY implementation begins
 ---
 
 # Setting Up Implementation Worktree
 
 ## Overview
 
-Before writing a single line of implementation code, create an isolated worktree with a verified, working environment. No shortcuts. No assumptions. No "we'll handle it later."
+Before writing a single line of implementation code, set up an isolated environment with a verified, working state. This skill supports TWO modes:
 
-**CRITICAL ASSUMPTION:** This skill creates a FRESH worktree starting from scratch. If a worktree already exists for the current epic/user-story, it will be REMOVED and recreated. Other epic/user-story worktrees are preserved to enable concurrent work.
+**Local Mode** - Creates isolated worktree for local development
+**Online Mode** - Creates branch and pushes to GitHub for Claude Code Online
+
+No shortcuts. No assumptions. No "we'll handle it later."
+
+**LOCAL MODE ASSUMPTION:** Creates a FRESH worktree starting from scratch. If a worktree already exists for the current epic/user-story, it will be REMOVED and recreated. Other epic/user-story worktrees are preserved to enable concurrent work.
+
+**ONLINE MODE ASSUMPTION:** Creates branch from current HEAD and pushes to origin. No worktree artifacts. Branch ready for Claude Code Online to access.
 
 **REQUIRED INPUT:** Plan file path must be provided to enable epic/user-story-specific naming. Set `PLAN_FILE_PATH` environment variable with path to implementation plan before using this skill.
 
 **IMPORTANT: Worktrees are for development work, not production deployment.** This skill verifies that the development environment works (tests pass, dependencies install correctly) but does NOT require production builds to succeed. Production build issues (like SSR incompatibilities) are irrelevant for development-focused worktrees. The worktree must support iterative development and testing, not production readiness.
+
+## Workflow Diagram
+
+```mermaid
+graph TD
+    start@{ shape: stadium, label: "Start: Setting Up Implementation" }
+    mode@{ shape: diam, label: "Select Mode?" }
+
+    start --> mode
+
+    %% Local Mode Path
+    mode -->|local| p1local@{ shape: rect, label: "Phase 1: Pre-flight (git clean + tests)" }
+    p1local --> p15@{ shape: rect, label: "Phase 1.5: Clean up existing worktree" }
+    p15 --> p2local@{ shape: rect, label: "Phase 2: Call using-git-worktrees skill" }
+    p2local --> p3@{ shape: rect, label: "Phase 3: Verify dependencies" }
+    p3 --> p4@{ shape: rect, label: "Phase 4: Run tests in worktree" }
+    p4 --> p5local@{ shape: rect, label: "Phase 5: Report worktree ready" }
+    p5local --> endlocal@{ shape: stadium, label: "Ready: Worktree created" }
+
+    %% Online Mode Path
+    mode -->|online| p1online@{ shape: rect, label: "Phase 1: Pre-flight (git clean + tests)" }
+    p1online --> p2online@{ shape: rect, label: "Phase 2: Create branch + push to origin" }
+    p2online --> p5online@{ shape: rect, label: "Phase 5: Report branch ready" }
+    p5online --> endonline@{ shape: stadium, label: "Ready: Branch pushed to origin" }
+
+    classDef local fill:#cce5ff
+    classDef online fill:#d4edda
+
+    p1local:::local
+    p15:::local
+    p2local:::local
+    p3:::local
+    p4:::local
+    p5local:::local
+    endlocal:::local
+
+    p1online:::online
+    p2online:::online
+    p5online:::online
+    endonline:::online
+```
 
 ## When to Use
 
@@ -32,7 +80,51 @@ Before writing a single line of implementation code, create an isolated worktree
 
 **EVERY step is required. NO exceptions. NO skipping due to time pressure, exhaustion, authority, or urgency.**
 
+### Phase 0: Mode Selection
+
+**CRITICAL:** Mode selection MUST happen FIRST, before any other action. NO assumptions. NO inference. ALWAYS ask.
+
+1. **Ask user to select mode**
+
+   Use this exact prompt format:
+
+   ```text
+   Which mode for implementation environment?
+
+   1. Local Mode - Create worktree for local development
+      - Isolated workspace in .worktrees/ directory
+      - Full environment verification (deps + tests)
+      - Best for: Local development machine
+
+   2. Online Mode - Create branch for Claude Code Online
+      - Branch created and pushed to origin
+      - Pre-flight checks only (git clean + tests in current dir)
+      - Best for: Claude Code Online web interface
+
+   Choose 1 or 2.
+   ```
+
+2. **Wait for explicit choice**
+
+   - NO proceeding without clear choice
+   - NO inferring from context clues
+   - NO assuming based on filesystem evidence
+   - NO defaulting due to time pressure
+
+3. **Store mode choice for all subsequent phases**
+
+   ```bash
+   # After user chooses
+   if [[ "$USER_CHOICE" == "1" ]]; then
+     MODE="local"
+   else
+     MODE="online"
+   fi
+   ```
+
 ### Phase 1: Pre-Flight Checks
+
+**Run for BOTH modes** - Both local and online require clean git state and passing tests before setup.
 
 1. **Check git status in current directory**
 
@@ -55,6 +147,8 @@ Before writing a single line of implementation code, create an isolated worktree
    - NO "senior engineer says skip" - engineers are fallible, tests are not
 
 ### Phase 1.5: Clean Up Existing Worktree for Current Epic/User-Story
+
+**LOCAL MODE ONLY** - Skip this entire phase for online mode.
 
 **ASSUMPTION:** We start from scratch for this specific epic/user-story. Remove only its worktree.
 
@@ -102,7 +196,11 @@ Before writing a single line of implementation code, create an isolated worktree
    - NO "reuse existing worktree" - fresh start every time
    - NO "preserve work in progress" - commit to feature branch first
 
-### Phase 2: Worktree Creation
+### Phase 2: Environment Creation
+
+Branch based on mode selected in Phase 0.
+
+#### Local Mode - Create Worktree
 
 1. **Create worktree using `using-git-worktrees` skill**
    - Pass `PLAN_FILE_PATH` to enable epic/user-story naming
@@ -120,7 +218,52 @@ Before writing a single line of implementation code, create an isolated worktree
    # Result: typescript-refactor-epic2-leaf-components-worktree
    ```
 
+#### Online Mode - Create Branch and Push
+
+1. **Extract epic/user-story context from plan file path**
+
+   ```bash
+   current_branch=$(git branch --show-current)
+
+   # Parse epic/user-story identifier from plan file path
+   # Example: .../user-stories/epic2-leaf-components/... → epic2-leaf-components
+   if [[ -n "$PLAN_FILE_PATH" ]]; then
+     context_identifier=$(echo "$PLAN_FILE_PATH" | grep -oP 'user-stories/\K[^/]+')
+
+     if [[ -n "$context_identifier" ]]; then
+       online_branch="${current_branch}-${context_identifier}"
+     else
+       online_branch="${current_branch}-implementation"  # Fallback
+     fi
+   else
+     online_branch="${current_branch}-implementation"  # Fallback
+   fi
+   ```
+
+2. **Create branch from current HEAD**
+
+   ```bash
+   git checkout -b "$online_branch"
+   ```
+
+   - NO `-worktree` suffix in online mode
+   - Branch name matches pattern: `{parent-branch}-{epic-id}`
+   - Stays in current directory (no worktree artifacts)
+
+3. **Push branch to origin with tracking**
+
+   ```bash
+   git push -u origin "$online_branch"
+   ```
+
+   - MUST push to origin (required for Claude Code Online access)
+   - `-u` flag sets upstream tracking
+   - NO skipping push due to time pressure
+   - NO "I'll push later" - push happens NOW
+
 ### Phase 3: Environment Verification
+
+**LOCAL MODE ONLY** - Skip this entire phase for online mode.
 
 **Note:** The `using-git-worktrees` skill already ran npm install. This phase VERIFIES it worked correctly.
 
@@ -136,6 +279,8 @@ Before writing a single line of implementation code, create an isolated worktree
 
 ### Phase 4: Test Validation
 
+**LOCAL MODE ONLY** - Skip this entire phase for online mode (tests already passed in Phase 1).
+
 1. **Run tests in NEW worktree**
 
    ```bash
@@ -148,11 +293,37 @@ Before writing a single line of implementation code, create an isolated worktree
 
 ### Phase 5: Ready State Confirmation
 
-1. **Confirm ready state to user**
-   - Report worktree location
-   - Report all checks passed
-   - Report ready to begin implementation
-   - DO NOT begin implementation without explicit user confirmation
+Report ready state based on mode.
+
+#### Local Mode - Report Worktree Ready
+
+```text
+Worktree setup complete:
+- Location: /path/to/.worktrees/branch-epic-worktree
+- Branch: branch-epic-worktree
+- Dependencies: installed and verified
+- Tests: passing
+
+Ready to begin implementation.
+```
+
+#### Online Mode - Report Branch Ready
+
+```text
+Online branch setup complete:
+- Branch: branch-epic
+- Pushed to: origin/branch-epic
+- Current directory: /path/to/project (unchanged)
+- Tests: passing (verified in Phase 1)
+
+Ready for Claude Code Online. Partner can now:
+1. Open Claude Code Online web interface
+2. Access repository at origin
+3. Switch to branch: branch-epic
+4. Begin implementation
+```
+
+**DO NOT** begin implementation without explicit user confirmation.
 
 ## Common Rationalizations
 
@@ -171,6 +342,12 @@ When you're tempted to skip a step, you're rationalizing. Here are the excuses f
 | "Can we save the work in the existing worktree?" | Commit to parent branch first if work is valuable. | Always start from scratch. No exceptions. |
 | "Production build is failing, can't create worktree" | Worktrees are for development. Tests verify dev environment works. | Production builds are irrelevant for dev worktrees. |
 | "We should fix the build issue before proceeding" | Build issues don't affect dev workflow if tests pass. | Tests passing = dev environment works. Proceed. |
+| "Based on clear evidence of local development" | If context is ambiguous, evidence is NOT clear. Ask. | Explicit mode selection required. ALWAYS ask. |
+| "Filesystem path structure indicates local/online" | Never infer mode from filesystem. Ask user. | Context clues ≠ explicit choice. Ask mode. |
+| "Team is blocked, can't wait for mode clarification" | Asking takes 5 seconds. Wrong mode wastes hours. | Time pressure doesn't override asking. Ask mode. |
+| "I can infer the mode from context" | Inference = assumption = wrong mode = rework. | Explicit beats implicit. ALWAYS ask mode. |
+| "I'll push to origin later in online mode" | Claude Code Online needs branch NOW. Push immediately. | "Later" = never. Push NOW in online mode. |
+| "Push isn't critical, can skip for speed" | No push = Claude Code Online can't access branch. | Push is mandatory in online mode. No skipping. |
 
 ## Red Flags - STOP Immediately
 
@@ -202,12 +379,27 @@ If you think ANY of these, you are rationalizing and MUST stop:
 - "We can fix it later"
 - "Errors are minor"
 
+**Mode Selection Signals:**
+- "Based on clear evidence" or "filesystem indicates"
+- "I can infer the mode from context"
+- "Team is blocked, can't wait for clarification"
+- "Claude Code Online mentioned" → assume online mode
+- ".worktrees exists" → assume local mode
+
+**Online Mode Push Signals:**
+- "I'll push to origin later"
+- "Push isn't critical, can skip for speed"
+- "Partner can push themselves"
+
 **Production Build Confusion:**
 - "Build must pass before creating worktree"
 - "Can't proceed until production build works"
 - "SSR/build errors block worktree creation"
 
-**Remember:** Worktrees verify DEV environment (tests), NOT production builds. If tests pass, dev environment works.
+**Remember:**
+- Worktrees verify DEV environment (tests), NOT production builds. If tests pass, dev environment works.
+- Mode selection is ALWAYS explicit. Never infer, never assume. ALWAYS ask.
+- Online mode MUST push to origin immediately. No deferring.
 
 **When you catch yourself thinking these:** STOP. Read the rationalization table. Follow the checklist exactly.
 
@@ -215,81 +407,127 @@ If you think ANY of these, you are rationalizing and MUST stop:
 
 ### Step-by-Step Process
 
-#### Step 1: Pre-Flight in Current Directory
+Follow the workflow diagram above. The process branches based on mode selection in Phase 0.
+
+#### Phase 0: Mode Selection
+
+**ALWAYS start here - no exceptions.**
+
+Ask user:
+
+```text
+Which mode for implementation environment?
+
+1. Local Mode - Create worktree for local development
+2. Online Mode - Create branch for Claude Code Online
+
+Choose 1 or 2.
+```
+
+Wait for explicit answer. NO proceeding without clear choice.
+
+#### Phase 1: Pre-Flight Checks (BOTH Modes)
 
 ```bash
 # Check for uncommitted changes
 git status
 
 # If dirty, use create-git-commit skill to commit
-# (See ~/.claude/skills/create-git-commit/SKILL.md)
 
 # Verify tests pass
 npm test
 ```
 
-#### Step 1.5: Clean Up Existing Worktrees
+Both modes require clean git state and passing tests.
+
+#### Phase 1.5: Clean Up Existing Worktree (LOCAL MODE ONLY)
 
 ```bash
-# Get current branch and worktree branch name
+# LOCAL MODE ONLY - skip for online mode
+
+# Get current branch and extract epic context
 current_branch=$(git branch --show-current)
-worktree_branch="${current_branch}-worktree"
+context_identifier=$(echo "$PLAN_FILE_PATH" | grep -oP 'user-stories/\K[^/]+')
+worktree_branch="${current_branch}-${context_identifier}-worktree"
 
-# Check if worktree exists
-if git worktree list | grep -q "$worktree_branch"; then
-  echo "Existing worktree found. Cleaning up..."
-
-  # Remove worktree (--force handles uncommitted changes)
-  git worktree remove .worktrees/$worktree_branch --force
-
-  # Delete the branch
-  git branch -D $worktree_branch
-
-  echo "Cleanup complete. Ready for fresh worktree."
-fi
+# Remove existing worktree if present
+git worktree remove .worktrees/$worktree_branch --force 2>/dev/null || true
+git branch -D $worktree_branch 2>/dev/null || true
 ```
 
-#### Step 2: Create Worktree
+#### Phase 2: Environment Creation
 
-Use the `using-git-worktrees` skill to create the worktree:
-- Invoke: `~/.claude/skills/using-git-worktrees/SKILL.md`
-- Let it handle directory selection and safety checks
-- It will create the worktree and switch you to it
-
-#### Step 3: Verify Environment
+**LOCAL MODE:**
 
 ```bash
-# You are now in the new worktree directory
-# The using-git-worktrees skill has placed you here and run npm install
+# Use using-git-worktrees skill
+export PLAN_FILE_PATH="/path/to/user-stories/epic-name/plan.md"
 
-# Verify dependencies installed correctly (MANDATORY - do not skip)
+# Call skill (it handles directory selection, creation, npm install)
+# Result: worktree created at .worktrees/{branch}-{epic}-worktree
+```
+
+**ONLINE MODE:**
+
+```bash
+# Extract epic context
+current_branch=$(git branch --show-current)
+context_identifier=$(echo "$PLAN_FILE_PATH" | grep -oP 'user-stories/\K[^/]+')
+online_branch="${current_branch}-${context_identifier}"
+
+# Create and push branch
+git checkout -b "$online_branch"
+git push -u origin "$online_branch"
+```
+
+NO `-worktree` suffix in online mode. MUST push immediately.
+
+#### Phase 3: Environment Verification (LOCAL MODE ONLY)
+
+```bash
+# LOCAL MODE ONLY - skip for online mode
+
+# Verify dependencies installed correctly
 npm list --depth=0
 ```
 
-#### Step 4: Validate Environment
+#### Phase 4: Test Validation (LOCAL MODE ONLY)
 
 ```bash
-# Run tests (MANDATORY - do not skip)
-npm test
+# LOCAL MODE ONLY - skip for online mode
+# (Online mode already verified tests in Phase 1)
 
-# All checks must pass. If any fail, debug and fix before proceeding.
+# Run tests in new worktree
+npm test
 ```
 
-#### Step 5: Confirm Ready
+#### Phase 5: Ready State Confirmation
 
-Report to user:
+**LOCAL MODE:**
 
 ```text
 Worktree setup complete:
-- Location: /path/to/worktree
-- Branch: feature-branch-name
+- Location: /path/to/.worktrees/branch-epic-worktree
+- Branch: branch-epic-worktree
 - Dependencies: installed and verified
 - Tests: passing
 
 Ready to begin implementation.
 ```
 
-**DO NOT** begin implementation without user confirmation.
+**ONLINE MODE:**
+
+```text
+Online branch setup complete:
+- Branch: branch-epic
+- Pushed to: origin/branch-epic
+- Current directory: /path/to/project (unchanged)
+- Tests: passing (verified in Phase 1)
+
+Ready for Claude Code Online.
+```
+
+**DO NOT** begin implementation without explicit user confirmation.
 
 ## Common Mistakes
 
@@ -325,15 +563,27 @@ Ready to begin implementation.
 
 ## Success Criteria
 
-You have successfully completed this skill when:
+### Both Modes
 
-1. ✅ Git status shows clean state (before and after worktree creation)
-2. ✅ Tests pass in original directory
-3. ✅ Worktree created using `using-git-worktrees` skill
-4. ✅ Dependencies installed in new worktree
-5. ✅ Tests pass in new worktree
-6. ✅ Ready state confirmed to user
-7. ✅ NO steps skipped due to time, authority, exhaustion, or assumptions
+1. ✅ Mode explicitly selected (NO inference, NO assumption)
+2. ✅ Git status shows clean state before setup
+3. ✅ Tests pass in original directory (Phase 1)
+4. ✅ Ready state confirmed to user
+5. ✅ NO steps skipped due to time, authority, exhaustion, or assumptions
+
+### Local Mode Specific
+
+1. ✅ Worktree created using `using-git-worktrees` skill
+2. ✅ Dependencies installed in new worktree
+3. ✅ Tests pass in new worktree
+4. ✅ Branch name includes `-worktree` suffix
+
+### Online Mode Specific
+
+1. ✅ Branch created from current HEAD
+2. ✅ Branch pushed to origin with `-u` tracking
+3. ✅ Branch name does NOT include `-worktree` suffix
+4. ✅ Current directory unchanged (no worktree artifacts)
 
 If ANY check fails: STOP. Debug. Fix. Then continue checklist.
 
