@@ -1,5 +1,18 @@
+import type { readFileSync } from "node:fs";
 import { dirname, isAbsolute, relative, resolve } from "node:path";
 import { marked } from "marked";
+import type { Token } from "marked";
+
+/** Type guard for tokens with nested token arrays */
+function hasNestedTokens(token: Token): token is Token & { tokens: Token[] } {
+	return "tokens" in token && Array.isArray((token as { tokens?: unknown }).tokens);
+}
+import type {
+	AnchorObject,
+	HeadingObject,
+	LinkObject,
+	ParserOutput,
+} from "./types/citationTypes.js";
 
 /**
  * Markdown parser with Obsidian-compatible link and anchor extraction
@@ -31,15 +44,27 @@ import { marked } from "marked";
  * const result = await parser.parseFile('/path/to/file.md');
  * // Returns { filePath, content, tokens, links, headings, anchors }
  */
+
+/**
+ * File system interface for dependency injection.
+ * Matches Node.js fs module subset used by MarkdownParser.
+ */
+interface FileSystemInterface {
+	readFileSync: typeof readFileSync;
+}
+
 export class MarkdownParser {
+	private fs: FileSystemInterface;
+	private currentSourcePath: string | null;
+
 	/**
 	 * Initialize parser with file system dependency
 	 *
-	 * @param {Object} fileSystem - Node.js fs module (or mock for testing)
+	 * @param fileSystem - Node.js fs module (or mock for testing)
 	 */
-	constructor(fileSystem) {
+	constructor(fileSystem: FileSystemInterface) {
 		this.fs = fileSystem;
-		this.currentSourcePath = null; // Store current file being parsed
+		this.currentSourcePath = null;
 	}
 
 	/**
@@ -50,9 +75,9 @@ export class MarkdownParser {
 	 * link resolution during extraction.
 	 *
 	 * @param {string} filePath - Absolute or relative path to markdown file
-	 * @returns {Promise<Object>} MarkdownParser.Output.DataContract with { filePath, content, tokens, links, headings, anchors }
+	 * @returns {Promise<ParserOutput>} Object containing parsed markdown metadata including filePath, content, tokens, links, headings, and anchors
 	 */
-	async parseFile(filePath) {
+	async parseFile(filePath: string): Promise<ParserOutput> {
 		this.currentSourcePath = filePath; // Store for use in extractLinks()
 		const content = this.fs.readFileSync(filePath, "utf8");
 		const tokens = marked.lexer(content);
@@ -85,8 +110,8 @@ export class MarkdownParser {
 	 * @param {string} content - Full markdown file content
 	 * @returns {Array<Object>} Array of link objects with { linkType, scope, anchorType, source, target, text, fullMatch, line, column }
 	 */
-	extractLinks(content) {
-		const links = [];
+	extractLinks(content: string): LinkObject[] {
+		const links: LinkObject[] = [];
 		const lines = content.split("\n");
 		const sourceAbsolutePath = this.currentSourcePath;
 
@@ -95,16 +120,16 @@ export class MarkdownParser {
 			const linkPattern = /\[([^\]]+)\]\(([^)#]+\.md)(#([^)]+))?\)/g;
 			let match = linkPattern.exec(line);
 			while (match !== null) {
-				const text = match[1];
-				const rawPath = match[2];
-				const anchor = match[4] || null;
+				const text = match[1] ?? "";
+				const rawPath = match[2] ?? "";
+				const anchor = match[4] ?? null;
 
-				const linkType = "markdown";
-				const scope = "cross-document";
+				const linkType = "markdown" as const;
+				const scope = "cross-document" as const;
 				const anchorType = anchor ? this.determineAnchorType(anchor) : null;
 
-				const absolutePath = this.resolvePath(rawPath, sourceAbsolutePath);
-				const relativePath = absolutePath
+				const absolutePath = this.resolvePath(rawPath, sourceAbsolutePath ?? "");
+				const relativePath = absolutePath && sourceAbsolutePath
 					? relative(dirname(sourceAbsolutePath), absolutePath)
 					: null;
 
@@ -142,15 +167,15 @@ export class MarkdownParser {
 			const citePattern = /\[cite:\s*([^\]]+)\]/g;
 			match = citePattern.exec(line);
 			while (match !== null) {
-				const rawPath = match[1].trim();
+				const rawPath = (match[1] ?? "").trim();
 				const text = `cite: ${rawPath}`;
 
-				const linkType = "markdown";
-				const scope = "cross-document";
+				const linkType = "markdown" as const;
+				const scope = "cross-document" as const;
 				const anchorType = null;
 
-				const absolutePath = this.resolvePath(rawPath, sourceAbsolutePath);
-				const relativePath = absolutePath
+				const absolutePath = this.resolvePath(rawPath, sourceAbsolutePath ?? "");
+				const relativePath = absolutePath && sourceAbsolutePath
 					? relative(dirname(sourceAbsolutePath), absolutePath)
 					: null;
 
@@ -188,22 +213,23 @@ export class MarkdownParser {
 			const relativeDocRegex = /\[([^\]]+)\]\(([^)]*\/[^)#]+)(#[^)]+)?\)/g;
 			match = relativeDocRegex.exec(line);
 			while (match !== null) {
-				const filepath = match[2];
+				const filepath = match[2] ?? "";
 				if (
+					filepath &&
 					!filepath.endsWith(".md") &&
 					!filepath.startsWith("http") &&
 					filepath.includes("/")
 				) {
-					const text = match[1];
-					const rawPath = match[2];
+					const text = match[1] ?? "";
+					const rawPath = match[2] ?? "";
 					const anchor = match[3] ? match[3].substring(1) : null;
 
-					const linkType = "markdown";
-					const scope = "cross-document";
+					const linkType = "markdown" as const;
+					const scope = "cross-document" as const;
 					const anchorType = anchor ? this.determineAnchorType(anchor) : null;
 
-					const absolutePath = this.resolvePath(rawPath, sourceAbsolutePath);
-					const relativePath = absolutePath
+					const absolutePath = this.resolvePath(rawPath, sourceAbsolutePath ?? "");
+					const relativePath = absolutePath && sourceAbsolutePath
 						? relative(dirname(sourceAbsolutePath), absolutePath)
 						: null;
 
@@ -242,16 +268,16 @@ export class MarkdownParser {
 			const wikiCrossDocRegex = /\[\[([^#\]]+\.md)(#([^\]|]+))?\|([^\]]+)\]\]/g;
 			match = wikiCrossDocRegex.exec(line);
 			while (match !== null) {
-				const rawPath = match[1];
-				const anchor = match[3] || null;
-				const text = match[4];
+				const rawPath = match[1] ?? "";
+				const anchor = match[3] ?? null;
+				const text = match[4] ?? "";
 
-				const linkType = "wiki";
-				const scope = "cross-document";
+				const linkType = "wiki" as const;
+				const scope = "cross-document" as const;
 				const anchorType = anchor ? this.determineAnchorType(anchor) : null;
 
-				const absolutePath = this.resolvePath(rawPath, sourceAbsolutePath);
-				const relativePath = absolutePath
+				const absolutePath = this.resolvePath(rawPath, sourceAbsolutePath ?? "");
+				const relativePath = absolutePath && sourceAbsolutePath
 					? relative(dirname(sourceAbsolutePath), absolutePath)
 					: null;
 
@@ -289,11 +315,11 @@ export class MarkdownParser {
 			const wikiRegex = /\[\[#([^|]+)\|([^\]]+)\]\]/g;
 			match = wikiRegex.exec(line);
 			while (match !== null) {
-				const anchor = match[1];
-				const text = match[2];
+				const anchor = match[1] ?? "";
+				const text = match[2] ?? "";
 
-				const linkType = "wiki";
-				const scope = "internal";
+				const linkType = "wiki" as const;
+				const scope = "internal" as const;
 				const anchorType = this.determineAnchorType(anchor);
 
 				const wikiLinkObject = {
@@ -302,7 +328,7 @@ export class MarkdownParser {
 					anchorType: anchorType,
 					source: {
 						path: {
-							absolute: sourceAbsolutePath,
+							absolute: sourceAbsolutePath ?? "",
 						},
 					},
 					target: {
@@ -330,11 +356,11 @@ export class MarkdownParser {
 			const internalAnchorRegex = /\[([^\]]+)\]\(#([^)]+)\)/g;
 			match = internalAnchorRegex.exec(line);
 			while (match !== null) {
-				const text = match[1];
-				const anchor = match[2];
+				const text = match[1] ?? "";
+				const anchor = match[2] ?? "";
 
-				const linkType = "markdown";
-				const scope = "internal";
+				const linkType = "markdown" as const;
+				const scope = "internal" as const;
 				const anchorType = this.determineAnchorType(anchor);
 
 				const internalAnchorLinkObject = {
@@ -343,7 +369,7 @@ export class MarkdownParser {
 					anchorType: anchorType,
 					source: {
 						path: {
-							absolute: sourceAbsolutePath,
+							absolute: sourceAbsolutePath ?? "",
 						},
 					},
 					target: {
@@ -371,11 +397,11 @@ export class MarkdownParser {
 			const caretRegex = /\^([A-Za-z0-9-]+)/g;
 			match = caretRegex.exec(line);
 			while (match !== null) {
-				const anchor = match[1];
+				const anchor = match[1] ?? "";
 
-				const linkType = "markdown";
-				const scope = "internal";
-				const anchorType = "block";
+				const linkType = "markdown" as const;
+				const scope = "internal" as const;
+				const anchorType = "block" as const;
 
 				const caretLinkObject = {
 					linkType: linkType,
@@ -383,7 +409,7 @@ export class MarkdownParser {
 					anchorType: anchorType,
 					source: {
 						path: {
-							absolute: sourceAbsolutePath,
+							absolute: sourceAbsolutePath ?? "",
 						},
 					},
 					target: {
@@ -419,7 +445,7 @@ export class MarkdownParser {
 	 * @param {number} linkEndColumn - Column where link ends
 	 * @returns {Object|null} { fullMatch, innerText } or null if no marker
 	 */
-	_detectExtractionMarker(line, linkEndColumn) {
+	_detectExtractionMarker(line: string, linkEndColumn: number): { fullMatch: string; innerText: string } | null {
 		// Get text after link on same line
 		const remainingLine = line.substring(linkEndColumn);
 
@@ -429,8 +455,8 @@ export class MarkdownParser {
 
 		if (match) {
 			return {
-				fullMatch: match[1], // Full marker with delimiters
-				innerText: (match[2] || match[3]).trim(), // Text between delimiters (trimmed)
+				fullMatch: match[1] ?? "", // Full marker with delimiters
+				innerText: (match[2] ?? match[3] ?? "").trim(), // Text between delimiters (trimmed)
 			};
 		}
 
@@ -438,7 +464,7 @@ export class MarkdownParser {
 	}
 
 	// Classify anchor as "block" (^prefix) or "header"
-	determineAnchorType(anchorString) {
+	determineAnchorType(anchorString: string): 'header' | 'block' | null {
 		if (!anchorString) return null;
 
 		// Block references start with ^ or match ^alphanumeric pattern
@@ -454,7 +480,7 @@ export class MarkdownParser {
 	}
 
 	// Resolve relative paths to absolute using source file's directory
-	resolvePath(rawPath, sourceAbsolutePath) {
+	resolvePath(rawPath: string, sourceAbsolutePath: string): string | null {
 		if (!rawPath || !sourceAbsolutePath) return null;
 
 		if (isAbsolute(rawPath)) {
@@ -475,10 +501,10 @@ export class MarkdownParser {
 	 * @param {Array} tokens - Token array from marked.lexer()
 	 * @returns {Array<Object>} Array of { level, text, raw } heading objects
 	 */
-	extractHeadings(tokens) {
-		const headings = [];
+	extractHeadings(tokens: Token[]): HeadingObject[] {
+		const headings: HeadingObject[] = [];
 
-		const extractFromTokens = (tokenList) => {
+		const extractFromTokens = (tokenList: Token[]): void => {
 			for (const token of tokenList) {
 				if (token.type === "heading") {
 					headings.push({
@@ -489,7 +515,7 @@ export class MarkdownParser {
 				}
 
 				// Recursively check nested tokens
-				if (token.tokens) {
+				if (hasNestedTokens(token)) {
 					extractFromTokens(token.tokens);
 				}
 			}
@@ -517,8 +543,8 @@ export class MarkdownParser {
 	 * @param {string} content - Full markdown file content
 	 * @returns {Array<Object>} Array of { anchorType, id, rawText, fullMatch, line, column } anchor objects
 	 */
-	extractAnchors(content) {
-		const anchors = [];
+	extractAnchors(content: string): AnchorObject[] {
+		const anchors: AnchorObject[] = [];
 		const lines = content.split("\n");
 
 		lines.forEach((line, index) => {
@@ -529,7 +555,7 @@ export class MarkdownParser {
 			if (obsidianMatch) {
 				anchors.push({
 					anchorType: "block",
-					id: obsidianMatch[1],
+					id: obsidianMatch[1] ?? "",
 					rawText: null,
 					fullMatch: obsidianMatch[0],
 					line: index + 1,
@@ -546,7 +572,7 @@ export class MarkdownParser {
 				if (!isObsidianBlock) {
 					anchors.push({
 						anchorType: "block",
-						id: match[1],
+						id: match[1] ?? "",
 						rawText: null,
 						fullMatch: match[0],
 						line: index + 1,
@@ -560,10 +586,11 @@ export class MarkdownParser {
 			const emphasisRegex = /==\*\*([^*]+)\*\*==/g;
 			match = emphasisRegex.exec(line);
 			while (match !== null) {
+				const emphasisText = match[1] ?? "";
 				anchors.push({
 					anchorType: "block",
-					id: `==**${match[1]}**==`,
-					rawText: match[1],
+					id: `==**${emphasisText}**==`,
+					rawText: null, // Block anchors have null rawText per type contract
 					fullMatch: match[0],
 					line: index + 1,
 					column: match.index,
@@ -575,7 +602,7 @@ export class MarkdownParser {
 			const headerRegex = /^(#+)\s+(.+)$/;
 			const headerMatch = line.match(headerRegex);
 			if (headerMatch) {
-				const headerText = headerMatch[2];
+				const headerText = headerMatch[2] ?? "";
 
 				// Check for explicit anchor ID like {#anchor-id}
 				const explicitAnchorRegex = /^(.+?)\s*\{#([^}]+)\}$/;
@@ -583,10 +610,12 @@ export class MarkdownParser {
 
 				if (explicitMatch) {
 					// Use explicit anchor ID
+					const explicitId = explicitMatch[2] ?? "";
 					anchors.push({
 						anchorType: "header",
-						id: explicitMatch[2],
-						rawText: explicitMatch[1].trim(),
+						id: explicitId,
+						urlEncodedId: explicitId, // Explicit IDs are already URL-safe
+						rawText: (explicitMatch[1] ?? "").trim(),
 						fullMatch: headerMatch[0],
 						line: index + 1,
 						column: 0,
@@ -615,7 +644,7 @@ export class MarkdownParser {
 	}
 
 	// Check if text contains markdown formatting (backticks, bold, italic, etc.)
-	containsMarkdown(text) {
+	containsMarkdown(text: string): boolean {
 		// Check for common markdown patterns that would affect anchor generation
 		const markdownPatterns = [
 			/`[^`]+`/, // Backticks (code spans)
@@ -629,7 +658,7 @@ export class MarkdownParser {
 	}
 
 	// Convert text to kebab-case (e.g., "Project Architecture" → "project-architecture")
-	toKebabCase(text) {
+	toKebabCase(text: string): string {
 		return text
 			.toLowerCase()
 			.replace(/[^a-z0-9\s-]/g, "") // Remove special chars except spaces and hyphens
