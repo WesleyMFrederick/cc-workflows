@@ -40,7 +40,7 @@ class ParsedDocument {
 	 * @param {string} anchorId - Anchor ID to check (either id or urlEncodedId format)
 	 * @returns {boolean} True if anchor exists in document
 	 */
-	hasAnchor(anchorId) {
+	hasAnchor(anchorId: string): boolean {
 		// Check both id and urlEncodedId for match
 		return this._data.anchors.some(
 			(a) => a.id === anchorId || a.urlEncodedId === anchorId,
@@ -56,7 +56,7 @@ class ParsedDocument {
 	 * @param {string} anchorId - Anchor ID to find similar matches for
 	 * @returns {string[]} Array of similar anchor IDs sorted by similarity score (max 5)
 	 */
-	findSimilarAnchors(anchorId) {
+	findSimilarAnchors(anchorId: string): string[] {
 		// Get all anchor IDs (lazy-loaded from cache)
 		const allIds = this._getAnchorIds();
 
@@ -71,6 +71,19 @@ class ParsedDocument {
 	getLinks() {
 		// Return links array from parser output
 		return this._data.links;
+	}
+
+	/**
+	 * Get all anchor IDs in the document
+	 *
+	 * Returns unique set of anchor IDs including both id and urlEncodedId variants.
+	 * Results are lazy-loaded and cached for performance.
+	 *
+	 * @returns {string[]} Array of all unique anchor IDs
+	 */
+	getAnchorIds(): string[] {
+		// Return cached anchor IDs (lazy-loaded)
+		return this._getAnchorIds()!;
 	}
 
 	/**
