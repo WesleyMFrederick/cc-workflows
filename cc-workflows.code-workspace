@@ -7,6 +7,9 @@
 		{
 			"name": ".claude",
 			"path": "../../../../.claude"
+		},
+		{
+			"path": "../claude-code-hooks-multi-agent-observability"
 		}
 	],
 	"settings": {}
