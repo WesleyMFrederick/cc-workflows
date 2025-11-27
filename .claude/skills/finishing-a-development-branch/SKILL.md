@@ -78,7 +78,7 @@ Present exactly these 4 options:
 ```text
 Implementation complete. What would you like to do?
 
-1. Merge back to <base-branch> locally
+1. Merge back to {{base-branch}} locally
 2. Push and create a Pull Request
 3. Keep the branch as-is (I'll handle it later)
 4. Discard this work
@@ -94,19 +94,19 @@ Which option?
 
 ```bash
 # Switch to base branch (typically feature branch)
-git checkout <base-branch>
+git checkout {{base-branch}}
 
 # Pull latest
 git pull
 
 # Merge worktree branch (regular merge, NOT squash)
-git merge <worktree-branch>
+git merge {{worktree-branch}}
 
 # Verify tests on merged result
-<test command>
+{{test-command}}
 
 # If tests pass
-git branch -d <worktree-branch>
+git branch -d {{worktree-branch}}
 ```
 
 **Note:** This is a regular merge (NOT squash) because you're merging worktree → feature branch. Use `merging-feature-branches-to-main` skill later to squash merge feature branch → main after human review.
@@ -117,15 +117,15 @@ Then: Cleanup worktree (Step 6)
 
 ```bash
 # Push branch
-git push -u origin <feature-branch>
+git push -u origin {{feature-branch}}
 
 # Create PR
-gh pr create --title "<title>" --body "$(cat <<'EOF'
+gh pr create --title "{{title}}" --body "$(cat <<'EOF'
 ## Summary
-<2-3 bullets of what changed>
+{{summary-bullets}}
 
 ## Test Plan
-- [ ] <verification steps>
+- [ ] {{test-steps}}
 EOF
 )"
 ```
@@ -134,7 +134,7 @@ Then: Cleanup worktree (Step 6)
 
 #### Option 3: Keep As-Is
 
-Report: "Keeping branch <name>. Worktree preserved at <path>."
+Report: "Keeping branch {{branch-name}}. Worktree preserved at {{worktree-path}}."
 
 **Don't cleanup worktree.**
 
@@ -144,9 +144,9 @@ Report: "Keeping branch <name>. Worktree preserved at <path>."
 
 ```text
 This will permanently delete:
-- Branch <name>
-- All commits: <commit-list>
-- Worktree at <path>
+- Branch {{branch-name}}
+- All commits: {{commit-list}}
+- Worktree at {{worktree-path}}
 
 Type 'discard' to confirm.
 ```
@@ -156,8 +156,17 @@ Wait for exact confirmation.
 If confirmed:
 
 ```bash
-git checkout <base-branch>
-git branch -D <feature-branch>
+git checkout {{base-branch}}
+git branch -d {{feature-branch}}
+```
+
+**If deletion fails (branch not merged):**
+
+```text
+❌ Branch {{feature-branch}} is not fully merged.
+Use 'git branch -D {{feature-branch}}' to force delete if you're certain.
+
+Confirm force delete? (yes/no)
 ```
 
 Then: Cleanup worktree (Step 6)
@@ -175,7 +184,7 @@ git worktree list | grep $(git branch --show-current)
 If yes, try to remove:
 
 ```bash
-git worktree remove <worktree-path>
+git worktree remove {{worktree-path}}
 ```
 
 **If removal fails due to dirty state:**
@@ -184,8 +193,8 @@ Report error and stop. **NEVER use --force to delete dirty worktrees.**
 
 ```text
 ❌ Cannot remove worktree - contains uncommitted changes
-Worktree path: <path>
-Branch: <branch-name>
+Worktree path: {{path}}
+Branch: {{branch-name}}
 
 This indicates uncommitted work was not properly saved.
 Please investigate manually before removing.
@@ -200,7 +209,7 @@ Please investigate manually before removing.
 | 1. Merge locally | ✓ | - | - | ✓ |
 | 2. Create PR | - | ✓ | ✓ | - |
 | 3. Keep as-is | - | - | ✓ | - |
-| 4. Discard | - | - | - | ✓ (force) |
+| 4. Discard | - | - | - | ✓ (safe delete, confirm if force needed) |
 
 ## Common Mistakes
 

@@ -282,6 +282,20 @@ Branch based on mode selected in Phase 0.
    - Check for installation errors
    - NO assumptions - VERIFY that the MECHANISM skill did its job
 
+2. **Run build if project requires it**
+
+   Execute the build detection script:
+
+   ```bash
+   # Run build support script from skill directory
+   bash .claude/skills/setting-up-implementation-worktree/run-build-if-required.sh
+   ```
+
+   - Auto-detects TypeScript, Vite, Webpack, or generic build scripts
+   - Builds are for development, NOT production
+   - Build failures don't block if tests pass
+   - Only runs if build tooling detected
+
 ### Phase 4: Test Validation
 
 **LOCAL MODE ONLY** - Skip this entire phase for online mode (tests already passed in Phase 1).
