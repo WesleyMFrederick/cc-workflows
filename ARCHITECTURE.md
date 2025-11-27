@@ -208,7 +208,7 @@ graph LR
 
 Component-level architecture (C4 Level 3) is defined within each tool's own architecture documentation, not at the workspace level. This approach enforces our **Modular Design Principles** by treating each tool as a self-contained container, keeping the workspace architecture focused on system-level boundaries.
 
-See the [content-aggregation-architecture](tools/citation-manager/design-docs/features/20251003-content-aggregation/content-aggregation-architecture.md)  for a reference implementation.
+See the [content-aggregation-architecture](tools/citation-manager/design-docs/.archive/features/20251003-content-aggregation/content-aggregation-architecture.md)  for a reference implementation.
 
 ---
 ## Component Interfaces and Data Contracts
@@ -516,6 +516,19 @@ This project follows TypeScript naming conventions aligned with our [Action-Base
 - **Test Descriptions**: Use **natural language with spaces** for test descriptions in `it()` methods (e.g., `it('should validate citations with valid references', () => {...})`)
   - **Rationale**: Test descriptions serve as executable specifications requiring maximum clarity per our **"Names as Contracts"** philosophy
 
+#### Interface Segregation for Dependencies
+
+Components define their own dependency interfaces inline. This enforces the [Interface Segregation](ARCHITECTURE-PRINCIPLES.md#^interface-segregation) principle: each component declares only the methods it needs.
+
+**Decision Tree:**
+- **1 component needs it:** Define interface inline in that component
+- **2 components need it:** Copy the interface definition to each component (keep them independent)
+- **3+ components need the exact same contract:** Promote to `src/types/interfaces.ts` as a shared type
+
+**Example:** `CitationValidator` needs only `resolveParsedFile()` from the cache. It defines `ParsedFileCacheInterface` inline with that single method. If `ContentExtractor` later needs cache access, it defines its own interface—even if identical—to remain decoupled from `CitationValidator`.
+
+**Anti-Pattern:** Never import a dependency interface from another component (e.g., `ContentExtractor` importing from `CitationValidator`). This creates nonsensical coupling where one component breaks when another changes its requirements.
+
 ### Formatting Conventions
 
 - **Indentation**: Use **tabs** for indentation (configured via Biome)
@@ -707,7 +720,7 @@ describe('Citation Manager Integration Tests', () => {
 - Reserve subprocess testing for true E2E scenarios (argument parsing, exit codes)
 - Aligns test architecture with production architecture (both use same code path)
 
-**Reference**: [Bug 3: Buffer Limit Resolution](tools/citation-manager/design-docs/features/20251003-content-aggregation/user-stories/us1.8-implement-validation-enrichment-pattern/bug3-buffer-limit-resolution.md)
+**Reference**: [Bug 3: Buffer Limit Resolution](tools/citation-manager/design-docs/.archive/features/20251003-content-aggregation/user-stories/us1.8-implement-validation-enrichment-pattern/bug3-buffer-limit-resolution.md)
 
 ###### CLI Testing: stdout/stderr Separation Pattern
 
@@ -779,7 +792,7 @@ it('should validate with JSON format', () => {
 
 When testing component collaboration, use constructor dependency injection to pass in real dependencies (not mocks).
 
-**Note:** This example represents the target architecture after refactoring citation-manager to implement DI ([technical debt](<tools/citation-manager/design-docs/features/20251003-content-aggregation/content-aggregation-architecture.md#Dependency Management>)) and factory pattern ([mitigation strategy](#Constructor-Based%20DI%20Wiring%20Overhead)).
+**Note:** This example represents the target architecture after refactoring citation-manager to implement DI ([technical debt](<tools/citation-manager/design-docs/.archive/features/20251003-content-aggregation/content-aggregation-architecture.md#Dependency Management>)) and factory pattern ([mitigation strategy](#Constructor-Based%20DI%20Wiring%20Overhead)).
 
 **Production Code - USES Factory:**
 
@@ -863,7 +876,7 @@ describe('CitationValidator Integration Tests', () => {
 
 ### Citation-Manager: Reference Test Structure
 
-The citation-manager tool provides the established pattern for tool-level testing within the workspace. See [Citation Manager Testing Strategy](<tools/citation-manager/design-docs/features/20251003-content-aggregation/content-aggregation-architecture.md#Testing Strategy>) for complete test structure and principles.
+The citation-manager tool provides the established pattern for tool-level testing within the workspace. See [Citation Manager Testing Strategy](<tools/citation-manager/design-docs/.archive/features/20251003-content-aggregation/content-aggregation-architecture.md#Testing Strategy>) for complete test structure and principles.
 
 ---
 
@@ -1037,7 +1050,7 @@ Use **Dependency Injection (DI)** as a foundational pattern to achieve a modular
 
 While DI makes it possible to inject mock dependencies for isolated unit testing, our testing philosophy explicitly prioritizes integration tests that verify real component interactions. Therefore, the workspace adheres to the **"Real Systems, Fake Fixtures"** principle, which includes a **"zero-tolerance policy for mocking"** application components. Our strategy is to use DI to inject _real_ dependencies during testing to gain the highest confidence that our components work together correctly.
 
-For example, the `CitationValidator` should receive its `MarkdownParser` dependency via its constructor. During testing, we will pass in the _real_ `MarkdownParser` to ensure the validation logic works with the actual parsing output. This gives us confidence that the integrated system functions as expected. The existing `citation-manager` code, which does not fully use DI, has been [identified as technical debt](<tools/citation-manager/design-docs/features/20251003-content-aggregation/content-aggregation-architecture.md#Dependency Management>) to be refactored to align with this principle.
+For example, the `CitationValidator` should receive its `MarkdownParser` dependency via its constructor. During testing, we will pass in the _real_ `MarkdownParser` to ensure the validation logic works with the actual parsing output. This gives us confidence that the integrated system functions as expected. The existing `citation-manager` code, which does not fully use DI, has been [identified as technical debt](<tools/citation-manager/design-docs/.archive/features/20251003-content-aggregation/content-aggregation-architecture.md#Dependency Management>) to be refactored to align with this principle.
 
 ### Tool Distribution and Linking
 

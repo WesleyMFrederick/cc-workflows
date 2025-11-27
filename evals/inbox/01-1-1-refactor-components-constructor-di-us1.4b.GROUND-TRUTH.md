@@ -14,7 +14,7 @@ status: "ready"
 
 **Objective**: Refactor CitationValidator, MarkdownParser, and FileCache to accept all dependencies via constructor parameters instead of creating them internally.
 
-_Reference_: [Task 1.1 in Story US1.4b](../../tools/citation-manager/design-docs/features/20251003-content-aggregation/user-stories/us1.4b-refactor-components-for-di/us1.4b-refactor-components-for-di.md#^US1-4bT1-1)
+_Reference_: [Task 1.1 in Story US1.4b](../../tools/citation-manager/design-docs/.archive/features/20251003-content-aggregation/user-stories/us1.4b-refactor-components-for-di/us1.4b-refactor-components-for-di.md#^US1-4bT1-1)
 
 ---
 

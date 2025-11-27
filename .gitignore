@@ -113,3 +113,6 @@ _worktrees/
 
 # Claude Local Settings
 .claude/settings.local.json
+
+# JACT state folder
+.citation-manager/
