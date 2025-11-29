@@ -17,7 +17,9 @@ You write test cases (pressure scenarios with subagents), watch them fail (basel
 
 **Core principle:** If you didn't watch an agent fail without the skill, you don't know if the skill teaches the right thing.
 
-**REQUIRED BACKGROUND:** You MUST understand [**`test-driven-development`**](../test-driven-development/SKILL.md) skill before using this skill. That skill defines the fundamental RED-GREEN-REFACTOR cycle. This skill adapts TDD to documentation.`
+**REQUIRED BACKGROUND:**
+- You MUST understand [**`test-driven-development`**](../test-driven-development/SKILL.md) skill before using this skill. That skill defines the fundamental RED-GREEN-REFACTOR cycle. This skill adapts TDD to documentation.
+- You MUST use [**`testing-skills-with-subagents`**](../testing-skills-with-subagents/SKILL.md) skill to test the skill you are writing. This skill has the claude code orchestration workflow to implement TDD for documentation
 
 **Official guidance:** For Anthropic's official skill authoring best practices, see [anthropic-best-practices](anthropic-best-practices.md). This document provides additional patterns and guidelines that complement the TDD-focused approach in this skill.
 

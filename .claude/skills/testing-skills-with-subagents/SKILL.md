@@ -22,44 +22,60 @@ Follow this workflow exactly - do not skip steps:
 ```mermaid
 graph TD
     a@{ shape: stadium, label: "Start: Announce Skill Usage" }
-    b@{ shape: rect, label: "Ask Variant Question" }
-    c@{ shape: diam, label: "Variant Choice?" }
-    d@{ shape: rect, label: "Read variants/fast-conversational.md" }
-    e@{ shape: rect, label: "Read variants/slow-isolated.md" }
-    f@{ shape: stadium, label: "Execute Variant Workflow" }
+    b@{ shape: diam, label: "Variant Specified?" }
+    c@{ shape: rect, label: "Ask Variant Question" }
+    d@{ shape: diam, label: "Variant Choice?" }
+    e@{ shape: rect, label: "Read variants/fast-conversational.md" }
+    f@{ shape: rect, label: "Read variants/slow-isolated.md" }
+    g@{ shape: stadium, label: "Execute Variant Workflow" }
 
     a --> b
-    b --> c
-    c -->|Fast| d
-    c -->|Slow| e
-    d --> f
-    e --> f
+    b -->|No| c
+    b -->|Yes: Fast| e
+    b -->|Yes: Slow| f
+    c --> d
+    d -->|Fast| e
+    d -->|Slow| f
+    e --> g
+    f --> g
 
     classDef start fill:#ccffcc
     classDef decision fill:#ffffcc
     classDef action fill:#ccccff
 
     a:::start
-    c:::decision
-    b:::action
-    d:::action
+    b:::decision
+    d:::decision
+    c:::action
     e:::action
-    f:::start
+    f:::action
+    g:::start
 ```
 
-**Design Rationale:** Mermaid flowchart provides visual enforcement of workflow sequence, preventing LLM from skipping announcement or variant question.
+**Design Rationale:** Mermaid flowchart provides visual enforcement of workflow sequence. Allows variant to be pre-specified to skip user question, enabling smoother workflow integration.
 
-## Step 1: Choose Testing Variant
+## Step 1: Determine Testing Variant
+
+**First, check if variant was pre-specified:**
+
+Check conversation history and skill invocation context for explicit variant specification:
+- Keywords: "fast variant", "slow variant", "conversational testing", "worktree-based testing"
+- Pattern: User or calling skill explicitly specified which variant to use
 
 <critical-instruction>
-Use the AskUserQuestion tool with these exact parameters:
-</critical-instruction>
+**IF variant was pre-specified:**
+- Skip AskUserQuestion tool
+- Proceed directly to Step 2 with the specified variant
+
+**IF variant was NOT specified:**
+- Use the AskUserQuestion tool with these exact parameters:
 
 **Question:** "Which testing variant do you want to use?"
 
 **Options:**
 1. **"Fast: Conversational testing with control scenarios"** - 15-30 min iteration, lightweight logging, good for skill development
 2. **"Slow: Worktree-based isolated testing"** - 45-90 min validation, full infrastructure, deployment-ready confidence
+</critical-instruction>
 
 **Trade-offs:**
 

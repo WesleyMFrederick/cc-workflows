@@ -72,9 +72,6 @@ pids/
 # Yarn Integrity file
 .yarn-integrity
 
-# xml
-*.xml
-
 # archive files
 .archive/
 
