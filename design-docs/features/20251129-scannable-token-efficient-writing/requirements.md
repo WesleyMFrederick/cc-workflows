@@ -41,10 +41,11 @@ Without clear rules, Claude may over-explain (wasting tokens) or under-explain (
 - NFR1: The skill SHALL follow Single Responsibility—focus exclusively on output formatting and structure, not content generation strategy. ^NFR1
 - NFR2: The skill SHALL use modular design with clear sections for chat output rules, file output rules, and content-type-specific guidance. ^NFR2
 - NFR3: The skill SHALL provide decision trees or clear conditional logic using the [`creating-mermaid-flowcharts` skill](/Users/wesleyfrederick/Documents/ObsidianVault/0_SoftwareDevelopment/cc-workflows/.claude/skills/creating-mermaid-flowcharts/SKILL.md) that Claude can apply without ambiguity during response composition. ^NFR3
-- NFR4: The skill SHALL include concrete before/after examples demonstrating scannable vs. non-scannable formatting for at least 5 common scenarios. ^NFR4
+- NFR4: The skill SHALL include concrete before/after examples demonstrating scannable vs. non-scannable formatting for at least 3 common scenarios. ^NFR4
 - NFR5: The skill SHALL maintain consistency with CEO output preferences hook while being usable independently in any context. ^NFR5
 - NFR6: The skill SHALL avoid creating new jargon or acronyms—use plain language accessible to any Claude instance reading the skill. ^NFR6
 - NFR7: The skill SHALL include anti-rationalization safeguards preventing Claude from justifying verbose output when brief format is appropriate. ^NFR7
+- NFR8: The skill SHALL follow writing-skills token budget guidelines with SKILL.md under 200 words and total context load (SKILL.md + formatting-reference.md) not exceeding 3,500 tokens. ^NFR8
 
 ## Success Criteria
 

@@ -1,8 +1,13 @@
+
 # Scannable & Token-Efficient Writing - Design Document
 
 **Date**: 2025-11-29
 **Status**: Draft
-**Related**: [Requirements](../requirements.md) | [Phase 2 Whiteboard](./whiteboard-phase2.md)
+**Related**:
+- [Requirements](../requirements.md) %% force-extract %%
+- [Phase 2 Whiteboard](./whiteboard-phase2.md) %% force-extract %%
+- [writing-skills skill](../../../../.claude/skills/writing-skills/SKILL.md) %% force-extract %%
+- [example-spec](example-spec.txt)
 
 ## Architecture Decision
 
@@ -133,6 +138,67 @@ formatting-reference.md
 
 **Philosophy**: Mechanism, not manifesto. Teach technique, not theory.
 
+## Testing Strategy
+
+**Per writing-skills requirement**: Must test with subagents BEFORE deploying skill.
+
+### Baseline Test Scenarios (RED Phase)
+
+#### Run WITHOUT skill to document natural violations
+
+##### Scenario 1: Status Update Under Authority
+- **Setup:** CEO asks "What's the status on the authentication refactor?"
+- **Pressures:** Authority + time + context overload (spent 3 hours on this)
+- **Expected Violation:** Long prose narrative of what was done, buried completion status
+- **Target Behavior:** ✅ Complete. Refactored JWT handling in auth.ts:45, tests passing.
+
+#### Scenario 2: Options Presentation With Complexity
+- **Setup:** "We need to decide on state management for this feature"
+- **Pressures:** Complex topic + fear of missing nuance + multiple valid options
+- **Expected Violation:** Prose paragraphs explaining each option's trade-offs
+- **Target Behavior:** AskUserQuestion with "I recommend Redux because..." OR numbered list with recommendation first
+
+#### Scenario 3: Error Explanation After Deep Debug
+- **Setup:** Test failing, spent 2 hours debugging, found race condition in async code
+- **Pressures:** Sunk cost + complexity + desire to show thoroughness
+- **Expected Violation:** Detailed debugging narrative before stating fix
+- **Target Behavior:** **Fix:** Add await to line 89. Race condition in promise chain.
+
+#### Scenario 4: Multi-Task Implementation Summary
+- **Setup:** Completed 5 related tasks, user asks "What did you finish?"
+- **Pressures:** Multiple interconnected items + pride in work + context
+- **Expected Violation:** Prose paragraphs explaining each task and relationships
+- **Target Behavior:** Bullets with file:line references, grouped by outcome
+
+#### Scenario 5: Architecture Explanation
+- **Setup:** "Explain how the citation validation system works"
+- **Pressures:** Complex system + completeness expectation + technical depth
+- **Expected Violation:** Wall of prose explaining components and data flow
+- **Target Behavior:** Headers for components, bullets for flow, reference to diagram
+
+#### Scenario 6: MAXIMUM PRESSURE (Red Flag Test)
+- **Setup:** CEO asks for status on 10 parallel work streams after 3-hour debug session that found critical issues requiring immediate decisions
+- **Pressures:** Authority + time + sunk cost + complexity + multiple asks + exhaustion
+- **Expected Violation:** Massive context dump in prose
+- **Target Behavior:** **Critical:** DB migration blocked (needs decision). Status: [bullets]. Decision needed: [AskUserQuestion]
+
+### GREEN Phase Validation
+
+**Run WITH skill, verify compliance:**
+1. Agents use front-loading (critical info first 1-2 sentences)
+2. Options use AskUserQuestion or numbered lists with recommendation
+3. Status updates lead with completion state
+4. Errors lead with fix, then brief explanation
+5. Complex topics use headers/bullets not prose walls
+
+### REFACTOR Phase
+
+**Capture new rationalizations from testing:**
+- Document verbatim excuses agents use
+- Add explicit counters to skill
+- Build rationalization table
+- Re-test until bulletproof
+
 ## Success Metrics
 
 **Skill deployed successfully when**:
@@ -142,10 +208,17 @@ formatting-reference.md
 4. Cross-references minimize duplication
 5. Passes subagent testing (TDD required per writing-skills)
 
-## Open Questions for Implementation
+## Final Design Decisions
 
-- Should Content-Type Matrix be exhaustive (12 types) or core (6 types)?
-- Include System 1/2 explanation or just reference research?
-- Separate file for extended examples or keep inline?
+1. **Content-Type Matrix**: 6 core types (grouped by pattern)
+   - Status/Progress, Options, Errors, Implementation, Architecture/Design, Quick Answers
+   - Rationale: Pattern-based easier to scan, adequate coverage, token efficient
 
-**Recommendation**: Inline only, 6 core types in matrix, reference research (not explain)
+2. **System 1/2 Explanation**: Brief explanation + reference link
+   - Include concise 2-3 sentence explanation in formatting-reference.md
+   - Link to research docs for deeper understanding
+   - Rationale: Context without duplication, balance accessibility with token efficiency
+
+3. **Examples Location**: Inline in formatting-reference.md
+   - 3 before/after examples integrated into reference
+   - Rationale: Not heavy enough (100+ lines) to justify separate file per writing-skills guidelines
