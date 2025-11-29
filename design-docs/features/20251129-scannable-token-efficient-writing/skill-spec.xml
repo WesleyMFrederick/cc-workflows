@@ -1,0 +1,675 @@
+<skill_specification>
+  <skill_name>scannable-token-efficient-writing</skill_name>
+
+  <overview>
+    Create a Claude Code skill that enables Claude to write output optimized for both human scannability
+    (CEO reading patterns with System 1/2 processing) and token efficiency (LLM context management). The
+    skill addresses the dual challenge of creating responses that executives can quickly scan while
+    minimizing token consumption to maximize conversation depth. This is a MECHANISM skill (teaches HOW
+    to write scannably) that extends the CEO output hook (POLICY - when to be brief) and complements
+    elements-of-style (prose quality). File structure: SKILL.md (<200 words) + formatting-reference.md
+    (~2,000 words) for total token budget ≤3,500.
+  </overview>
+
+  <skill_identity>
+    <name>writing-for-token-optimized-and-ceo-scannable-content</name>
+    <type>MECHANISM (Reference/Technique)</type>
+    <scope>Project (.claude/skills/)</scope>
+    <token_budget>≤3,500 tokens total</token_budget>
+    <file_structure>
+      <primary>SKILL.md (<200 words)</primary>
+      <reference>formatting-reference.md (~2,000 words)</reference>
+    </file_structure>
+  </skill_identity>
+
+  <critical_must_read>
+    <requirements_document>
+      <path>./requirements.md</path>
+      <description>
+        Complete functional and non-functional requirements for the skill. Defines the problem statement,
+        specific formatting rules (FR1-FR10), token budget constraints (NFR8), integration requirements
+        (NFR5), and success criteria. MUST be read before implementation to understand all constraints
+        and objectives.
+      </description>
+    </requirements_document>
+  </critical_must_read>
+
+  <problem_statement>
+    Claude currently lacks standardized guidance for balancing two critical output constraints:
+
+    <human_scannability>
+      CEO needs rapid comprehension via System 1 (fast, pattern-based) processing with clear signals
+      for when System 2 (slow, analytical) engagement is needed. Current hook says "scannable" but
+      doesn't explain what makes content scannable, how users scan (F-pattern), where to place critical
+      information, or visual hierarchy techniques.
+    </human_scannability>
+
+    <token_efficiency>
+      200K token budget requires minimizing verbose explanations, redundant context, and unnecessary
+      detail to maximize conversation turns. No guidance on eliminating hedge words, avoiding redundant
+      explanations, when to use references vs. repetition, or thinking block optimization.
+    </token_efficiency>
+
+    <missing_capabilities>
+      - No F-pattern awareness for scannable content
+      - No token efficiency techniques
+      - No content-type decision logic (status vs implementation vs options)
+      - No progressive disclosure strategy
+      - No integration of human (System 1/2) + LLM (tokens) constraints
+    </missing_capabilities>
+
+    Without clear rules, Claude may over-explain (wasting tokens) or under-explain (reducing comprehension),
+    creating friction in the development workflow.
+  </problem_statement>
+
+  <architecture>
+    <mechanism_vs_policy>
+      <this_skill>MECHANISM - Teaches formatting techniques and patterns (how to write scannably)</this_skill>
+      <ceo_hook>POLICY - When to be brief, high-level directives (when/why to be brief)</ceo_hook>
+      <elements_of_style>PROSE QUALITY - Word choice, grammar, clarity (separate concern)</elements_of_style>
+    </mechanism_vs_policy>
+
+    <integration_diagram>
+CEO Hook (user-prompt-submit.sh) ────> High-level directives
+         │                              "Be concise, scannable"
+         │
+         ├─> Skill (scannable-token-efficient-writing)
+         │   └─> Detailed HOW (formatting, examples)
+         │
+         └─> elements-of-style skill
+             └─> Prose quality (word choice, grammar)
+    </integration_diagram>
+
+    <separation_rationale>
+      Hook stays lightweight (~200 tokens), skill provides depth when needed. CEO hook handles POLICY
+      (when to be brief), this skill handles MECHANISM (how to be brief), elements-of-style handles
+      prose quality. No overlap.
+    </separation_rationale>
+
+    <file_architecture>
+      <skill_md>
+        - YAML frontmatter (required):
+          name: scannable-token-efficient-writing
+          description: Use when writing chat responses under CEO context, presenting options/status, or
+                       explaining complex topics - provides formatting patterns and token reduction
+                       techniques for human-scannable, LLM-efficient output that balances System 1
+                       scanning with token budget constraints (max 1024 chars)
+        - Overview (what this is) ~50 words
+        - When to use (triggers) ~50 words
+        - Token cost warning (~2,000 word reference) ~50 words
+        - Link to formatting-reference.md ~50 words
+        - TOTAL: <200 words
+      </skill_md>
+      <formatting_reference_md>
+        - Content-Type Decision Matrix (table) ~300 words
+        - Formatting Patterns (front-loading, hierarchy, F-pattern) ~400 words
+        - Token Reduction Techniques ~300 words
+        - Progressive Disclosure (3 templates) ~300 words
+        - Before/After Examples (3) ~500 words
+        - Red Flags ~200 words
+        - TOTAL: ~2,000 words
+      </formatting_reference_md>
+    </file_architecture>
+  </architecture>
+
+  <required_background>
+    <skill_dependencies>
+      <skill>
+        <name>writing-skills</name>
+        <location>.claude/skills/writing-skills/SKILL.md</location>
+        <purpose>TDD methodology for skill creation (REQUIRED for implementation)</purpose>
+      </skill>
+      <skill>
+        <name>testing-skills-with-subagents</name>
+        <location>.claude/skills/testing-skills-with-subagents/SKILL.md</location>
+        <purpose>Pressure scenario testing (REQUIRED for validation)</purpose>
+      </skill>
+      <skill>
+        <name>elements-of-style:writing-clearly-and-concisely</name>
+        <location>.claude/plugins/cache/elements-of-style/skills/writing-clearly-and-concisely/SKILL.md</location>
+        <purpose>Prose quality (COMPLEMENTARY, not duplicate)</purpose>
+      </skill>
+    </skill_dependencies>
+    <knowledge_requirements>
+      - Understanding of System 1/System 2 processing (Kahneman)
+      - F-pattern reading behavior (Nielsen Norman Group research)
+      - Token budget management for LLMs
+      - CEO reading patterns and time constraints
+    </knowledge_requirements>
+  </required_background>
+
+  <skill_mechanics>
+    <reference_format>
+      Heavy reference pattern (per writing-skills guidelines):
+      - SKILL.md: Entry point, <200 words
+      - formatting-reference.md: Comprehensive guide, ~2,000 words
+      - Inline examples (not separate files, <100 lines)
+    </reference_format>
+
+    <decision_support>
+      - Content-Type Matrix: Table mapping 6 content types to format decisions
+      - When-to-use flowchart: Triggers for loading skill
+      - Red flags list: Self-check for violations
+    </decision_support>
+
+    <learning_aids>
+      - 3 before/after examples (not 5, token efficiency)
+      - Templates for progressive disclosure
+      - Explicit rationalization counters
+    </learning_aids>
+  </skill_mechanics>
+
+  <skill_sections>
+    <skill_md_structure>
+      <overview>
+        What is this skill? Core principle: Dual optimization for human scanning and token efficiency.
+        MECHANISM not POLICY. Complements CEO hook and elements-of-style.
+      </overview>
+
+      <when_to_use>
+        Triggers:
+        - Writing chat responses (not file content)
+        - CEO context (authority, time pressure)
+        - Complex explanations risk verbosity
+        - Options presentation needed
+        - Status updates required
+
+        When NOT to use:
+        - Writing detailed design docs (file output)
+        - Implementation pseudocode (comprehensive required)
+        - Architecture diagrams (visual, not prose)
+      </when_to_use>
+
+      <token_warning>
+        This skill loads ~2,000 word formatting reference. Use when output optimization is critical.
+        For general prose quality, use elements-of-style instead.
+      </token_warning>
+
+      <reference_link>
+        See formatting-reference.md for:
+        - Content-Type Decision Matrix
+        - Formatting patterns and techniques
+        - Before/after examples
+        - Token reduction strategies
+      </reference_link>
+    </skill_md_structure>
+
+    <formatting_reference_structure>
+      <content_type_matrix>
+        6 core types (grouped by pattern):
+        1. Status/Progress updates → Front-load completion state, bullets for details
+        2. Options presentation → AskUserQuestion OR numbered list with recommendation first
+        3. Errors/debugging → Lead with fix, brief explanation after
+        4. Implementation detail → Comprehensive okay, use headers/code blocks
+        5. Architecture/design → Headers for components, bullets for flow, reference diagrams
+        6. Quick answers → Direct answer first sentence, context if requested
+
+        Rationale: Pattern-based grouping easier to scan, adequate coverage, token efficient
+      </content_type_matrix>
+
+      <formatting_patterns>
+        <front_loading>
+          - Decision-critical information in first 1-2 sentences
+          - Completion status before explanation
+          - Fix before debugging narrative
+          - Recommendation before options explanation
+        </front_loading>
+
+        <visual_hierarchy>
+          - Headers for sections requiring System 2 attention
+          - Bullets for lists (not prose paragraphs)
+          - Bold for critical terms/decisions
+          - Whitespace for scanning breaks
+          - Max 3-4 sentences per paragraph in chat
+        </visual_hierarchy>
+
+        <f_pattern_optimization>
+          - Top-left: Most critical information
+          - Scannable left edge: Headers, bullets, bold
+          - Minimize horizontal scanning in details
+        </f_pattern_optimization>
+      </formatting_patterns>
+
+      <token_reduction_techniques>
+        <hedge_word_removal>
+          Remove: "basically", "essentially", "generally", "actually", "just", "simply"
+          These add zero information, waste tokens
+        </hedge_word_removal>
+
+        <avoid_redundancy>
+          - Don't repeat context user already has
+          - Reference previous messages instead of re-explaining
+          - Cross-reference other skills instead of duplicating
+        </avoid_redundancy>
+
+        <references_vs_repetition>
+          - Use file:line references instead of pasting code
+          - Link to docs instead of explaining APIs
+          - Point to diagrams instead of describing architecture
+        </references_vs_repetition>
+
+        <table_over_prose>
+          - Content-Type Matrix as table: 60% token reduction vs prose
+          - Comparison decisions: table rows vs paragraphs
+          - Status summaries: bullets vs narrative
+        </table_over_prose>
+      </token_reduction_techniques>
+
+      <progressive_disclosure>
+        <pattern_1_status>
+          Initial: "✅ Complete. Refactored auth in auth.ts:45, tests passing."
+          If asked: Provide implementation details, challenges encountered, architectural decisions
+        </pattern_1_status>
+
+        <pattern_2_options>
+          Initial: Numbered list with recommendation first OR AskUserQuestion with preference stated
+          If asked: Detailed trade-off analysis, code examples, performance implications
+        </pattern_2_options>
+
+        <pattern_3_explanation>
+          Initial: Headers for components, bullets for key points, reference to detailed docs
+          If asked: Comprehensive walkthrough, code examples, edge cases
+        </pattern_3_explanation>
+      </progressive_disclosure>
+
+      <before_after_examples>
+        <example_1_status_update>
+          <before>
+I've been working on the authentication refactor for the past three hours. I started by examining
+the existing JWT implementation and identified several areas that needed improvement. The token
+validation logic was scattered across multiple files, which made it difficult to maintain. I
+consolidated this into a single auth.ts file and extracted the validation logic into a reusable
+function. I also added comprehensive test coverage for all the authentication paths. The tests
+are now passing and the refactor is complete.
+          </before>
+          <after>
+✅ Complete. Refactored JWT handling in auth.ts:45, tests passing.
+          </after>
+          <token_savings>~80 tokens (12 words vs 95 words)</token_savings>
+          <principle>Front-loading completion status, eliminate narrative</principle>
+        </example_1_status_update>
+
+        <example_2_options>
+          <before>
+For state management, we have several options we could consider. Redux is a popular choice that
+provides a robust solution with great developer tools, but it does add some boilerplate. Context
+API is built into React and would be simpler, though it might have performance implications for
+frequent updates. We could also use Zustand which offers a nice middle ground with less boilerplate
+than Redux but better performance than Context.
+          </before>
+          <after>
+**I recommend Redux** because developer tools aid debugging and team is familiar with pattern.
+
+Options:
+1. Redux - Robust, great DevTools, team knows it (more boilerplate)
+2. Context API - Built-in, simple (performance cost on frequent updates)
+3. Zustand - Middle ground (less mature ecosystem)
+          </after>
+          <token_savings>~25 tokens, PLUS decision clarity</token_savings>
+          <principle>Recommendation first, structured options, parenthetical trade-offs</principle>
+        </example_2_options>
+
+        <example_3_error_explanation>
+          <before>
+I spent about two hours debugging the test failure you mentioned. I started by examining the test
+output and noticed it was timing out. I then looked at the async code and found that we had a race
+condition in the promise chain. The issue was that we weren't awaiting a critical database call on
+line 89, which meant the test was checking the result before it was ready. I've added the await
+keyword and the test now passes reliably.
+          </before>
+          <after>
+**Fix:** Add await to line 89. Race condition in promise chain caused timeout.
+          </after>
+          <token_savings>~65 tokens (11 words vs 85 words)</token_savings>
+          <principle>Fix first, cause second, eliminate debugging narrative</principle>
+        </example_3_error_explanation>
+      </before_after_examples>
+
+      <red_flags>
+        - Prose paragraphs for options (should be numbered list or AskUserQuestion)
+        - Completion status buried mid-response (should be first sentence)
+        - Lengthy debugging narrative before fix (fix first, narrative if requested)
+        - Hedge words in every sentence ("basically", "essentially")
+        - Repeating context user already has
+        - Multiple paragraphs without headers or bullets
+      </red_flags>
+    </formatting_reference_structure>
+  </skill_sections>
+
+  <content_strategy>
+    <matrix_design>
+      6 core types (grouped by pattern):
+      - Status/Progress
+      - Options
+      - Errors
+      - Implementation
+      - Architecture/Design
+      - Quick Answers
+
+      Rationale: Pattern-based easier to scan, adequate coverage, token efficient
+    </matrix_design>
+
+    <example_count>
+      3 before/after examples (not 5):
+      - Status update (front-loading)
+      - Options presentation (recommendation first)
+      - Error explanation (fix before narrative)
+
+      Rationale: 3 covers 80% of use cases, token efficient, prevents dilution
+    </example_count>
+
+    <cross_references>
+      - elements-of-style for prose quality (don't duplicate)
+      - CEO hook for policy (when to be brief)
+      - Research docs for System 1/2 deep dive
+
+      Rationale: Minimize duplication, stay focused on formatting/structure
+    </cross_references>
+
+    <table_usage>
+      Content-Type Matrix as table (not prose):
+      - 60% token reduction
+      - Scannable at a glance
+      - Easy to update/extend
+    </table_usage>
+
+    <system_1_2_approach>
+      Brief 2-3 sentence explanation in formatting-reference.md:
+      - System 1: Fast, pattern-based (scanning, bullets, headers)
+      - System 2: Slow, analytical (deep reading triggered by headers)
+      - Link to research docs for deeper understanding
+
+      Rationale: Context without duplication, balance accessibility with token efficiency
+    </system_1_2_approach>
+  </content_strategy>
+
+  <token_optimization>
+    <applied_techniques>
+      - Cross-references (not duplication) - elements-of-style, CEO hook
+      - Tables over prose - Content-Type Matrix 60% reduction
+      - Compress examples - 3 short vs 5 long, ~40% reduction
+      - Templates over explanations - Progressive disclosure patterns
+      - Reference other skills - writing-skills for TDD methodology
+    </applied_techniques>
+
+    <verification>
+      wc -w SKILL.md                    # Must be <200 words
+      wc -w formatting-reference.md      # ~2,000 words target
+      # Total: ≤3,500 tokens (~2,625 words at 0.75 word/token ratio)
+    </verification>
+
+    <elimination_targets>
+      From skill content:
+      - Extensive rationalizations table → Brief red flags list
+      - 5 before/after examples → 3 examples
+      - Detailed architecture rationale → Single integration diagram
+      - CEO hook implementation details → Reference to hook file
+      - System 1/2 psychology deep dive → Brief explanation + research link
+      - Multiple examples per pattern → One excellent example each
+    </elimination_targets>
+  </token_optimization>
+
+  <file_structure>
+    <directory_layout>
+.claude/skills/
+  scannable-token-efficient-writing/
+    SKILL.md                      # Entry point (<200 words)
+    formatting-reference.md       # Comprehensive guide (~2,000 words)
+    </directory_layout>
+
+    <skill_md_sections>
+      1. YAML frontmatter (name, description with "Use when...")
+      2. Overview (what/why, MECHANISM clarification)
+      3. When to use (triggers and anti-triggers)
+      4. Token warning (~2,000 word reference)
+      5. Link to formatting-reference.md
+    </skill_md_sections>
+
+    <formatting_reference_sections>
+      1. Content-Type Decision Matrix
+      2. Formatting Patterns
+      3. Token Reduction Techniques
+      4. Progressive Disclosure
+      5. Before/After Examples
+      6. Red Flags
+    </formatting_reference_sections>
+
+    <rationale>
+      Heavy reference pattern per writing-skills:
+      - SKILL.md stays under 200 words for fast loading
+      - Comprehensive reference separate for when needed
+      - Not heavy enough (100+ lines) to need multiple support files
+      - Examples inline (clearer than separate files for 3 examples)
+    </rationale>
+  </file_structure>
+
+  <testing_strategy>
+    <baseline_scenarios>
+      Run WITHOUT skill to document natural violations (RED phase):
+
+      <scenario_1>
+        <name>Status Update Under Authority</name>
+        <setup>CEO asks "What's the status on the authentication refactor?"</setup>
+        <pressures>Authority + time + context overload (spent 3 hours on this)</pressures>
+        <expected_violation>Long prose narrative of what was done, buried completion status</expected_violation>
+        <target_behavior>✅ Complete. Refactored JWT handling in auth.ts:45, tests passing.</target_behavior>
+      </scenario_1>
+
+      <scenario_2>
+        <name>Options Presentation With Complexity</name>
+        <setup>"We need to decide on state management for this feature"</setup>
+        <pressures>Complex topic + fear of missing nuance + multiple valid options</pressures>
+        <expected_violation>Prose paragraphs explaining each option's trade-offs</expected_violation>
+        <target_behavior>AskUserQuestion with "I recommend Redux because..." OR numbered list with recommendation first</target_behavior>
+      </scenario_2>
+
+      <scenario_3>
+        <name>Error Explanation After Deep Debug</name>
+        <setup>Test failing, spent 2 hours debugging, found race condition in async code</setup>
+        <pressures>Sunk cost + complexity + desire to show thoroughness</pressures>
+        <expected_violation>Detailed debugging narrative before stating fix</expected_violation>
+        <target_behavior>**Fix:** Add await to line 89. Race condition in promise chain.</target_behavior>
+      </scenario_3>
+
+      <scenario_4>
+        <name>Multi-Task Implementation Summary</name>
+        <setup>Completed 5 related tasks, user asks "What did you finish?"</setup>
+        <pressures>Multiple interconnected items + pride in work + context</pressures>
+        <expected_violation>Prose paragraphs explaining each task and relationships</expected_violation>
+        <target_behavior>Bullets with file:line references, grouped by outcome</target_behavior>
+      </scenario_4>
+
+      <scenario_5>
+        <name>Architecture Explanation</name>
+        <setup>"Explain how the citation validation system works"</setup>
+        <pressures>Complex system + completeness expectation + technical depth</pressures>
+        <expected_violation>Wall of prose explaining components and data flow</expected_violation>
+        <target_behavior>Headers for components, bullets for flow, reference to diagram</target_behavior>
+      </scenario_5>
+
+      <scenario_6>
+        <name>MAXIMUM PRESSURE (Red Flag Test)</name>
+        <setup>CEO asks for status on 10 parallel work streams after 3-hour debug session that found critical issues requiring immediate decisions</setup>
+        <pressures>Authority + time + sunk cost + complexity + multiple asks + exhaustion</pressures>
+        <expected_violation>Massive context dump in prose</expected_violation>
+        <target_behavior>**Critical:** DB migration blocked (needs decision). Status: [bullets]. Decision needed: [AskUserQuestion]</target_behavior>
+      </scenario_6>
+    </baseline_scenarios>
+
+    <green_phase_validation>
+      Run WITH skill, verify compliance:
+      1. Agents use front-loading (critical info first 1-2 sentences)
+      2. Options use AskUserQuestion or numbered lists with recommendation
+      3. Status updates lead with completion state
+      4. Errors lead with fix, then brief explanation
+      5. Complex topics use headers/bullets not prose walls
+    </green_phase_validation>
+
+    <refactor_phase>
+      Capture new rationalizations from testing:
+      - Document verbatim excuses agents use
+      - Add explicit counters to skill
+      - Build rationalization table from all test iterations
+      - Re-test until bulletproof under maximum pressure
+    </refactor_phase>
+
+    <testing_methodology>
+      Use testing-skills-with-subagents skill:
+      - Fast variant for iteration (15-30 min)
+      - Slow variant for deployment validation (45-90 min)
+      - Pressure combinations: authority + time + sunk cost + exhaustion
+      - Meta-testing: Does skill resist rationalization under pressure?
+    </testing_methodology>
+  </testing_strategy>
+
+  <tdd_phases>
+    <red_phase>
+      <title>Write Failing Test (Baseline)</title>
+      <tasks>
+        - Launch subagents WITHOUT skill loaded
+        - Run all 6 pressure scenarios
+        - Document exact violations verbatim
+        - Capture rationalizations agents use
+        - Identify patterns in failures
+        - Note which pressures trigger which violations
+      </tasks>
+      <success_criteria>
+        - All 6 scenarios produce expected violations
+        - Rationalizations documented for use in skill
+        - Clear pattern identified: prose over structure, narrative over brevity
+      </success_criteria>
+    </red_phase>
+
+    <green_phase>
+      <title>Write Minimal Skill to Pass</title>
+      <tasks>
+        - Write SKILL.md (<200 words)
+        - Write formatting-reference.md addressing baseline violations
+        - Include Content-Type Matrix for decision support
+        - Add 3 before/after examples from baseline failures
+        - Create red flags list from baseline rationalizations
+        - Launch subagents WITH skill loaded
+        - Run same 6 scenarios
+        - Verify compliance
+      </tasks>
+      <success_criteria>
+        - All 6 scenarios now produce target behavior
+        - Token count ≤3,500 verified
+        - Agents can apply patterns to novel situations
+        - No false positives (comprehensive content where appropriate)
+      </success_criteria>
+    </green_phase>
+
+    <refactor_phase>
+      <title>Close Loopholes, Bulletproof</title>
+      <tasks>
+        - Run scenarios again, look for NEW rationalizations
+        - Add explicit counters for each excuse
+        - Build comprehensive rationalization table
+        - Test with pressure combinations
+        - Add to red flags list
+        - Re-test until no new violations
+        - Verify token budget maintained
+      </tasks>
+      <success_criteria>
+        - Agents comply even under maximum pressure (scenario 6)
+        - No new rationalizations emerge
+        - Skill maintains token budget after additions
+        - Works across different content types
+      </success_criteria>
+    </refactor_phase>
+
+    <iteration_notes>
+      - Start with minimal skill (GREEN)
+      - Only add content to address actual failures (REFACTOR)
+      - Don't add hypothetical content "just in case"
+      - Every section should map to baseline violation or discovered rationalization
+      - Re-verify token budget after each addition
+    </iteration_notes>
+  </tdd_phases>
+
+  <usage_workflows>
+    <when_claude_uses_this>
+      <trigger_1>Writing chat response under CEO context</trigger_1>
+      <trigger_2>Presenting options or status updates</trigger_2>
+      <trigger_3>Explaining errors after debugging</trigger_3>
+      <trigger_4>Summarizing completed work</trigger_4>
+      <trigger_5>Architecture explanation (chat, not docs)</trigger_5>
+    </when_claude_uses_this>
+
+    <when_claude_skips_this>
+      <skip_1>Writing design documents (files allow comprehensive detail)</skip_1>
+      <skip_2>Implementation pseudocode (needs full context)</skip_2>
+      <skip_3>Architecture diagrams (visual, not prose)</skip_3>
+      <skip_4>Test code (completeness over brevity)</skip_4>
+    </when_claude_skips_this>
+
+    <decision_flow>
+      1. Is this chat output (not file)? → Consider skill
+      2. Is CEO context active (authority/time pressure)? → Load skill
+      3. Is topic complex (risk of verbosity)? → Load skill
+      4. Consult Content-Type Matrix → Apply appropriate pattern
+      5. Front-load critical info → Apply visual hierarchy
+      6. Check red flags → Verify no violations
+    </decision_flow>
+
+    <integration_with_workflow>
+      - CEO hook triggers awareness: "be scannable"
+      - Claude loads skill when complexity risk exists
+      - Skill provides HOW (patterns, examples)
+      - Claude applies appropriate pattern from matrix
+      - Output meets scannability + token efficiency
+    </integration_with_workflow>
+  </usage_workflows>
+
+  <success_criteria>
+    <functionality>
+      - Claude consistently applies formatting rules for scannable chat
+      - Content-Type Matrix enables quick, correct format decisions
+      - Front-loading pattern works across all content types
+      - Progressive disclosure reduces initial tokens while maintaining depth availability
+      - Token reduction techniques applied without losing clarity
+    </functionality>
+
+    <token_metrics>
+      - Skill total ≤3,500 tokens (SKILL.md + formatting-reference.md)
+      - SKILL.md under 200 words verified
+      - formatting-reference.md ~2,000 words verified
+      - Token usage for equivalent information decreases measurably
+      - 3 before/after examples demonstrate average 60% token reduction
+    </token_metrics>
+
+    <user_experience>
+      - CEO can extract key decisions/actions within 10 seconds
+      - Critical information visible in first 1-2 sentences
+      - Options include recommendation upfront
+      - Status updates lead with completion state
+      - Complex content structured (headers/bullets) not prose walls
+    </user_experience>
+
+    <integration>
+      - No conflicts with elements-of-style skill
+      - Extends CEO hook without duplication
+      - Cross-references work correctly
+      - Complements (doesn't replace) comprehensive file output
+    </integration>
+
+    <testing_validation>
+      - Passes all 6 baseline scenarios with skill loaded
+      - Agents comply under maximum pressure (scenario 6)
+      - No false positives (comprehensive where appropriate)
+      - Resists rationalization under time/authority/complexity pressure
+      - Works with fast and slow testing variants
+    </testing_validation>
+
+    <deployment_ready>
+      - Token count verified ≤3,500
+      - 3 before/after examples cover 80% of use cases
+      - Content-Type Matrix enables quick decisions
+      - Cross-references minimize duplication
+      - Passes subagent testing (TDD required per writing-skills)
+      - Red flags list prevents common violations
+      - Rationalization table addresses all discovered excuses
+    </deployment_ready>
+  </success_criteria>
+</skill_specification>
