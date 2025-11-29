@@ -174,6 +174,57 @@ Parser details:
 [Continue with requested component]
 ```
 
+## Design Doc Section Patterns
+
+Design docs have **two types of sections** with different formatting needs:
+
+### Scannable Sections (Overview/Problem/Solution/Structure)
+
+Use concise, front-loaded formatting. Target: ~50-100 words per section.
+
+**Pattern** (from Markdown Parser Implementation Guide):
+
+```markdown
+## Problem
+
+Downstream components need a structured representation of markdown links
+and anchors. Parsing with regex in each component would be repetitive,
+brittle, and inefficient. The system needs a single, reliable parser.
+
+## Solution
+
+The **`MarkdownParser`** component acts as a specialized transformer.
+It produces a comprehensive **`DataContract`** object wrapped by the
+`ParsedDocument` facade, decoupling consumers from parser internals.
+
+## Structure
+
+[Mermaid diagram]
+1. ParserOutputContract: The composite object returned
+2. Link Object: Outgoing link representation
+3. Anchor Object: Potential link target
+```
+
+**Characteristics:**
+- One paragraph per section (~50-100 words)
+- Bold key terms
+- Numbered list for structure components
+- Diagram instead of prose for relationships
+
+### Comprehensive Sections (Pseudocode/Contracts/Testing/Debt)
+
+Full detail appropriate. These sections serve as reference material.
+
+| Section Type | Appropriate Detail Level |
+|--------------|-------------------------|
+| Pseudocode | Complete implementation logic |
+| Data Contracts | Full JSON schemas with examples |
+| Testing Strategy | All test categories and rationale |
+| Technical Debt | Full issue documentation |
+| Whiteboard | Research notes and exploration |
+
+**Key difference:** Comprehensive sections are **reference material** (System 2 reading expected). Overview sections are **decision support** (System 1 scanning).
+
 ## Before/After Examples
 
 ### Example 1: Status Update

@@ -13,11 +13,17 @@ description: Use when writing chat responses under CEO context, presenting optio
 
 ## When to Use
 
-- Chat responses (not file content)
+**Chat output:**
 - Status updates, options presentation, error explanations
 - Complex topics that risk verbosity
 
-**Skip for:** Design docs, implementation pseudocode, comprehensive file output.
+**Design doc sections:**
+- Problem/Solution/Overview sections → scannable, concise
+- Structure summaries → bullets + diagrams
+
+**Comprehensive detail appropriate for:**
+- Implementation pseudocode, data contracts, testing strategy
+- Technical debt documentation, whiteboard sections
 
 ## Token Warning
 
