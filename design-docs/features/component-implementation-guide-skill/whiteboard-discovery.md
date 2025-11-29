@@ -83,9 +83,20 @@ Engineers and agents module guides that:
 
 - **One-line summary** (line 5): Active verb + object + purpose
   - Example: "Parses markdown files into structured ParserOutput objects containing links, anchors, and headings for consumption by CitationValidator and ContentExtractor."
+  - **PROBLEM IDENTIFIED**: Template mentions components (CitationValidator, ContentExtractor) and data structures (ParserOutput) WITHOUT links
+  - **ISSUE**: Violates linking rule - when introducing concepts, must link to them
+  - **SOLUTION OPTIONS**:
+    1. Add links in one-line summary when mentioning components/data structures
+    2. Keep one-line summary generic without mentioning specific components
+    3. All mentioned concepts MUST be properly linked in Problem/Solution sections (minimum requirement)
 - **Problem bullets**: Consumer perspective, concrete pain points
+  - **MUST LINK**: First mention of external components → architecture doc anchor
 - **Solution bullets**: Role metaphor + capabilities + value
+  - **MUST LINK**:
+    - External components → architecture doc anchor
+    - Internal data structures → section in THIS doc with component prefix
 - **Impact table**: Shows **how** design decisions align with architecture standards
+  - **MUST LINK**: Architecture principles → principle doc anchors
 
 **Impact Table Purpose** (Lines 21-28):
 
