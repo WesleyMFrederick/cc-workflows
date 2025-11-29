@@ -1,5 +1,5 @@
 ---
-name: scannable-token-efficient-writing
+name: writing-for-token-optimized-and-ceo-scannable-content
 description: Use when writing chat responses under CEO context, presenting options/status, or explaining complex topics - provides formatting patterns for human-scannable, token-efficient output that balances rapid comprehension with context budget constraints
 ---
 
