@@ -4,8 +4,10 @@ Detailed patterns for scannable, token-efficient chat output.
 
 ## System 1/System 2 Context
 
+Human cognitive modes (how your brain processes information):
+
 **System 1** (fast, pattern-based): Scans headers, bullets, bold text. Finds key info in seconds.
-**System 2** (slow, analytical): Engages for complex decisions. Triggered by clear headers signaling depth needed.
+**System 2** (slow, analytical): Engages for complex decisions. Headers help System 1 locate sections needing depth.
 
 **Goal:** Enable System 1 scanning to extract decisions quickly. Reserve System 2 engagement for genuinely complex content.
 
@@ -34,7 +36,8 @@ Detailed patterns for scannable, token-efficient chat output.
 | Summaries | Key outcome | Process description |
 
 **Pattern:**
-```
+
+```text
 [Decision/State/Fix] + [Brief supporting detail]
 
 Details if requested.
@@ -50,7 +53,7 @@ Structure for F-pattern scanning (users scan top-left, then across headers):
 4. **Whitespace** for scanning breaks
 5. **Max 3-4 sentences** per paragraph in chat
 
-**Headers signal System 2 engagement.** If a section doesn't warrant deep reading, use bullets instead.
+**Headers help System 1 scan, signal System 2 content below.** If a section doesn't warrant deep reading, use bullets instead.
 
 ### F-Pattern Optimization
 
@@ -84,6 +87,7 @@ These words consume tokens without adding meaning.
 - **Reference previous messages** instead of re-explaining
 - **Cross-reference other skills** instead of duplicating content
 - **Use file:line references** instead of pasting code
+  - **Note:** Balance brevity with clarity - include what changed at that location (e.g., "Added validation in auth.ts:45" not just "auth.ts:45")
 
 **Before:** "As I mentioned earlier when we discussed the authentication system that handles JWT tokens for user sessions..."
 
@@ -110,7 +114,7 @@ Tables reduce tokens by ~60% compared to equivalent prose:
 |------------|-----|
 | Pasting code blocks | `auth.ts:45` reference |
 | Explaining APIs | Link to docs |
-| Describing architecture | Reference diagram |
+| Describing architecture | Reference diagram (use [`creating-mermaid-flowcharts`](../creating-mermaid-flowcharts/SKILL.md) skill) |
 | Repeating prior context | "Per earlier discussion..." |
 
 ## Progressive Disclosure
@@ -120,12 +124,14 @@ Start brief. Add detail on request.
 ### Pattern 1: Status Update
 
 **Initial:**
-```
+
+```text
 Complete. Refactored JWT handling in auth.ts:45, tests passing.
 ```
 
 **If asked for details:**
-```
+
+```text
 Implementation details:
 - Consolidated scattered validation into single module
 - Added refresh token rotation
@@ -135,7 +141,8 @@ Implementation details:
 ### Pattern 2: Options Presentation
 
 **Initial:**
-```
+
+```text
 **I recommend Redux** because team knows it and DevTools aid debugging.
 
 Options:
@@ -145,7 +152,8 @@ Options:
 ```
 
 **If asked for analysis:**
-```
+
+```text
 Detailed comparison:
 - Redux: 2-day setup, proven at scale, team trained
 - Context: 2-hour setup, works for low-frequency state
@@ -155,20 +163,22 @@ Detailed comparison:
 ### Pattern 3: Architecture Explanation
 
 **Initial:**
-```
+
+```text
 **Citation validation** has 4 components:
 - **Parser**: Extracts citations from markdown
 - **Validator**: Checks file/anchor existence
 - **Reporter**: Formats output (CLI/JSON)
 - **Auto-fixer**: Corrects broken citations
 
-Data flow: Parse file cache file Validate Report/Fix
+Data flow: Parse file → Cache file → Validate → Report/Fix
 ```
 
 **If asked for depth:**
-```
+
+```text
 Parser details:
-- Uses unified/remark for AST
+- Uses unified/remark (markdown parser) for AST
 - Extracts wiki links, markdown links, block refs
 - Tracks line/column for error reporting
 [Continue with requested component]
