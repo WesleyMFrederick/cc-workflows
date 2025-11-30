@@ -91,8 +91,8 @@
 				"matcher": "",
 				"hooks": [
 					{
-						"type": "command",
-						"command": "echo \\\"Do you have more todos in your todo list? If so, continue the tasks in your todo list \\\""
+						"type": "prompt",
+						"prompt": "Evaluate if Claude should stop: $ARGUMENTS. Check if all tasks are complete."
 					}
 				]
 			}
