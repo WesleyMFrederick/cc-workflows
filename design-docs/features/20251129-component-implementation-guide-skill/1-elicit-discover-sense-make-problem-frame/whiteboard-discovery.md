@@ -510,74 +510,98 @@ src/core/ComponentName/
 ---
 ### Public Contracts Section
 
+**Purpose**: Lock down the stable interface boundary. Everything in Public Contracts cannot change without breaking consumers. Workflow (how it works internally) is documented separately and can be refactored freely.
+
 #### Public Contracts Header Depth Pattern
 
 <!-- citation-ignore -->
 ```markdown
 ## Public Contracts                           ← H2: Section title
 
-### Input Contract                            ← H3: Subsection
-[TypeScript code block with constructor + method signatures]
-[Internal links to related sections]
+### Constructor                               ← H3: Method (constructor is a method)
+**Input**: [DI dependencies with descriptions]
+**Output**: [Component instance]
 
-#### [DetailedContract]                       ← H4: Sub-contract (optional)
-[Coupling notes + interface definition]
+### `methodName(params)`                       ← H3: Each public method
+**Input**: [Runtime parameters]
+**Output**: [Return type] - [one-line description]
 
-### Output Contract                           ← H3: Subsection
-[TypeScript code block with return type]
-**Returns:**
-- [Output type link + description]
+### `anotherMethod(params)`                     ← H3: Repeat for each public method
+**Input**: [Runtime parameters]
+**Output**: [Return type] - [one-line description]
 
 ---                                           ← Horizontal rule separator
 ```
+<!-- /citation-ignore -->
 
-#### Input Contract Tone & Style
+#### Method-Centric Structure
 
-- **Format**: TypeScript code block showing constructor dependencies and runtime parameters
-- **Comments**: Inline annotations for each dependency (e.g., `// Required: Read file operations`)
-- **Structure**:
-  1. **Constructor dependencies** - DI parameters at instantiation
-  2. **Runtime parameters** - Method call arguments
-- **Links**: Reference related component sections using Level 4 links
-- **Sub-contracts (H4)**: Document detailed interface requirements when coupling is significant
+**Principle**: Constructor is a method. Each public method (including constructor) gets its own subsection with Input/Output.
 
-##### Examples
+**Benefits**:
+- Self-contained: Everything about one method in one place
+- Scales to any number of methods
+- Clear contract boundary per method
+- No repetition of constructor deps
+
+#### Constructor Tone & Style
+
+- **Format**: H3 heading, Input/Output blocks
+- **Input**: List DI dependencies with inline descriptions
+- **Output**: The component instance
+- **Links**: Reference dependency interfaces using Level 3/4 links
+
+##### Example
 
 <!-- citation-ignore -->
-```typescript
-// Input 1: Constructor dependencies (at instantiation)
-new MarkdownParser(
-  fileSystem: FileSystemInterface,     // Required: Read file operations
-)
+```markdown
+### Constructor
 
-// Input 2: Runtime parameter (when calling parseFile)
-MarkdownParser.parseFile(filePath: string)  // Required: Absolute path to markdown file
+**Input**:
+- `parsedFileCache: ParsedFileCacheInterface` - Returns ParsedDocument instances
+- `fileCache: FileCacheInterface` - Legacy path resolution
+
+**Output**: `CitationValidator` instance
 ```
 <!-- /citation-ignore -->
 
-#### Output Contract Tone & Style
+#### Public Method Tone & Style
 
-- **Format**: TypeScript code block with return type, followed by **Returns:** bullet list
-- **Structure**:
-  1. **Method signature** - Shows return type
-  2. **Returns block** - Links to output type with description of contents
-- **Links**: Reference output type definition using Level 4 links
+- **Format**: H3 heading with method signature, Input/Output blocks
+- **Input**: Runtime parameters with types and descriptions
+- **Output**: Return type name + one-line description (full interface in Data Contracts)
+- **Links**: Output links to Data Contracts section for full interface definition
 
-##### Examples
+##### Single-Method Example (MarkdownParser)
 
 <!-- citation-ignore -->
-```typescript
-MarkdownParser.parseFile(filePath) → Promise<ParserOutput>
+```markdown
+### parseFile(filePath)
+
+**Input**: `filePath: string` - Absolute path to markdown file
+
+**Output**: [`ParserOutput`](#ParserOutput-Interface) - Structured representation of markdown document
 ```
 <!-- /citation-ignore -->
 
-<!-- citation-ignore -->
-**Returns:**
+##### Multi-Method Example (CitationValidator)
 
-- [**`ParserOutput`**](#ParserOutput%20Interface)
-  - Complete structured representation of markdown document including:
-    - File metadata (path, content, tokens)
-    - All outgoing links with resolution metadata
+<!-- citation-ignore -->
+```markdown
+### validateFile(filePath)
+
+**Input**: `filePath: string` - Absolute path to source file
+
+**Output**: [`ValidationResult`](#ValidationResult-Interface) - Summary counts + enriched links
+
+### validateSingleCitation(link, contextFile?)
+
+**Input**:
+- `link: LinkObject` - The link to validate
+- `contextFile?: string` - Optional source context for path resolution
+
+**Output**: [`EnrichedLinkObject`](#EnrichedLinkObject-Interface) - Input link with added validation property
+```
 <!-- /citation-ignore -->
 
 ---
