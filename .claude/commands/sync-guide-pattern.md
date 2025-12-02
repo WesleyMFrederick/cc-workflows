@@ -62,8 +62,8 @@ Use `AskUserQuestion` with component list as options (multiSelect: true):
 
 After collecting arguments, resolve paths:
 
-- **Guide**: `tools/citation-manager/design-docs/component-guides/$1 Implementation Guide.md`
-- **Whiteboard**: `design-docs/features/20251129-component-implementation-guide-skill/1-elicit-discover-sense-make-problem-frame/whiteboard-discovery.md`
+- **Guide**: `/Users/wesleyfrederick/Documents/ObsidianVault/0_SoftwareDevelopment/cc-workflows/tools/citation-manager/design-docs/component-guides/$1 Implementation Guide.md`
+- **Whiteboard**: `/Users/wesleyfrederick/Documents/ObsidianVault/0_SoftwareDevelopment/cc-workflows/design-docs/features/20251129-component-implementation-guide-skill/1-elicit-discover-sense-make-problem-frame/whiteboard-discovery.md`
 
 ## Extraction
 

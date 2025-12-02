@@ -514,25 +514,60 @@ src/core/ComponentName/
 
 #### Public Contracts Header Depth Pattern
 
-<!-- citation-ignore -->
-```markdown
+<!-- markdownlint-disable MD048 -->
+~~~markdown
 ## Public Contracts                           ← H2: Section title
 
-### Constructor                               ← H3: Method (constructor is a method)
-**Input**: [DI dependencies with descriptions]
-**Output**: [Component instance]
+### Constructor                               ← H3: Constructor method
 
-### `methodName(params)`                       ← H3: Each public method
-**Input**: [Runtime parameters]
-**Output**: [Return type] - [one-line description]
-
-### `anotherMethod(params)`                     ← H3: Repeat for each public method
-**Input**: [Runtime parameters]
-**Output**: [Return type] - [one-line description]
-
----                                           ← Horizontal rule separator
+```typescript
+new ComponentName(
+  dep1: Interface1,  // Inline comment
+  dep2: Interface2,  // Inline comment
+)
 ```
-<!-- /citation-ignore -->
+
+| Type     | Value           | Comment                      |
+| :------- | :-------------- | :--------------------------- |
+| `@param` | `Interface1`    | Link to interface definition |
+| `@param` | `Interface2`    | Link to interface definition |
+
+#### Interface1                               ← H4: Each DI interface gets subsection
+- **Consumer-defined**: Where interface lives
+- **Implementation**: Level 3 link to ARCHITECTURE for concrete impl
+
+```typescript
+interface Interface1 {
+  method(): ReturnType;
+}
+```
+
+| Type       | Value           | Comment                |
+| :--------- | :-------------- | :--------------------- |
+| `@param`   | `param: Type`   | Parameter description  |
+| `@returns` | `ReturnType`    | Return description     |
+
+---                                           ← HR: Separates constructor/interfaces from methods
+
+### methodName(params)                        ← H3: Each public method
+- [**\`ComponentName.methodName()\`**](#anchor): Workflow diagram link (optional)
+- Usage note: When/why this method is called (optional)
+
+```typescript
+/**
+ * JSDoc description of what this method does.
+ */
+ComponentName.methodName(param: Type) → ReturnType
+```
+
+| Type       | Value           | Comment                        |
+| :--------- | :-------------- | :----------------------------- |
+| `@param`   | `param: Type`   | Description of parameter       |
+| `@returns` | `ReturnType`    | Link to interface in Data Contracts |
+
+---                                           ← HR: Separates Public Contracts from next section
+~~~
+<!-- markdownlint-enable MD048 -->
 
 #### Method-Centric Structure
 
@@ -546,68 +581,173 @@ src/core/ComponentName/
 
 #### Constructor Tone & Style
 
-- **Format**: H3 heading, Input/Output blocks
-- **Input**: List DI dependencies with inline descriptions
-- **Output**: The component instance
-- **Links**: Reference dependency interfaces using Level 3/4 links
+- **Format**: H3 heading → TypeScript code block → JSDoc table → H4 interface subsections
+- **Code block**: `new ComponentName(dep1: Interface1, ...)` with inline comments
+- **JSDoc table**: Type | Value | Comment columns linking to interface subsections
+- **Interface subsections**: Each DI dependency gets an H4 subsection (see below)
 
 ##### Example
 
 <!-- citation-ignore -->
-```markdown
+<!-- markdownlint-disable MD048 -->
+~~~markdown
 ### Constructor
 
-**Input**:
-- `parsedFileCache: ParsedFileCacheInterface` - Returns ParsedDocument instances
-- `fileCache: FileCacheInterface` - Legacy path resolution
-
-**Output**: `CitationValidator` instance
+```typescript
+new CitationValidator(
+  parsedFileCache: ParsedFileCacheInterface,  // Required: Returns ParsedDocument instances
+  fileCache: FileCacheInterface,              // Required: Legacy path resolution
+)
 ```
+
+| Type     | Value                         | Comment                                |
+| :------- | :---------------------------- | :------------------------------------- |
+| `@param` | `ParsedFileCacheInterface`    | Link to interface definition below     |
+| `@param` | `FileCacheInterface`          | Link to interface definition below     |
+~~~
+<!-- markdownlint-enable MD048 -->
 <!-- /citation-ignore -->
+
+#### Interface Subsection Pattern
+
+**Purpose**: Each DI dependency interface gets its own H4 subsection after the constructor JSDoc table.
+
+**Structure**:
+1. **H4 heading**: Interface name
+2. **Bullet points**: Consumer-defined location + Implementation link
+3. **TypeScript code block**: Full interface definition
+4. **JSDoc table**: Interface method signatures
+
+##### Example
+
+<!-- citation-ignore -->
+<!-- markdownlint-disable MD048 -->
+~~~markdown
+#### ParsedFileCacheInterface
+- **Consumer-defined**: Inline interface in `CitationValidator.ts`
+- **Implementation**: [**`CitationManager.ParsedFileCache`**](../ARCHITECTURE-Citation-Manager.md#anchor) provides concrete impl
+
+```typescript
+interface ParsedFileCacheInterface {
+  resolveParsedFile(filePath: string): Promise<ParsedDocument>;
+}
+```
+
+| Type       | Value                     | Comment                          |
+| :--------- | :------------------------ | :------------------------------- |
+| `@param`   | `filePath: string`        | Absolute path to markdown file   |
+| `@returns` | `Promise<ParsedDocument>` | Facade instance for queries      |
+~~~
+<!-- markdownlint-enable MD048 -->
+<!-- /citation-ignore -->
+
+#### HR Separator After Interfaces
+
+**Rule**: Place horizontal rule (`---`) after constructor + all interface subsections, before public methods.
+
+**Why**: Visually separates DI setup (stable) from runtime methods (contract boundary).
 
 #### Public Method Tone & Style
 
-- **Format**: H3 heading with method signature, Input/Output blocks
-- **Input**: Runtime parameters with types and descriptions
-- **Output**: Return type name + one-line description (full interface in Data Contracts)
-- **Links**: Output links to Data Contracts section for full interface definition
+- **Format**: H3 heading → optional bullets → TypeScript code block → JSDoc table
+- **Optional bullets**: Internal cross-references (workflow diagrams) and usage notes
+- **Code block**: JSDoc comment + `ComponentName.method(params) → ReturnType`
+- **JSDoc table**: Type | Value | Comment with links to Data Contracts
 
-##### Single-Method Example (MarkdownParser)
+##### Internal Cross-Reference Pattern (Optional)
+
+Methods can link to workflow/sequence diagrams in same guide:
 
 <!-- citation-ignore -->
 ```markdown
 ### parseFile(filePath)
-
-**Input**: `filePath: string` - Absolute path to markdown file
-
-**Output**: [`ParserOutput`](#ParserOutput-Interface) - Structured representation of markdown document
+- [**`MarkdownParser.parseFile()`**](#sequence-diagram-section): Workflow sequence diagram
 ```
+<!-- /citation-ignore -->
+
+##### Usage Notes Pattern (Optional)
+
+Methods can have contextual notes about when/why they're called:
+
+<!-- citation-ignore -->
+```markdown
+### validateSingleCitation(link, contextFile?)
+- Called by CLI Orchestrator for synthetic link validation
+- Supports `extract header/file` commands
+```
+<!-- /citation-ignore -->
+
+##### Single-Method Example (MarkdownParser)
+
+<!-- citation-ignore -->
+<!-- markdownlint-disable MD048 -->
+~~~markdown
+### parseFile(filePath)
+- [**`MarkdownParser.parseFile()`**](#sequence-diagram): Workflow sequence diagram
+
+```typescript
+/**
+ * Parse markdown file and extract all metadata.
+ * Main entry point for file parsing.
+ */
+MarkdownParser.parseFile(filePath: string) → Promise<ParserOutput>
+```
+
+| Type       | Value                    | Comment                                    |
+| :--------- | :----------------------- | :----------------------------------------- |
+| `@param`   | `filePath: string`       | Absolute path to markdown file             |
+| `@returns` | `Promise<ParserOutput>`  | Link to ParserOutput in Data Contracts     |
+~~~
+<!-- markdownlint-enable MD048 -->
 <!-- /citation-ignore -->
 
 ##### Multi-Method Example (CitationValidator)
 
 <!-- citation-ignore -->
-```markdown
+<!-- markdownlint-disable MD048 -->
+~~~markdown
 ### validateFile(filePath)
 
-**Input**: `filePath: string` - Absolute path to source file
+```typescript
+/**
+ * Validate all citations in a markdown file.
+ * Enriches each LinkObject with ValidationMetadata in-place.
+ */
+CitationValidator.validateFile(filePath: string) → Promise<ValidationResult>
+```
 
-**Output**: [`ValidationResult`](#ValidationResult-Interface) - Summary counts + enriched links
+| Type       | Value                    | Comment                                    |
+| :--------- | :----------------------- | :----------------------------------------- |
+| `@param`   | `filePath: string`       | Absolute path to source markdown file      |
+| `@returns` | `ValidationResult`       | Link to ValidationResult in Data Contracts |
+
+---
 
 ### validateSingleCitation(link, contextFile?)
+- Called by CLI Orchestrator for synthetic link validation
+- Supports `extract header/file` commands
 
-**Input**:
-- `link: LinkObject` - The link to validate
-- `contextFile?: string` - Optional source context for path resolution
-
-**Output**: [`EnrichedLinkObject`](#EnrichedLinkObject-Interface) - Input link with added validation property
+```typescript
+/**
+ * Validate a single citation link.
+ * Classifies pattern type and delegates to appropriate validator.
+ */
+CitationValidator.validateSingleCitation(link: LinkObject, contextFile?: string) → Promise<EnrichedLinkObject>
 ```
+
+| Type       | Value                    | Comment                                    |
+| :--------- | :----------------------- | :----------------------------------------- |
+| `@param`   | `link: LinkObject`       | Link to validate (synthetic or from parser)|
+| `@param`   | `contextFile?: string`   | Optional source context for path resolution|
+| `@returns` | `EnrichedLinkObject`     | Input link with added validation property  |
+~~~
+<!-- markdownlint-enable MD048 -->
 <!-- /citation-ignore -->
 
 ---
 
-> [!CRITICAL] Patterns Below This HR
-> The patterns below were the first pass at pattern recognition. They can be used to help populate our section by section approach. BE WARNED THE INFORMATION MIGHT BE DATED
+> [!NOTE] Legacy Patterns Below
+> The patterns below were the first pass at pattern recognition. The **Public Contracts Section** above has been updated with guide-derived patterns (TypeScript + JSDoc tables). Legacy patterns below may still be useful for other sections not yet updated.
 
 ---
 <!-- markdownlint-disable -->
