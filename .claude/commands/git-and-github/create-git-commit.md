@@ -18,5 +18,6 @@ Arguments: $1
 </feature-branch-name>
 
 ## Load Skill & Execute Plan
-1. Load `create-git-commit` skill
-2. Commit branch defined during ## Input Validation
+1. Create a sub-task using the `github-assistant` agent
+2. Instruct agent to load `create-git-commit` skill
+3. Instruct agent to commit branch defined during ## Input Validation
