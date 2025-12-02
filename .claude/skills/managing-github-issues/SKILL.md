@@ -64,14 +64,20 @@ Issue comments require **full blob paths**, not relative paths.
 
 **❌ Wrong (breaks in issue comments):**
 
-- `\[Link\](tools/path/file.md)` - relative from repo root
-- `\[Link\](../design-docs/file.md)` - relative path
+- Relative from repo root: `tools/path/file.md`
+- Relative path: `../design-docs/file.md`
 
-**✅ Correct:**
+**✅ Correct format:**
 
-- `\[Link\](/owner/repo/blob/main/path/to/file.md)` - full blob path
+```text
+/owner/repo/blob/main/path/to/file.md
+```
 
-**Format:** `/owner/repo/blob/main/path/to/file.md`
+**Example for this repo:**
+
+```text
+/WesleyMFrederick/cc-workflows/blob/main/tools/citation-manager/README.md
+```
 
 **URL Encoding:** Spaces become `%20` (e.g., `Markdown%20Link%20Flavors.md`)
 
