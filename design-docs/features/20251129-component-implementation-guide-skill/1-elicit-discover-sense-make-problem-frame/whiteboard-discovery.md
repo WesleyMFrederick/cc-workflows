@@ -28,8 +28,6 @@ Engineers and agents module guides that:
 
 ### Structural Elements (Sections Present)
 
-
-
 ### Content Requirements
 
 - **Architecture principle links**: Throughout, with block anchors
@@ -508,6 +506,79 @@ src/core/ComponentName/
 - **Technical debt**: Link to GitHub issue if applicable
 - **Cross-reference**: Link to related component guides for alignment examples
 - **Migration notes**: Document planned structural changes
+
+---
+### Public Contracts Section
+
+#### Public Contracts Header Depth Pattern
+
+<!-- citation-ignore -->
+```markdown
+## Public Contracts                           ← H2: Section title
+
+### Input Contract                            ← H3: Subsection
+[TypeScript code block with constructor + method signatures]
+[Internal links to related sections]
+
+#### [DetailedContract]                       ← H4: Sub-contract (optional)
+[Coupling notes + interface definition]
+
+### Output Contract                           ← H3: Subsection
+[TypeScript code block with return type]
+**Returns:**
+- [Output type link + description]
+
+---                                           ← Horizontal rule separator
+```
+
+#### Input Contract Tone & Style
+
+- **Format**: TypeScript code block showing constructor dependencies and runtime parameters
+- **Comments**: Inline annotations for each dependency (e.g., `// Required: Read file operations`)
+- **Structure**:
+  1. **Constructor dependencies** - DI parameters at instantiation
+  2. **Runtime parameters** - Method call arguments
+- **Links**: Reference related component sections using Level 4 links
+- **Sub-contracts (H4)**: Document detailed interface requirements when coupling is significant
+
+##### Examples
+
+<!-- citation-ignore -->
+```typescript
+// Input 1: Constructor dependencies (at instantiation)
+new MarkdownParser(
+  fileSystem: FileSystemInterface,     // Required: Read file operations
+)
+
+// Input 2: Runtime parameter (when calling parseFile)
+MarkdownParser.parseFile(filePath: string)  // Required: Absolute path to markdown file
+```
+<!-- /citation-ignore -->
+
+#### Output Contract Tone & Style
+
+- **Format**: TypeScript code block with return type, followed by **Returns:** bullet list
+- **Structure**:
+  1. **Method signature** - Shows return type
+  2. **Returns block** - Links to output type with description of contents
+- **Links**: Reference output type definition using Level 4 links
+
+##### Examples
+
+<!-- citation-ignore -->
+```typescript
+MarkdownParser.parseFile(filePath) → Promise<ParserOutput>
+```
+<!-- /citation-ignore -->
+
+<!-- citation-ignore -->
+**Returns:**
+
+- [**`ParserOutput`**](#ParserOutput%20Interface)
+  - Complete structured representation of markdown document including:
+    - File metadata (path, content, tokens)
+    - All outgoing links with resolution metadata
+<!-- /citation-ignore -->
 
 ---
 
