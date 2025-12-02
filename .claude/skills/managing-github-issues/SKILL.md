@@ -58,6 +58,33 @@ gh issue create \
   --label "bug,component:MarkdownParser,component:CitationValidator,priority:medium"
 ```
 
+## Linking to Repo Files
+
+Issue comments require **full blob paths**, not relative paths.
+
+**❌ Wrong (breaks in issue comments):**
+
+```markdown
+[Link](tools/citation-manager/README.md)
+[Link](../design-docs/file.md)
+```
+
+**✅ Correct:**
+
+```markdown
+[Link](/WesleyMFrederick/cc-workflows/blob/main/tools/citation-manager/README.md)
+```
+
+**Format:** `/owner/repo/blob/main/path/to/file.md`
+
+**URL Encoding:** Spaces become `%20`
+
+```markdown
+[Markdown Link Flavors](/WesleyMFrederick/cc-workflows/blob/main/tools/citation-manager/design-docs/research/Markdown%20Link%20Flavors.md)
+```
+
+**Why:** GitHub issue comments resolve paths relative to `/issues/`, not repo root. The blob path is absolute from GitHub's domain root.
+
 ## Command Reference
 
 ```bash
