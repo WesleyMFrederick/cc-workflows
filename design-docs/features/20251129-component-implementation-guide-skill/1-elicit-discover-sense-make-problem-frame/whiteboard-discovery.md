@@ -9,7 +9,7 @@
 > The [Markdown Parser Implementation Guide](../../../../tools/citation-manager/design-docs/component-guides/Markdown%20Parser%20Implementation%20Guide.md) IS the canonical source for all patterns documented here. If divergence exists between this whiteboard and that guide, update this whiteboard to match.
 
 > [!CRITICAL] Critical Skills
-> Use the [writing-for-token-optimized-and-ceo-scannable-content](../../../../.claude/skills/writing-for-token-optimized-and-ceo-scannable-content/SKILL.md) when writing to this document
+> Use the [writing-for-token-optimized-and-ceo-scannable-content](../../../../.claude/skills/writing-for-token-optimized-and-ceo-scannable-content/SKILL.md) when writing to this document AND when using its Patterns to update a component guide
 
 ## Problem Statement
 
@@ -28,46 +28,7 @@ Engineers and agents module guides that:
 
 ### Structural Elements (Sections Present)
 
-| Section | Link | Purpose | Required | Status in CitationValidator |
-|---------|------|---------|----------|---------------------------|
-| **Overview** | [§Overview](../../../../tools/citation-manager/design-docs/component-guides/Markdown%20Parser%20Implementation%20Guide.md#Overview) | One-line summary + contains Problem/Solution/Impact | ✅ Required | ✗ **MISSING** |
-| ↳ **Problem** | [§Problem](../../../../tools/citation-manager/design-docs/component-guides/Markdown%20Parser%20Implementation%20Guide.md#Problem) | Frame the gap from consumer perspective | ✅ Required | ✓ Present |
-| ↳ **Solution** | [§Solution](../../../../tools/citation-manager/design-docs/component-guides/Markdown%20Parser%20Implementation%20Guide.md#Solution) | Component's role, approach, data contracts | ✅ Required | ✓ Present |
-| ↳ **Impact** | [§Impact](../../../../tools/citation-manager/design-docs/component-guides/Markdown%20Parser%20Implementation%20Guide.md#Impact) | Solution → Outcome → Architecture Principles (table) | ✅ Required | ✗ **MISSING** |
-| **Structure** | [§Structure](../../../../tools/citation-manager/design-docs/component-guides/Markdown%20Parser%20Implementation%20Guide.md#Structure) | Contains Class Diagram + File Structure | ✅ Required | ✓ Present |
-| ↳ **Class Diagram** | [§Class Diagram](../../../../tools/citation-manager/design-docs/component-guides/Markdown%20Parser%20Implementation%20Guide.md#Class%20Diagram) | Mermaid class diagram + numbered element list | ✅ Required | ✓ Present |
-| ↳ **File Structure** | [§File Structure](../../../../tools/citation-manager/design-docs/component-guides/Markdown%20Parser%20Implementation%20Guide.md#File%20Structure) | Current implementation tree, line counts, tech debt | ✅ Required | ✓ Present |
-| **Component Workflow** | [§Component Workflow](../../../../tools/citation-manager/design-docs/component-guides/Markdown%20Parser%20Implementation%20Guide.md#Component%20Workflow) | Sequence diagram + high-level flow + integration points | ✅ Required | ✗ **MISSING** |
-| **Public Contracts** | [§Public Contracts](../../../../tools/citation-manager/design-docs/component-guides/Markdown%20Parser%20Implementation%20Guide.md#Public%20Contracts) | Input/Output requirements | ✅ Required | ✓ Present |
-| **Data Contracts** | [§Data Contracts](../../../../tools/citation-manager/design-docs/component-guides/Markdown%20Parser%20Implementation%20Guide.md#Data%20Contracts) | TypeScript interfaces + JSON examples + tables | ✅ Required | ✓ Present |
-| **Testing Strategy** | [§Testing Strategy](../../../../tools/citation-manager/design-docs/component-guides/Markdown%20Parser%20Implementation%20Guide.md#Testing%20Strategy) | Philosophy + test categories + contract validation | ✅ Required | ✓ Present |
-| **Whiteboard** | [§Whiteboard](../../../../tools/citation-manager/design-docs/component-guides/Markdown%20Parser%20Implementation%20Guide.md#Whiteboard) | Deep technical Q&A, layer breakdown, research dates | 🔶 Optional | ✗ **MISSING** |
-| **Technical Debt** | [§Technical Debt](../../../../tools/citation-manager/design-docs/component-guides/Markdown%20Parser%20Implementation%20Guide.md#Technical%20Debt) | GitHub query for component issues | 🔶 Optional | ✓ Present (very detailed) |
 
-## Emerging Skill Structure
-
-### Required Sections (in order)
-<!-- markdownlint-disable MD029 -->
-1. **Problem** (Frame consumer need and gap)
-2. **Solution** (Component role and approach)
-3. **Impact** (Table: Solution → Outcome → Principle)
-4. **Structure** (Mermaid class diagram + element list)
-1. ![Composition vs Aggregation](Pasted%20image%2020251129161652.png)
-5. **File Structure** (Current tree + line counts + tech debt notes)
-6. **Component Workflow** (Sequence diagram + text flow + integration points)
-7. **Public Contracts** (Input + Output requirements)
-8. **Data Contracts** (TypeScript interfaces + JSON examples + tables)
-9. **Testing Strategy** (Philosophy + categories + validation pattern)
-10. **Whiteboard** (Deep technical Q&A, research dates, POC validation)
-11. **Technical Debt** (GitHub query + detailed issues)
-12. **Research** (Optional: External tool analysis)
-<!-- markdownlint-enable MD029 -->
-
-### Visual Requirements
-
-- **Mermaid diagrams**: Structure (class) + Workflow (sequence)
-- **Text diagrams**: ASCII tree for high-level flow
-- **Tables**: Impact, special cases, comparisons
 
 ### Content Requirements
 
@@ -96,30 +57,32 @@ Engineers and agents module guides that:
 
 ##### Examples
 
+<!-- citation-ignore -->
 ```markdown
  Links and anchors identified by the [**`MarkdownParser`**](../ARCHITECTURE-Citation-Manager.md#Citation%20Manager.Markdown%20Parser) are purely syntactic constructs...
 ```
+<!-- /citation-ignore -->
 
 **Format Examples**:
 
+<!-- citation-ignore -->
 ```markdown
 [**`MarkdownParser`**](../ARCHITECTURE-Citation-Manager.md#Citation%20Manager.Markdown%20Parser)
 [**`ParsedDocument`**](../ARCHITECTURE-Citation-Manager.md#Citation%20Manager.ParsedDocument)
 [**`ParsedFileCache`**](../ARCHITECTURE-Citation-Manager.md#Citation%20Manager.ParsedFileCache)
 ```
+<!-- /citation-ignore -->
 
 **Anchor Pattern**: `#Module%20Name.Component%20Name` (URL-encoded spaces)
 
 #### Level 4: Component.Funtionality Reference (→ Component Guide section)
 
 **When**: Referencing a data contract, interface, or section inside a component guide
-
 **Can be**: Same document (internal) OR different document (cross-document)
-
 **First Mention Rule**:
 - **First introduction** → `ComponentName.DataStructure` (prefix roots ownership)
 - **Subsequent mentions** → Just `DataStructure` (prefix drops)
-
+  
 **Cross-Document Example** (from CitationValidator line 4 - linking to MarkdownParser guide):
 
 ```markdown
@@ -185,11 +148,8 @@ Engineers and agents module guides that:
 
 #### Overview Sentence Tone & Style
 - **One-line summary**: Active verb + object + purpose
-- **Best practice**: Keep summary concise and generic. Specific components/data structures get properly linked in Problem/Solution sections below. Create at most 1-3 linked components if adding a component reference makes the overview clearer; more than 3 is visually confusing.
-- **Links:** 
-	- [Level 3: Component Reference (→ Tool ARCHITECTURE doc)](#Level%203%20Component%20Reference%20(→%20Tool%20ARCHITECTURE%20doc))
-	- [Level 4: Component.Funtionality Reference (→ Component Guide section)](#Level%204%20Component.Funtionality%20Reference%20(→%20Component%20Guide%20section))
-  
+- **Best practice**: Keep summary concise, generic, and easy to understand. **NO component links** in the overview sentence - save all component references for Problem/Solution sections below. The overview should be scannable without requiring the reader to follow links.
+
 ##### Examples
 
  ```markdown
@@ -197,105 +157,107 @@ Parses markdown files into structured objects containing outgoing links and head
  ```
 
  ```markdown
-Wraps [**`MarkdownParser.ParserOutput`**](Markdown%20Parser%20Implementation%20Guide.md#ParserOutput%20Interface) in a facade providing stable query methods for anchor validation, link retrieval, and content extraction for consumption by [**`CitationValidator`**](../ARCHITECTURE-Citation-Manager.md#Citation%20Manager.Citation%20Validator) and [**`ContentExtractor`**](../ARCHITECTURE-Citation-Manager.md#Citation%20Manager.ContentExtractor).
+Wraps parser output in a facade providing stable query methods for anchor validation, link retrieval, and content extraction.
+ ```
+
+ ```markdown
+Validates link paths and anchors, enriching links with validation metadata for downstream processing.
  ```
 
 #### Problem Tone & Style
 
-- **Format**: Bullet list
-- **Structure** (3 bullets):
-	1. **Consumer need** - Who needs what (link consumers on first mention)
-	2. **Pain point** - Why current/alternative approach fails
-	3. **Gap statement** - What the system needs
+- **Format**: Numbered list with block anchors (`^P1`, `^P2`, `^P3`)
+- **Structure** (3 items):
+ 1. **Consumer need** - Who needs what (link consumers on first mention) `^P1`
+ 2. **Pain point** - Why current/alternative approach fails `^P2`
+ 3. **Gap statement** - What the system needs `^P3`
+- **Block anchors**: Enable bidirectional traceability from Impact table back to problems
 - **Links:**
-	- [Level 3: Component Reference (→ Tool ARCHITECTURE doc)](#Level%203%20Component%20Reference%20(→%20Tool%20ARCHITECTURE%20doc))
-	- [Level 4: Component.Funtionality Reference (→ Component Guide section)](#Level%204%20Component.Funtionality%20Reference%20(→%20Component%20Guide%20section))
+  - [Level 3: Component Reference (→ Tool ARCHITECTURE doc)](#Level%203%20Component%20Reference%20(→%20Tool%20ARCHITECTURE%20doc))
+  - [Level 4: Component.Funtionality Reference (→ Component Guide section)](#Level%204%20Component.Funtionality%20Reference%20(→%20Component%20Guide%20section))
 
 ##### Examples
 
 ```markdown
 ### Problem
-- Downstream components like the [**`CitationValidator`**](...) need structured representation of links and anchors.
-- Parsing raw markdown with regex in each component would be repetitive, brittle, and inefficient.
-- The system needs a single, reliable component to transform markdown into a consistent data model.
+1. Downstream components like [**`CitationValidator`**](...) need structured representation of links and anchors. ^P1
+2. Parsing raw markdown with regex in each component would be repetitive, brittle, and inefficient. ^P2
+3. The system needs a single, reliable component to transform markdown into a consistent data model. ^P3
 ```
 
 ```markdown
 ### Problem
-- Consumers like the [**`CitationValidator`**](../ARCHITECTURE-Citation-Manager.md#Citation%20Manager.Citation%20Validator) are tightly coupled to the internal structure of [**`MarkdownParser.ParserOutput`**](Markdown%20Parser%20Implementation%20Guide.md#ParserOutput%20Interface), making them complex and forcing them to contain data-querying logic.
-- Any change to the parser's output structure becomes a breaking change for all consumers.
-- Direct data structure access violates encapsulation and makes the system brittle to refactoring.
+1. Consumers like the [**`CitationValidator`**](...) are tightly coupled to the internal structure of [**`MarkdownParser.ParserOutput`**](...), making them complex. ^P1
+2. Any change to the parser's output structure becomes a breaking change for all consumers. ^P2
+3. Direct data structure access violates encapsulation and makes the system brittle to refactoring. ^P3
 ```
 
 #### Solution Tone & Style
 
-- **Format**: Bullet list (2 major bullets with sub-bullets)
+- **Format**: Numbered list with block anchors (`^S1`, `^S2`, `^S3`)
 - **Structure**:
-	1. **Component role** - "The [Component] acts as [role]. It:" + capability sub-bullets
-	2. **Value proposition** - "The [Component/Output/Methods]:" + benefit sub-bullets
+ 1. **Intro sentence** - "The [Component] provides [capability] by:"
+ 2. **Numbered capabilities** - Each with problem reference and block anchor
+- **Problem references**: Link back to problems addressed using `(addresses [P1](#^P1))`
+- **Block anchors**: Enable bidirectional traceability from Impact table back to solutions
 - **Links:**
-	- [Level 3: Component Reference (→ Tool ARCHITECTURE doc)](#Level%203%20Component%20Reference%20(→%20Tool%20ARCHITECTURE%20doc))
-	- [Level 4: Component.Funtionality Reference (→ Component Guide section)](#Level%204%20Component.Funtionality%20Reference%20(→%20Component%20Guide%20section))
+  - [Level 3: Component Reference (→ Tool ARCHITECTURE doc)](#Level%203%20Component%20Reference%20(→%20Tool%20ARCHITECTURE%20doc))
+  - [Level 4: Component.Funtionality Reference (→ Component Guide section)](#Level%204%20Component.Funtionality%20Reference%20(→%20Component%20Guide%20section))
 
 ##### Examples
 
 ```markdown
 ### Solution
-- The [**`MarkdownParser`**](...) component acts as a specialized transformer. It:
-  - accepts a file path,
-  - reads the document, and
-  - applies a series of parsing strategies to produce a single [**`MarkdownParser.ParserOutput`**](...) object.
-- The [**`MarkdownParser.ParserOutput`**](...) object:
-  - is wrapped by the [**`ParsedDocument`**](...) facade before being consumed by other components
-  - contains two primary collections: [**`MarkdownParser.Link Objects`**](...) and [**`MarkdownParser.Anchor Objects`**](...)
+The [**`MarkdownParser`**](...) component provides centralized markdown parsing by:
+1. accepting a file path, reading the document, and applying parsing strategies to produce a comprehensive [**`ParserOutput`**](...) object ^S1
+2. wrapping output in the [**`ParsedDocument`**](...) facade before consumption, decoupling consumers from parser internals (addresses [P1](#^P1)) ^S2
+3. producing two primary collections: [**`LinkObject[]`**](...) and [**`AnchorObject[]`**](...), centralizing parsing logic (addresses [P2](#^P2), [P3](#^P3)) ^S3
 ```
 
 ```markdown
 ### Solution
-- The [**`ParsedDocument`**](...) facade acts as a stable interface wrapper. It:
-  - encapsulates the raw [**`MarkdownParser.ParserOutput`**](...) object,
-  - provides method-based query APIs for anchors, links, and content, and
-  - hides complex internal data structures from all consumers.
-- The [**`ParsedDocument`**](...) query methods:
-  - are consumed by the [**`CitationValidator`**](...) and [**`ContentExtractor`**](...),
-  - provide a stable API that decouples consumers from parser internals, and
-  - enable parser refactoring without breaking consumer code.
+The [**`ParsedDocument`**](...) facade provides a stable query interface by:
+1. encapsulating the raw [**`MarkdownParser.ParserOutput`**](...) and hiding internal data structures (addresses [P1](#^P1)) ^S1
+2. providing method-based APIs for anchors, links, and content extraction (addresses [P2](#^P2)) ^S2
+3. enabling parser refactoring without breaking consumer code (addresses [P3](#^P3)) ^S3
 ```
 
 #### Impact Tone & Style
 
-- **Format**: Table with 3 columns
+- **Format**: Table with 7 columns (bidirectional traceability)
 - **Structure**:
-	1. **Solution** - Design decision or pattern name (noun phrase)
-	2. **Impact** - Measurable engineer benefit (result phrase)
-	3. **Principles** - Architecture principle link(s)
+ 1. **Problem ID** - Link back to problem anchor `[P1](#^P1)`
+ 2. **Problem** - Brief problem description
+ 3. **Solution ID** - Link to solution anchor(s) `[S1](#^S1)`
+ 4. **Solution** - Design decision or pattern name
+ 5. **Impact** - Measurable engineer benefit
+ 6. **Principles** - Architecture principle link(s)
+ 7. **How Principle Applies** - Concrete explanation of principle application
+- **Principle link specificity**: Choose the level that best captures the relationship
+  - **Specific sub-principle** when it's a precise match (e.g., `^illegal-states-unrepresentable`, `^single-responsibility`)
+  - **High-level category** when broader context is needed (e.g., `#Data-First%20Design%20Principles`)
 - **Links**: [Architecture Principles Link Reference](#Architecture%20Principles%20Link%20Reference)
-	- **Principle Link Options**:
-		- **Section header**: `#Data-First%20Design%20Principles` - broader context
-		- **Block anchor**: `#^data-first-principles-definition` - precise reference (see ParsedDocument guide)
 
 ##### Examples
 
 ```markdown
 ### Impact
 
-| Solution | Impact | Principles |
-|----------|--------|------------|
-| Well defined interfaces and data shapes | Less errors when navigating and consuming data | [Data-First Design Principles](...) |
-| Dependency Injection | Flexible testing (real/mock components) | [Modular Design Principles](...) |
-| TypeScript discriminated unions (AnchorObject) | Impossible to represent invalid states | [Data-First Design Principles](...) |
+| Problem ID | Problem | Solution ID | Solution | Impact | Principles | How Principle Applies |
+| :--------: | ------- | :---------: | -------- | ------ | ---------- | --------------------- |
+| [P1](#^P1) | Components need structured representation | [S1](#^S1), [S2](#^S2) | Single parse + facade wrapping | Fewer errors navigating data | [Data Model First](...#^data-model-first) | Clean data structures lead to clean code |
+| [P2](#^P2) | Regex duplication across components | [S3](#^S3) | Centralized extraction | 100% reduction in duplicated logic | [Single Responsibility](...#^single-responsibility) | Parser parses; consumers consume |
+| [P3](#^P3) | No reliable transformer | [S1](#^S1) | DI-enabled class | Flexible testing (mock/real fs) | [Dependency Abstraction](...#^dependency-abstraction) | Depend on abstraction, not concrete node:fs |
 ```
 
 ```markdown
 ### Impact
 
-| Solution | Impact | Principles |
-|----------|--------|------------|
-| Facade pattern with query methods | Zero direct data structure access from consumers | [Black Box Interfaces](...), [Modular Design](...) |
-| Lazy-loaded anchor cache | Reduced memory overhead and improved query performance | [Access-Pattern Fit](...) |
-| Dual-key anchor matching | Handles Obsidian encoding variations transparently | [Simplicity First](...) |
+| Problem ID | Problem | Solution ID | Solution | Impact | Principles | How Principle Applies |
+| :--------: | ------- | :---------: | -------- | ------ | ---------- | --------------------- |
+| [P1](#^P1) | Tight coupling to parser internals | [S1](#^S1) | Facade with query methods | Zero direct data structure access | [Black Box Interfaces](...#^black-box-interfaces) | Expose clean API; hide implementation |
+| [P2](#^P2) | Breaking changes propagate | [S2](#^S2) | Stable method-based API | Parser refactoring doesn't break consumers | [Replaceable Parts](...#^replaceable-parts) | Components swapped via interfaces |
 ```
-
 
 #### Overview Horizontal Rule
 - Separates Overview from detailed Structure section below.
@@ -303,11 +265,249 @@ Wraps [**`MarkdownParser.ParserOutput`**](Markdown%20Parser%20Implementation%20G
 ---
 ### Structure Section
 
-#### Structure Section Header Depth  Pattern
+#### Structure Section Header Depth Pattern
+
+```markdown
+## Structure                                  ← H2: Section title (no intro)
+
+### Class Diagram                             ← H3: Subsection
+[Intro sentence: dependencies + public API]
+[Mermaid class diagram]
+[Numbered list linking elements to guide sections]
+
+---                                           ← HR: Separates Class Diagram from File Structure
+### File Structure                            ← H3: Subsection
+[ASCII tree: ONLY this component's files - NO dependencies]
+[Optional: Architecture Notes, tech debt, or references]
+
+---                                           ← HR: Separates Structure from next major section
+```
+
+##### Horizontal Rule Placement (Required)
+
+Structure section uses two horizontal rules:
+
+| Position | What It Separates | Example |
+|----------|-------------------|---------|
+| After numbered list | Class Diagram subsection → File Structure subsection | See MarkdownParser line 90 |
+| After File Structure | Structure section → Public Contracts section | See MarkdownParser line 128 |
+
+**Why**: Visual separation improves scannability between subsections and major sections.
 
 #### Class Diagram Tone & Style
 
+- **Format**: Mermaid class diagram with `direction LR`
+- **Intro sentence**: One line stating dependencies + public API before diagram
+- **Follow-up**: Numbered list linking diagram elements to guide sections
+
+##### Diagram Header
+
+```mermaid
+classDiagram
+    direction LR
+```
+
+##### Intro Sentence (Diagram Header)
+
+The intro sentence precedes the mermaid diagram. It follows a structured "dot sentence" pattern with specific link conventions.
+
+**Pattern**:
+
+```text
+[Subject](ARCH-link) depends on [Dependency](link) for [purpose]. It exposes [method()](#section), which returns [Type](#Data%20Contracts).
+```
+
+**Link conventions by part**:
+
+| Sentence Part | Link Target | Format |
+|---------------|-------------|--------|
+| Subject component | Tool ARCHITECTURE doc | Bold backtick name |
+| Dependencies | ARCHITECTURE or internal section | Bold backtick name |
+| Public methods | Internal section (sequence diagram, contract) | Backtick name only |
+| Return types | Data Contracts or interface section | Bold backtick name |
+
+**Examples**:
+
+Single dependency, single method (from MarkdownParser guide):
+
+<!-- citation-ignore -->
+```text
+[**`MarkdownParser`**](../ARCHITECTURE-Citation-Manager.md#...) depends on [**`FileSystemInterface`**](#FileSystemInterface) for file I/O. It exposes a single public method, [`parseFile()`](#...), which returns the [**`ParserOutput`**](#ParserOutput%20Interface) interface.
+```
+<!-- /citation-ignore -->
+
+Multiple dependencies, multiple methods (from CitationValidator guide):
+
+<!-- citation-ignore -->
+```text
+[**`CitationValidator`**](../ARCHITECTURE-Citation-Manager.md#...) depends on [**`ParsedFileCache`**](...) for parsed document retrieval and [**`FileCache`**](...) for legacy path resolution. It exposes public methods [`validateFile()`](#...) and [`validateSingleCitation()`](#...), which return [**`ValidationResult`**](#...).
+```
+<!-- /citation-ignore -->
+
+##### Common Stereotypes
+
+| Stereotype | Use For |
+|------------|---------|
+| `<<interface>>` | Dependency injection contracts, public APIs |
+| `<<class>>` | Implementation classes |
+| `<<data>>` | Data transfer objects, value types |
+| `<<facade>>` | Facade classes wrapping complex internals |
+| `<<anonymous>>` | Inline/anonymous types (e.g., return objects) |
+| `<<abstract>>` | Abstract base classes |
+| `<<enumeration>>` | Enums |
+| `<<service>>` | Service layer classes |
+
+##### Class Member Syntax
+
+**Goal**: Communicate boundaries, not internals. Show public API surface only.
+
+```mermaid
+class ComponentName {
+    <<class>>
+    +publicMethod(input): OutputType
+}
+
+class OutputInterface {
+    <<interface>>
+    +fieldA: TypeA
+    +fieldB: TypeB[]
+}
+```
+
+- Show **public methods** that define the component's contract
+- Show **interface fields** that define data shape
+- Omit private members, implementation details → code is source of truth
+
+##### Type Naming Convention
+
+**Rule**: Use actual component/interface names from codebase, not generic placeholders.
+
+| Don't | Do | Rationale |
+|-------|-----|-----------|
+| `object[]` | `Token[]` | Reveals actual type from codebase |
+| `Link[]` | `LinkObject[]` | Matches interface name in code |
+| `Anchor[]` | `AnchorObject[]` | Matches type name in code |
+| `{ inline }` | Use `<<anonymous>>` stereotype | Indicates intentionally unnamed type |
+
+**When to use `<<anonymous>>`**: For inline return types or objects that have no named interface in the codebase (e.g., callback parameters, configuration objects without explicit types).
+
+##### Core Relationship Arrows
+
+| Arrow | Meaning | Example |
+|-------|---------|---------|
+| `A --> B` | Dependency (uses) | `Parser --> FileSystem` |
+| `A ..> B` | Creates/produces | `Parser ..> ParserOutput` |
+| `A *-- B` | Composition (owns) | `ParserOutput *-- LinkObject` |
+| `A o-- B` | Aggregation (has) | `Cart o-- Product` |
+| `A <\|-- B` | Inheritance | `BaseClass <\|-- DerivedClass` |
+| `A <\|.. B` | Implements | `IService <\|.. ServiceImpl` |
+
+##### Relationship Labels (Guillemets)
+
+Use **guillemets** `« »` for semantic labels on arrows:
+
+```text
+A --> B : «depends on»
+A ..> B : «creates»
+```
+
+**Common labels**: `«depends on»`, `«creates»`, `«returns»`, `«uses»`, `«extends»`, `«has»`, `«contains»`, `«implements»`
+
+**Why guillemets**: Visual distinction from regular text, matches UML convention.
+
+##### Relationship Examples
+
+```mermaid
+classDiagram
+    direction LR
+
+    %% Dependency: Parser uses FileSystem
+    Parser --> FileSystem : «depends on»
+
+    %% Creates: Parser produces output
+    Parser ..> ParserOutput : «creates»
+
+    %% Composition: Output owns its children
+    ParserOutput *-- LinkObject
+    ParserOutput *-- AnchorObject
+
+    %% Implements: Class implements interface
+    IValidator <|.. CitationValidator
+```
+
+##### Numbered Element List (Required)
+
+> [!warning] Link Guidance
+> Prefer using [Level 3: Component Reference (→ Tool ARCHITECTURE doc)](#Level%203%20Component%20Reference%20(→%20Tool%20ARCHITECTURE%20doc)) links
+> Use [Level 4: Component.Funtionality Reference (→ Component Guide section)](#Level%204%20Component.Funtionality%20Reference%20(→%20Component%20Guide%20section)) when there is a need to clarify the class diagram with more specific data contracts and/or input/output contracts
+
+After diagram, list elements with links to guide sections:
+
+```markdown
+1. [**`ParserOutput`**](#Data%20Contracts): The composite object returned.
+2. [**`LinkObject`**](#LinkObject%20Interface): Outgoing link representation.
+3. [**`MarkdownParser`**](../ARCHITECTURE-Tool.md#Module.Component): The orchestrator class.
+```
+
+**Pattern**: Bold backtick name + link to definition + colon + one-line description
+
+---
+
 #### File Structure Diagram Tone & Style
+
+- **Format**: ASCII tree using `├──`, `│`, `└──` box-drawing characters
+- **Scope**: ONLY this component's files - **NO dependency files** (dependencies shown in Class Diagram, not here)
+- **Comment style**: `// Description` inline after each entry
+- **Metrics**: Include line counts in comments where helpful (e.g., `(~670 lines)`)
+- **Depth**: Component folder → files → methods/helpers (two levels inside files)
+- **Spacing**: Align comments for readability
+
+##### Monolithic Structure (single file)
+
+```text
+tools/component-name/
+├── src/
+│   ├── ComponentName.ts                       // Implementation (~N lines)
+│   │   ├── publicMethod()                     // Main entry point
+│   │   ├── internalMethod()                   // Internal processing
+│   │   └── helpers                            // Inline helper methods
+│   │       └── helperMethod()                 // Helper description
+│   │
+│   └── types/
+│       └── componentTypes.ts                  // Type definitions
+│
+└── test/
+    └── component.test.js                      // Test file description
+```
+
+##### Multi-File Structure (component folder)
+
+```text
+src/core/ComponentName/
+├── ComponentName.js                           // Main orchestrator (~N lines)
+│   ├── publicMethod()                         // Entry point
+│   └── orchestrateWorkflow()                  // Coordinates action files
+│
+├── actionVerb.js                              // Action file (~N lines)
+│   └── actionVerb()                           // Single responsibility action
+│
+├── anotherAction.js                           // Action file
+│   └── anotherAction()                        // Another action
+│
+├── helperNoun.js                              // Helper file
+│   └── helperNoun()                           // Utility function
+│
+└── strategies/                                // Grouped pattern subfolder
+    ├── StrategyInterface.js                   // Interface definition
+    ├── ConcreteStrategyA.js                   // Implementation
+    └── ConcreteStrategyB.js                   // Implementation
+```
+
+##### Optional Notes
+
+- **Technical debt**: Link to GitHub issue if applicable
+- **Cross-reference**: Link to related component guides for alignment examples
+- **Migration notes**: Document planned structural changes
 
 ---
 
@@ -315,6 +515,8 @@ Wraps [**`MarkdownParser.ParserOutput`**](Markdown%20Parser%20Implementation%20G
 > The patterns below were the first pass at pattern recognition. They can be used to help populate our section by section approach. BE WARNED THE INFORMATION MIGHT BE DATED
 
 ---
+<!-- markdownlint-disable -->
+
 ### Visual-First Documentation
 
 **Principle**: Diagrams before text, mermaid for all visualizations.
@@ -519,17 +721,10 @@ mainMethod(input) → Output
 
 ### Missing Patterns
 
-1. **Impact Table**: No table linking validation enrichment pattern → data reduction → data-first principles
-2. **Component Workflow Diagram**: Has pseudocode (good!) but missing sequence diagram showing validation phases
-3. **Whiteboard Section**: No deep technical Q&A section (e.g., "How does enrichment eliminate duplication?")
-4. **Research Section**: No external tool comparison (e.g., how do other validators handle enrichment?)
+1. **Component Workflow Diagram**: Has pseudocode (good!) but missing sequence diagram showing validation phases
+2. **Whiteboard Section**: No deep technical Q&A section (e.g., "How does enrichment eliminate duplication?")
+3. **Research Section**: No external tool comparison (e.g., how do other validators handle enrichment?)
 
-### Strengths to Preserve
-
-1. **Detailed Technical Debt**: Issues 1-4 are comprehensive with resolution strategies
-2. **Pseudocode**: Includes implementation pseudocode with line number references
-3. **Enrichment Pattern**: Well-documented US1.8 pattern with clear explanation
-4. **Test Strategy**: Comprehensive with contract validation focus
 
 ---
 
@@ -537,15 +732,6 @@ mainMethod(input) → Output
 
 ### What to Add
 
-1. **Impact Table**:
-
-```markdown
-| Solution | Impact | Principles |
-|----------|--------|------------|
-| Enrichment pattern (add validation to LinkObject) | 80% reduction in data duplication | [Data-First Design](link), [One Source of Truth](link) |
-| Discriminated union ValidationMetadata | Illegal states unrepresentable (no valid+error state) | [Illegal States Unrepresentable](link) |
-| ParsedDocument facade integration | Zero direct data structure access from validator | [Modular Design](link) |
-```
 
 1. **Component Workflow Sequence Diagram**:
 
@@ -583,7 +769,6 @@ sequenceDiagram
     Validator-->>-CLI: { summary, links }
 ```
 
-claudeclaude
 
 ### Estimated Improvement Impact
 

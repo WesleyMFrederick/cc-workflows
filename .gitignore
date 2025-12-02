@@ -113,3 +113,6 @@ _worktrees/
 
 # JACT state folder
 .citation-manager/
+
+# lsmcp cache
+.lsmcp/cache
