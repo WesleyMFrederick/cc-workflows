@@ -16,6 +16,9 @@ build/
 .env.test.local
 .env.production.local
 
+# oAuth tokens and credentials
+.oauthtokens/
+
 # IDE files
 .vscode/
 .idea/
@@ -116,3 +119,6 @@ _worktrees/
 
 # lsmcp cache
 .lsmcp/cache
+
+#mc-porter
+config/mcporter.json

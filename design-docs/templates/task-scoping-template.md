@@ -274,4 +274,4 @@
 
 ## Next Phase
 
-When Phase 3 is complete, proceed to Phase 4 using the [implementation details prompt](../prompts/phase-4-implementation-details-prompt.md) to create self-contained implementation specification files for each subtask that requires detailed guidance.
+When Phase 3 is complete, proceed to Phase 4 using the [implementation details prompt](../../tools/claude-code-cli-prompts/prompts/phase-4-implementation-details-prompt.md) to create self-contained implementation specification files for each subtask that requires detailed guidance.

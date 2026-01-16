@@ -302,4 +302,4 @@ This story must adhere to the following [Design Principles]([link to design prin
 
 ## Next Phase
 
-When Phase 1 is complete, proceed to Phase 2 using the [task generation prompt](../prompts/phase-2-task-generation-prompt.md) to create high-level tasks based on the architectural context gathered in this phase.
+When Phase 1 is complete, proceed to Phase 2 using the [task generation prompt](../../tools/claude-code-cli-prompts/prompts/phase-2-task-generation-prompt.md) to create high-level tasks based on the architectural context gathered in this phase.
