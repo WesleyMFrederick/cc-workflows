@@ -1,13 +1,41 @@
 #!/bin/bash
 
-# CEO Output Modulation Hook
-# Injects lightweight directives for concise, scannable chat output
+# CEO Output Modulation Hook + Plan Execution Status Reminder
+# Injects concise output directives and detects plan execution patterns
+
+set -euo pipefail
 
 # Read stdin (hook context)
 INPUT=$(cat)
 
-# Create system notification with terse directives
-DIRECTIVES="<system-notification>
+# Determine project root
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" && pwd)"
+PROJECT_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
+
+STATUS_FILE="${PROJECT_ROOT}/current-status.json"
+USER_PROMPT=$(echo "$INPUT" | jq -r '.userPrompt // empty' 2>/dev/null)
+PLAN_EXECUTION_REMINDER=""
+
+# Check for plan execution patterns (only if status file exists and not in_progress)
+if [[ -n "$USER_PROMPT" && -f "$STATUS_FILE" ]]; then
+  if echo "$USER_PROMPT" | grep -qiE "(implement.*plan|execute.*plan|start.*implementation|begin.*plan|continue.*plan|resume.*plan)"; then
+    current_status=$(jq -r '.status // "pending"' "$STATUS_FILE" 2>/dev/null)
+    if [[ "$current_status" != "in_progress" ]]; then
+      PLAN_EXECUTION_REMINDER="
+<plan-execution-reminder>
+**Starting plan execution.** Update current-status.json:
+- status: 'in_progress'
+- plan_path: path to plan file
+- current_phase: first phase
+- phases_remaining: populate from plan
+- timestamp: current ISO-8601 time
+</plan-execution-reminder>"
+    fi
+  fi
+fi
+
+# CEO output preferences (always active)
+CEO_DIRECTIVES="<system-notification>
 <ceo-output-preferences>
 **HOOK_TEST_MARKER_CEO_OUTPUT_HOOK_ACTIVE**
 
@@ -41,9 +69,9 @@ DIRECTIVES="<system-notification>
 </ceo-output-preferences>
 </system-notification>"
 
-# Output JSON with additional context
+# Output JSON with combined context
 jq -n \
-  --arg context "$DIRECTIVES" \
+  --arg context "${CEO_DIRECTIVES}${PLAN_EXECUTION_REMINDER}" \
   '{
     "hookSpecificOutput": {
       "hookEventName": "UserPromptSubmit",

@@ -1,5 +1,3 @@
-This file is a merged representation of a subset of the codebase, containing specifically included files, combined into a single document by Repomix.
-
 # File Summary
 
 ## Purpose
@@ -34,6 +32,7 @@ The content is organized as follows:
 - Files are sorted by Git change count (files with more changes are at the bottom)
 
 # Directory Structure
+
 ```
 .claude/
   skills/
@@ -380,6 +379,7 @@ vitest.config.js
 # Files
 
 ## File: tools/citation-manager/design-docs/component-guides/CLI Orchestrator Implementation Guide.md
+
 ````markdown
 # CLI Orchestrator Implementation Guide
 
@@ -479,12 +479,12 @@ The CLI includes a `semanticSuggestionMap` constant that maps common user mistak
 
 ```javascript
 const semanticSuggestionMap = {
-	// Command synonyms
-	check: ['validate'],
-	verify: ['validate'],
-	lint: ['validate'],
-	parse: ['ast'],
-	// ... etc
+ // Command synonyms
+ check: ['validate'],
+ verify: ['validate'],
+ lint: ['validate'],
+ parse: ['ast'],
+ // ... etc
 };
 ```
 
@@ -1813,6 +1813,7 @@ _Reference_: [PRD US2.7 - Remove Deprecated base-paths Command](<../.archive/fea
 ````
 
 ## File: tools/citation-manager/design-docs/component-guides/Content Extractor Implementation Guide.md
+
 ````markdown
 <!-- markdownlint-disable MD025 -->
 <!-- markdownlint-disable  -->

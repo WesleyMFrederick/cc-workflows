@@ -1,4 +1,21 @@
-# Quick Command Reference
+# Project Reference
+
+## LLM Learnings
+
+### File Uploads (MCP Tools)
+- **Use `fs.createReadStream(path)`** - Google APIs accept streams directly
+- **Never base64 into context** - wastes tokens, no benefit
+- **Tool accepts path, streams internally** - keeps context clean
+
+### Image Downloads (CDN/Brandfetch)
+- **Always include User-Agent header** - CDNs like Brandfetch use Cloudflare protection
+- **Verify file type after download** - small files (< 1KB) may be error pages/HTML
+- **Use `file` command to validate** - confirms actual image data vs HTML redirect
+- **Example curl:** `curl -sL -A "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36" "<url>" -o /tmp/image.png`
+
+---
+
+## Quick Command Reference
 
 ## Testing
 
@@ -71,7 +88,6 @@ citation-manager extract file <file-path>
 # Display AST for debugging
 citation-manager ast <file-path>
 ```
-
 
 ## Mock Tool
 

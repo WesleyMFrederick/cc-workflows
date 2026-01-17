@@ -49,7 +49,7 @@
 		]
 	},
 	"enableAllProjectMcpServers": false,
-	"enabledMcpjsonServers": ["Context7"],
+	"enabledMcpjsonServers": ["Context7", "gdrive"],
 	"hooks": {
 		"UserPromptSubmit": [
 			{
@@ -62,7 +62,27 @@
 				]
 			}
 		],
+		"PreToolUse": [
+			{
+				"matcher": "Task",
+				"hooks": [
+					{
+						"type": "command",
+						"command": "$CLAUDE_PROJECT_DIR/.claude/hooks/pre-task-status-reminder.sh"
+					}
+				]
+			}
+		],
 		"PostToolUse": [
+			{
+				"matcher": "Task",
+				"hooks": [
+					{
+						"type": "command",
+						"command": "$CLAUDE_PROJECT_DIR/.claude/hooks/post-task-status-reminder.sh"
+					}
+				]
+			},
 			{
 				"matcher": "Write|Edit|MultiEdit",
 				"hooks": [
@@ -92,7 +112,7 @@
 				"hooks": [
 					{
 						"type": "prompt",
-						"prompt": "Evaluate if Claude should stop: $ARGUMENTS. Check if all tasks are complete."
+						"prompt": "Before stopping, check current-status.json in the project root. If status is 'in_progress', you MUST update it before stopping: set status to 'completed' or 'pending', update last_completed_phase, notes with summary, and timestamp. Do NOT stop with status='in_progress'. Also evaluate: $ARGUMENTS - check if all tasks are complete."
 					}
 				]
 			}
