@@ -12,11 +12,11 @@ Examples:
 This script extracts YouTube transcripts and saves them to a specified directory.
 """
 
-from youtube_transcript_api import YouTubeTranscriptApi
 import sys
-import os
 from datetime import datetime
 from pathlib import Path
+
+from youtube_transcript_api import YouTubeTranscriptApi
 
 def get_video_id_from_url(url):
     """Extract video ID from YouTube URL"""
@@ -123,7 +123,7 @@ def main():
             print("-" * 50)
             print(transcript[:preview_length] + "...")
         else:
-            print(f"\n📖 Full transcript:")
+            print("\n📖 Full transcript:")
             print("-" * 50)
             print(transcript)
     else:

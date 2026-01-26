@@ -2,7 +2,6 @@
 
 from youtube_transcript_api import YouTubeTranscriptApi
 import sys
-import json
 
 def get_video_id_from_url(url):
     """Extract video ID from YouTube URL"""
@@ -53,6 +52,6 @@ if __name__ == "__main__":
         # Save to file
         with open("transcript.txt", "w", encoding="utf-8") as f:
             f.write(transcript)
-        print(f"\nTranscript saved to transcript.txt")
+        print("\nTranscript saved to transcript.txt")
     else:
         print("Failed to get transcript")

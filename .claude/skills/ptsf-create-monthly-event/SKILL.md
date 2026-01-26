@@ -52,7 +52,7 @@ Run for all offsets to validate timeline dates before creating the project.
 
 ### Step 2: Create Event Project
 
-Use `mcp__linear-server__create_project` with these parameters:
+Use `linear-cli p create` with these parameters:
 
 **Fixed values**:
 - `team`: "Product Tank SF"
@@ -63,7 +63,7 @@ Use `mcp__linear-server__create_project` with these parameters:
 - `labels`: ["Event", "{Month}"] (e.g., ["Event", "Feb"])
 
 **Description construction**:
-1. Read PRO-60 template: `mcp__linear-server__get_issue` with id "PRO-60"
+1. Read PRO-60 template: `linear-cli i get PRO-60 --output json`
 2. Replace placeholders in description:
    - `[YYYY Month]` → "{Month} {YYYY}" (e.g., "Feb 2026")
    - `[Date]` → Full date string (e.g., "February 17, 2026")
@@ -82,7 +82,7 @@ Use `mcp__linear-server__create_project` with these parameters:
 ### Step 3: Validate Project Creation
 
 **Verification checklist**:
-- [ ] Read created project with `mcp__linear-server__get_project`
+- [ ] Read created project with `linear-cli p get <PROJECT_ID> --output json`
 - [ ] Confirm name format: "{Month} {YYYY} - [Speaker Name]"
 - [ ] Confirm team: "Product Tank SF"
 - [ ] Confirm labels: "Event" and month abbreviation
@@ -113,7 +113,7 @@ Each sub-agent creates ONE task following this process:
 
 **Sub-Agent Instructions** (for each template):
 
-1. **Read Template**: `mcp__linear-server__get_issue` with template ID
+1. **Read Template**: `linear-cli i get <TEMPLATE_ID> --output json`
    - Note title format: `[Event Name, ie. Jan 2026]` placeholder
    - Note description: `[Event Date - X days]` placeholder
    - Note **Target Completion** field (e.g., `[Event Date - 60 days]`)
@@ -124,7 +124,7 @@ Each sub-agent creates ONE task following this process:
    - Run: `./scripts/calculate-event-date.sh "<event-date>" "<offset>"`
    - For TBD items (no Target Completion): use `null`
 
-3. **Create Task**: `mcp__linear-server__create_issue`
+3. **Create Task**: `linear-cli i create "<TITLE>" -t "Product Tank SF" --project "<PROJECT_NAME>" -l "<LABELS>"`
    - `title`: Replace `[Event Name, ie. Jan 2026]` with `{Month} {YYYY}`
    - `team`: "Product Tank SF"
    - `project`: "{Month} {YYYY} - [Speaker Name]" (the project created in Step 2)
@@ -160,13 +160,13 @@ Batch 5: Templates PRO-79, PRO-80, PRO-81, PRO-82, PRO-84
 1. **Collect Results**: Gather template ID → new issue mapping from all 5 sub-agents
    - Example: `{"PRO-83": "PRO-109", "PRO-62": "PRO-107", ...}`
 
-2. **Read Current Project**: `mcp__linear-server__get_project` with project ID/name
+2. **Read Current Project**: `linear-cli p get <PROJECT_ID> --output json`
 
 3. **Update All Links**: For each template → new issue mapping:
    - Find template link in description (e.g., `[Template](https://linear.app/.../PRO-83/...)`)
    - Replace with new task link (e.g., `[PRO-109](https://linear.app/.../PRO-109/...)`)
 
-4. **Single Update**: `mcp__linear-server__update_project` with all replacements at once
+4. **Single Update**: `linear-cli p update <PROJECT_ID> -d "<UPDATED_DESCRIPTION>"`
 
 **Why**: Prevents concurrent update conflicts when multiple sub-agents try to update the same project simultaneously.
 

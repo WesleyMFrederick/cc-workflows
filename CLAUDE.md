@@ -111,3 +111,20 @@ npm install <package-name> -w @cc-workflows/tool-name
 # List all workspace packages
 npm list --workspaces
 ```
+
+## Linear.app Integration
+ALWAYS use `linear-cli` for Linear.app operations. NEVER use Linear MCP tools.
+
+Reason: CLI is 10-50x more token-efficient than MCP tool calls.
+
+### Quick Commands
+- List issues: `linear-cli i list`
+- Create issue: `linear-cli i create "Title" -t TEAM -p 2`
+- View issue: `linear-cli i get LIN-123`
+- Start work: `linear-cli i start LIN-123` (assigns, sets In Progress, creates branch)
+- Update: `linear-cli i update LIN-123 -s Done`
+- Create PR: `linear-cli g pr LIN-123`
+- Search: `linear-cli s issues "query"`
+- Fetch upload: `linear-cli up fetch URL -f file.png`
+- JSON output: Add `--output json` to any command (or set `LINEAR_CLI_OUTPUT=json`)
+- Agent help: `linear-cli agent`

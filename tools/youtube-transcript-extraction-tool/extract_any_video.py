@@ -8,10 +8,11 @@ Usage:
 This script will prompt you for a YouTube URL and extract its transcript.
 """
 
-from youtube_transcript_api import YouTubeTranscriptApi
-import sys
 import os
 from datetime import datetime
+
+from youtube_transcript_api import YouTubeTranscriptApi
+
 
 def get_video_id_from_url(url):
     """Extract video ID from YouTube URL"""
@@ -121,7 +122,7 @@ def main():
             print("-" * 50)
             print(transcript[:preview_length] + "...")
         else:
-            print(f"\nFull transcript:")
+            print("\nFull transcript:")
             print("-" * 50)
             print(transcript)
     else:

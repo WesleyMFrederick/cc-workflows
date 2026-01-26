@@ -53,8 +53,8 @@ User provides: url, qrType, name (for filename)
 **Bulk mode (from Linear task):**
 
 ```bash
-# Use Linear MCP to get task
-mcp__linear-server__get_issue id: {linearTaskId}
+# Use linear-cli to get task
+linear-cli i get {linearTaskId} --output json
 
 # Parse description for URLs matching qrType context
 ```

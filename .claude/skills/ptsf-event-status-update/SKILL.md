@@ -9,7 +9,7 @@ description: Generate ProductTank SF event status reports by synthesizing Linear
 
 | Source | What to Find | How to Access |
 |--------|--------------|---------------|
-| **Linear** | Issue status, blockers, timelines, checklist progress | `Linear:list_issues`, `Linear:get_issue`, `Linear:get_project` |
+| **Linear** | Issue status, blockers, timelines, checklist progress | `linear-cli i list -t "Product Tank SF"`, `linear-cli i get <ID>`, `linear-cli p get <ID>` |
 | **Gmail** | Speaker communications, confirmations, pending replies | `search_gmail_messages` with `q: "from:wmfrederick+producttanksf@gmail.com OR to:wmfrederick+producttanksf@gmail.com [speaker/event name]"` |
 | **Speaker Form Results** | Speaker submissions, talk titles, bios, availability | [Speaker Form](https://docs.google.com/spreadsheets/d/1GN2mAqlv_QRdCD4cuIplw_8IbwfjwpdlHTe7CSlcagY/edit?gid=206355470#gid=206355470) — `gdrive:gsheets_read` spreadsheetId: `1GN2mAqlv_QRdCD4cuIplw_8IbwfjwpdlHTe7CSlcagY` |
 | **Master Event Spreadsheet** | Event calendar, venue info, budget, sponsor tracking | [Master Events](https://docs.google.com/spreadsheets/d/1RnNx_kF0YsaiG2VlcgMO1oVs56rjKBIxtQKjVsvwq2o/edit?gid=2#gid=2) — `gdrive:gsheets_read` spreadsheetId: `1RnNx_kF0YsaiG2VlcgMO1oVs56rjKBIxtQKjVsvwq2o` |
@@ -22,8 +22,8 @@ description: Generate ProductTank SF event status reports by synthesizing Linear
 - Note the main coordination issue (e.g., PRO-42)
 
 ### 2. Get Linear Details
-- `Linear:get_project` for project description, event date, venue, speaker details
-- `Linear:get_issue` for main issue status, timeline, blockers, due dates
+- `linear-cli p get <PROJECT_ID> --output json` for project description, event date, venue, speaker details
+- `linear-cli i get <ISSUE_ID> --output json` for main issue status, timeline, blockers, due dates
 - Extract progress from "Event Definition of Done Checklist"
 
 ### 3. Check Google Sheets
@@ -37,6 +37,7 @@ description: Generate ProductTank SF event status reports by synthesizing Linear
 ### 5. Synthesize Using Template Below
 
 ## Output Template
+
 ```markdown
 ## Event Status: **[Status]** ([Brief Context])
 
