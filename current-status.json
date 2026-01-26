@@ -1,18 +1,15 @@
 {
-  "plan_path": "/Users/wesleyfrederick/.claude/plans/quiet-scribbling-lovelace.md",
-  "current_phase": "Add gdrive_download_file tool",
-  "status": "in_progress",
+  "plan_path": null,
+  "current_phase": null,
+  "status": "idle",
   "last_completed_phase": null,
-  "notes": "Adding download tool to avoid base64 bloat in context window",
-  "resume_instructions": "Implement gdrive_download_file following the plan",
+  "notes": "",
+  "resume_instructions": "",
   "required_skill": null,
   "required_reading": [],
-  "timestamp": "2026-01-17T20:05:00Z",
+  "timestamp": "2026-01-26T00:00:00Z",
   "phases_completed": [],
-  "phases_remaining": [
-    "Phase 1: Add gdrive_download_file tool",
-    "Phase 2: Generate sponsor QR codes for Jan 2026"
-  ],
+  "phases_remaining": [],
   "plan_queue": [],
-  "target_folder": "1nh4a-uoTK40S7Twm4erJICQaAmsFcXgj"
+  "target_folder": null
 }
