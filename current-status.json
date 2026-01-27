@@ -1,32 +1,39 @@
 {
   "active_sessions": {
     "410194a4-4969-4da1-bdeb-0b367472b706": {
+      "plan_path": "/Users/wesleyfrederick/.claude/plans/lucky-gliding-clarke.md",
+      "current_task_header": "### Task 1: Create POC script",
+      "focus": "Stop Hook for Status Sync",
+      "status": "in_progress",
+      "last_active_at": "2026-01-27T04:08:58Z"
+    },
+    "034cf154-fe0d-4cd4-be49-a6aaf6a965b9": {
+      "plan_path": null,
+      "current_task_header": null,
+      "focus": "Testing stop hook behavior and session entry creation.",
+      "status": "idle",
+      "last_active_at": "2026-01-27T03:34:39Z"
+    },
+    "ec28f747-5f5f-4d12-8016-171cb3d55085": {
+      "plan_path": null,
+      "current_task_header": null,
+      "focus": "No conversation yet.",
+      "status": "idle",
+      "last_active_at": "2026-01-27T03:49:47Z"
+    },
+    "8825e17c-022f-43d0-9ec9-9e3be19f2a50": {
       "plan_path": "/Users/wesleyfrederick/.claude/plans/precious-questing-pond.md",
-      "current_task_header": null,
-      "focus": "Slack-Linear Integration",
-      "status": "in_progress",
-      "last_active_at": "2026-01-27T00:26:19Z"
+      "current_task_header": "### Step 1: Configure slack-mcp-server in .mcp.json",
+      "focus": "Slack-Linear Integration for ProductTank SF",
+      "status": "idle",
+      "last_active_at": "2026-01-27T04:06:00Z"
     },
-    "5bc380fd-4b89-439b-808b-c57ea354a200": {
+    "af265c9b-e0c2-4935-86a3-58d2814474d7": {
       "plan_path": null,
       "current_task_header": null,
       "focus": "New session",
       "status": "active",
-      "last_active_at": "2026-01-27T00:28:20Z"
-    },
-    "385aa6dd-9a9e-4718-944b-689d5a8cad35": {
-      "plan_path": "/Users/wesleyfrederick/.claude/plans/jolly-popping-rivest.md",
-      "current_task_header": null,
-      "focus": "Migrate create-git-commit to github-assistant agent",
-      "status": "in_progress",
-      "last_active_at": "2026-01-27T00:41:53Z"
-    },
-    "96e2121c-8db6-4a01-9451-326a372133c3": {
-      "plan_path": null,
-      "current_task_header": null,
-      "focus": "New session",
-      "status": "active",
-      "last_active_at": "2026-01-27T00:45:31Z"
+      "last_active_at": "2026-01-27T04:09:27Z"
     }
   },
   "max_sessions": 5

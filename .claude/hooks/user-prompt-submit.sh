@@ -37,13 +37,19 @@ sync_session() {
   session_exists=$(jq -r --arg sid "$session_id" '.active_sessions[$sid] // empty' "$STATUS_FILE" 2>/dev/null)
 
   if [[ -z "$session_exists" ]]; then
-    # New session - enforce FIFO limit
+    # New session - enforce FIFO limit (prioritize removing planless sessions)
     if [[ "$session_count" -ge "$max_sessions" ]]; then
-      # Remove oldest session (by last_active_at)
-      local oldest_id
-      oldest_id=$(jq -r '[.active_sessions | to_entries[] | {key, time: .value.last_active_at}] | sort_by(.time) | .[0].key' "$STATUS_FILE" 2>/dev/null)
-      if [[ -n "$oldest_id" && "$oldest_id" != "null" ]]; then
-        jq --arg old "$oldest_id" 'del(.active_sessions[$old])' "$STATUS_FILE" > "${STATUS_FILE}.tmp" && mv "${STATUS_FILE}.tmp" "$STATUS_FILE"
+      # First try: remove oldest "New session" (no plan, default focus)
+      local planless_id
+      planless_id=$(jq -r '[.active_sessions | to_entries[] | select(.value.plan_path == null) | {key, time: .value.last_active_at}] | sort_by(.time) | .[0].key // empty' "$STATUS_FILE" 2>/dev/null)
+
+      if [[ -n "$planless_id" && "$planless_id" != "null" ]]; then
+        # Safe to remove - no plan attached
+        jq --arg old "$planless_id" 'del(.active_sessions[$old])' "$STATUS_FILE" > "${STATUS_FILE}.tmp" && mv "${STATUS_FILE}.tmp" "$STATUS_FILE"
+      else
+        # All sessions have plans - don't auto-remove, set flag for permission request
+        export SESSIONS_FULL_WITH_PLANS="true"
+        return 0  # Don't add new session - need user permission first
       fi
     fi
 
@@ -68,6 +74,17 @@ sync_session() {
 
 # Run session sync (silent - errors don't block hook)
 sync_session 2>/dev/null || true
+
+# Check if sessions are full with plans (set by sync_session)
+SESSION_LIMIT_WARNING=""
+if [[ "${SESSIONS_FULL_WITH_PLANS:-}" == "true" ]]; then
+  SESSION_LIMIT_WARNING="
+<session-limit-warning>
+**Session limit reached (all ${max_sessions:-5} sessions have plans).**
+Ask user which session to remove before creating new one.
+Show: session ID, focus, plan_path for each.
+</session-limit-warning>"
+fi
 
 # CEO output preferences (always active)
 CEO_DIRECTIVES="<system-notification>
@@ -106,7 +123,7 @@ CEO_DIRECTIVES="<system-notification>
 
 # Output JSON with combined context
 jq -n \
-  --arg context "${CEO_DIRECTIVES}" \
+  --arg context "${CEO_DIRECTIVES}${SESSION_LIMIT_WARNING}" \
   '{
     "hookSpecificOutput": {
       "hookEventName": "UserPromptSubmit",

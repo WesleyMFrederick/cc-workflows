@@ -112,9 +112,8 @@
 				"matcher": "",
 				"hooks": [
 					{
-						"type": "prompt",
-						"prompt": "Before stopping: 1) Summarize this session's focus in 3-10 words. 2) Update current-status.json: set your session's focus field to this summary, status to 'idle', and last_active_at to current ISO-8601 timestamp. Respond with brief confirmation.",
-						"async": true
+						"type": "command",
+						"command": "$CLAUDE_PROJECT_DIR/.claude/hooks/stop-sync.sh"
 					}
 				]
 			}
