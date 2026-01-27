@@ -113,7 +113,8 @@
 				"hooks": [
 					{
 						"type": "prompt",
-						"prompt": "Before stopping, check current-status.json in the project root. If status is 'in_progress', you MUST update it before stopping: set status to 'completed' or 'pending', update last_completed_phase, notes with summary, and timestamp. Do NOT stop with status='in_progress'. Also evaluate: $ARGUMENTS - check if all tasks are complete."
+						"prompt": "Before stopping: 1) Summarize this session's focus in 3-10 words. 2) Update current-status.json: set your session's focus field to this summary, status to 'idle', and last_active_at to current ISO-8601 timestamp. Respond with brief confirmation.",
+						"async": true
 					}
 				]
 			}

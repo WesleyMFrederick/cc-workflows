@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# SessionStart hook for local project
+# SessionStart hook for local project - DRY session-scoped design
 
 set -euo pipefail
 
@@ -18,43 +18,49 @@ status_display=""
 if [[ -f "$STATUS_FILE" ]]; then
   status_content=$(cat "$STATUS_FILE")
 
-  # Extract fields for status display
-  current_status=$(echo "$status_content" | jq -r '.status // "unknown"')
-  last_completed=$(echo "$status_content" | jq -r '.last_completed_phase // "none"')
-  current_phase=$(echo "$status_content" | jq -r '.current_phase // null')
-  next_phase=$(echo "$status_content" | jq -r '.phases_remaining[0] // null')
-  plan_queue=$(echo "$status_content" | jq -r '.plan_queue // []')
-  queue_count=$(echo "$plan_queue" | jq -r 'length')
+  # Count active sessions
+  session_count=$(echo "$status_content" | jq -r '.active_sessions | length // 0')
+  max_sessions=$(echo "$status_content" | jq -r '.max_sessions // 5')
 
-  # Format current phase display
-  if [[ "$current_phase" == "null" || -z "$current_phase" ]]; then
-    current_display="(none - status ${current_status})"
-  else
-    current_display="$current_phase"
-  fi
+  if [[ "$session_count" -gt 0 ]]; then
+    # Build active sessions display
+    sessions_list=""
+    idx=1
 
-  # Format next phase display
-  if [[ "$next_phase" == "null" || -z "$next_phase" ]]; then
-    next_display="(none)"
-  else
-    next_display="$next_phase"
-  fi
+    # Iterate through active sessions
+    for session_id in $(echo "$status_content" | jq -r '.active_sessions | keys[]'); do
+      session=$(echo "$status_content" | jq -r ".active_sessions[\"$session_id\"]")
+      focus=$(echo "$session" | jq -r '.focus // "No focus set"')
+      status=$(echo "$session" | jq -r '.status // "unknown"')
+      task_header=$(echo "$session" | jq -r '.current_task_header // empty')
+      plan_path=$(echo "$session" | jq -r '.plan_path // empty')
 
-  # Format queue display
-  if [[ "$queue_count" -eq 0 ]]; then
-    queue_display="empty"
-  else
-    queue_display="[${queue_count} plans pending]"
-  fi
+      # Build task info string
+      task_info=""
+      if [[ -n "$task_header" && "$task_header" != "null" ]]; then
+        task_info=" (${task_header})"
+      fi
 
-  # Build scannable status display
-  status_display="
-📍 **Status Update:**
-• Last: ${last_completed}
-• Current: ${current_display}
-• Next: ${next_display}
-• Queue: ${queue_display}
+      # Build plan indicator
+      plan_indicator=""
+      if [[ -n "$plan_path" && "$plan_path" != "null" ]]; then
+        plan_indicator=" [has plan]"
+      fi
+
+      short_id="${session_id:0:8}"
+      sessions_list="${sessions_list}
+${idx}. ${short_id} - \"${focus}\"${task_info} - ${status}${plan_indicator}"
+      idx=$((idx + 1))
+    done
+
+    status_display="
+📍 **Active Sessions (${session_count}/${max_sessions}):**${sessions_list}
 "
+  else
+    status_display="
+📍 **No active sessions** - Starting fresh
+"
+  fi
 
   current_status_block="
 <current-status>
@@ -62,21 +68,21 @@ ${status_content}
 </current-status>
 
 <current-status-instructions>
-You have an active project status. When resuming work:
-1. Check plan_path for the implementation plan
-2. Check status field - if 'in_progress', continue from current_phase
-3. Use resume_instructions for context on how to proceed
-4. Update this file when completing phases or changing status
+Session-scoped status tracking. When resuming:
+1. Find your session in active_sessions by session_id
+2. Check plan_path - use citation-manager to extract current task context
+3. Update your session's last_active_at on each interaction
+4. Derive resume context from plan file (DRY - don't store stale instructions)
 </current-status-instructions>
 ${status_display}"
 fi
 
 # Build the additional context message
 additional_context="<CRITICAL-INSTRUCTION>At the end of each response to the user, append the following content to the chat window exactly as shown, without any changes or omissions: _We are Oscar Mike_</CRITICAL-INSTRUCTION>
-${current_status_block} 
+${current_status_block}
 
 <EXTREMELY_IMPORTANT>
-At the end of each response, 
+At the end of each response,
 
 You have superpowers.
 

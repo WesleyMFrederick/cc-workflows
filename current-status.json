@@ -1,15 +1,19 @@
 {
-  "plan_path": null,
-  "current_phase": null,
-  "status": "idle",
-  "last_completed_phase": null,
-  "notes": "",
-  "resume_instructions": "",
-  "required_skill": null,
-  "required_reading": [],
-  "timestamp": "2026-01-26T00:00:00Z",
-  "phases_completed": [],
-  "phases_remaining": [],
-  "plan_queue": [],
-  "target_folder": null
+  "active_sessions": {
+    "410194a4-4969-4da1-bdeb-0b367472b706": {
+      "plan_path": "/Users/wesleyfrederick/.claude/plans/precious-questing-pond.md",
+      "current_task_header": null,
+      "focus": "Slack-Linear Integration",
+      "status": "in_progress",
+      "last_active_at": "2026-01-27T00:26:19Z"
+    },
+    "5bc380fd-4b89-439b-808b-c57ea354a200": {
+      "plan_path": null,
+      "current_task_header": null,
+      "focus": "New session",
+      "status": "active",
+      "last_active_at": "2026-01-27T00:28:20Z"
+    }
+  },
+  "max_sessions": 5
 }

@@ -32,6 +32,8 @@ if [[ -f "$STATUS_FILE" ]]; then
 - phases_remaining: Remove completed phase
 - notes: Key outcomes
 - timestamp: Current ISO-8601 time${queue_info}
+
+Note: Session tracking (session_history) is updated automatically.
 </post-task-status-reminder>"
   fi
 fi

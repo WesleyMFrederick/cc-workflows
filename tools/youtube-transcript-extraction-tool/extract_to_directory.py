@@ -18,6 +18,7 @@ from pathlib import Path
 
 from youtube_transcript_api import YouTubeTranscriptApi
 
+
 def get_video_id_from_url(url):
     """Extract video ID from YouTube URL"""
     if "watch?v=" in url:
@@ -35,7 +36,7 @@ def sanitize_filename(text):
             safe_chars.append(char)
         elif char in [':', '/', '\\', '?', '*', '<', '>', '|']:
             safe_chars.append('-')
-    
+
     filename = ''.join(safe_chars).strip()
     # Limit length and remove extra spaces
     filename = ' '.join(filename.split())[:100]
@@ -46,21 +47,21 @@ def get_transcript_to_directory(video_url, output_dir, custom_filename=None):
     try:
         video_id = get_video_id_from_url(video_url)
         print(f"Getting transcript for video ID: {video_id}")
-        
+
         # Create output directory if it doesn't exist
         output_path = Path(output_dir)
         output_path.mkdir(parents=True, exist_ok=True)
-        
+
         # Get transcript
         transcript = YouTubeTranscriptApi.get_transcript(video_id)
-        
+
         # Combine all text
         full_text = ""
         for entry in transcript:
             full_text += entry['text'] + " "
-        
+
         full_text = full_text.strip()
-        
+
         # Generate filename if not provided
         if custom_filename:
             if not custom_filename.endswith('.txt'):
@@ -69,10 +70,10 @@ def get_transcript_to_directory(video_url, output_dir, custom_filename=None):
         else:
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
             filename = f"transcript_{video_id}_{timestamp}.txt"
-        
+
         # Full path for output file
         output_file = output_path / filename
-        
+
         # Save to file
         with open(output_file, "w", encoding="utf-8") as f:
             f.write(f"YouTube Video: {video_url}\n")
@@ -81,9 +82,9 @@ def get_transcript_to_directory(video_url, output_dir, custom_filename=None):
             f.write(f"Output Directory: {output_dir}\n")
             f.write("=" * 80 + "\n\n")
             f.write(full_text)
-        
+
         return full_text, str(output_file)
-    
+
     except Exception as e:
         print(f"Error getting transcript: {e}")
         return None, None
@@ -96,11 +97,11 @@ def main():
         print('  python extract_to_directory.py "https://youtube.com/watch?v=abc123" "/path/to/output/"')
         print('  python extract_to_directory.py "https://youtube.com/watch?v=abc123" "/path/to/output/" "my_transcript.txt"')
         sys.exit(1)
-    
+
     video_url = sys.argv[1]
     output_dir = sys.argv[2]
     custom_filename = sys.argv[3] if len(sys.argv) > 3 else None
-    
+
     print("YouTube Transcript Extractor - Custom Directory")
     print("=" * 50)
     print(f"Video URL: {video_url}")
@@ -108,14 +109,14 @@ def main():
     if custom_filename:
         print(f"Custom Filename: {custom_filename}")
     print()
-    
+
     print("Extracting transcript...")
     transcript, output_file = get_transcript_to_directory(video_url, output_dir, custom_filename)
-    
+
     if transcript:
         print(f"\n✅ Success! Transcript saved to: {output_file}")
         print(f"📊 Length: {len(transcript)} characters")
-        
+
         # Show preview
         preview_length = 200
         if len(transcript) > preview_length:
