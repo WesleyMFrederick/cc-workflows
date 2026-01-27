@@ -22,7 +22,7 @@
       "current_task_header": "### Step 2: Explore ProductTank SF Slack Workspace (Task #14)",
       "focus": "Slack-Linear Integration for ProductTank SF",
       "status": "idle",
-      "last_active_at": "2026-01-27T15:45:34Z",
+      "last_active_at": "2026-01-27T15:55:30Z",
       "current_task_number": "14",
       "tasks_path": "/Users/wesleyfrederick/.claude/tasks/8825e17c-022f-43d0-9ec9-9e3be19f2a50",
       "task_summary": "Task #14: Exploring Slack channels"
@@ -30,9 +30,12 @@
     "af265c9b-e0c2-4935-86a3-58d2814474d7": {
       "plan_path": null,
       "current_task_header": null,
-      "focus": "No conversation yet.",
+      "focus": "No conversation topic to summarize.",
       "status": "active",
-      "last_active_at": "2026-01-27T15:52:07Z"
+      "last_active_at": "2026-01-27T15:55:44Z",
+      "current_task_number": null,
+      "tasks_path": "/Users/wesleyfrederick/.claude/tasks/af265c9b-e0c2-4935-86a3-58d2814474d7",
+      "task_summary": null
     },
     "0eef8843-9442-42f4-b5dc-565ac41d317f": {
       "plan_path": null,
