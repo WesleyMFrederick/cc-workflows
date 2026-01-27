@@ -13,6 +13,20 @@
       "focus": "New session",
       "status": "active",
       "last_active_at": "2026-01-27T00:28:20Z"
+    },
+    "385aa6dd-9a9e-4718-944b-689d5a8cad35": {
+      "plan_path": "/Users/wesleyfrederick/.claude/plans/jolly-popping-rivest.md",
+      "current_task_header": null,
+      "focus": "Migrate create-git-commit to github-assistant agent",
+      "status": "in_progress",
+      "last_active_at": "2026-01-27T00:41:53Z"
+    },
+    "96e2121c-8db6-4a01-9451-326a372133c3": {
+      "plan_path": null,
+      "current_task_header": null,
+      "focus": "New session",
+      "status": "active",
+      "last_active_at": "2026-01-27T00:45:31Z"
     }
   },
   "max_sessions": 5
