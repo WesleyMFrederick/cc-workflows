@@ -3,16 +3,12 @@
     "410194a4-4969-4da1-bdeb-0b367472b706": {
       "plan_path": "/Users/wesleyfrederick/.claude/plans/lucky-gliding-clarke.md",
       "current_task_header": "### Task 1: Create POC script",
-      "focus": "Stop Hook for Status Sync",
-      "status": "in_progress",
-      "last_active_at": "2026-01-27T04:08:58Z"
-    },
-    "034cf154-fe0d-4cd4-be49-a6aaf6a965b9": {
-      "plan_path": null,
-      "current_task_header": null,
-      "focus": "Testing stop hook behavior and session entry creation.",
+      "focus": "Plan: Stop Hook for Status Sync",
       "status": "idle",
-      "last_active_at": "2026-01-27T03:34:39Z"
+      "last_active_at": "2026-01-27T04:22:36Z",
+      "current_task_number": null,
+      "tasks_path": "/Users/wesleyfrederick/.claude/tasks/410194a4-4969-4da1-bdeb-0b367472b706",
+      "task_summary": null
     },
     "ec28f747-5f5f-4d12-8016-171cb3d55085": {
       "plan_path": null,
@@ -23,17 +19,39 @@
     },
     "8825e17c-022f-43d0-9ec9-9e3be19f2a50": {
       "plan_path": "/Users/wesleyfrederick/.claude/plans/precious-questing-pond.md",
-      "current_task_header": "### Step 1: Configure slack-mcp-server in .mcp.json",
+      "current_task_header": "### Step 2: Explore ProductTank SF Slack Workspace (Task #14)",
       "focus": "Slack-Linear Integration for ProductTank SF",
       "status": "idle",
-      "last_active_at": "2026-01-27T04:06:00Z"
+      "last_active_at": "2026-01-27T15:45:34Z",
+      "current_task_number": "14",
+      "tasks_path": "/Users/wesleyfrederick/.claude/tasks/8825e17c-022f-43d0-9ec9-9e3be19f2a50",
+      "task_summary": "Task #14: Exploring Slack channels"
     },
     "af265c9b-e0c2-4935-86a3-58d2814474d7": {
       "plan_path": null,
       "current_task_header": null,
-      "focus": "New session",
+      "focus": "No conversation yet.",
       "status": "active",
-      "last_active_at": "2026-01-27T04:09:27Z"
+      "last_active_at": "2026-01-27T15:52:07Z"
+    },
+    "0eef8843-9442-42f4-b5dc-565ac41d317f": {
+      "plan_path": null,
+      "current_task_header": null,
+      "focus": "Project planning gap analysis.",
+      "status": "idle",
+      "last_active_at": "2026-01-27T04:37:38Z",
+      "current_task_number": null,
+      "tasks_path": "/Users/wesleyfrederick/.claude/tasks/0eef8843-9442-42f4-b5dc-565ac41d317f",
+      "task_summary": null
+    },
+    "15f324c6-e143-4a11-bcae-482ea2fa6d8b": {
+      "focus": "Status sync gaps implementation in progress",
+      "status": "idle",
+      "last_active_at": "2026-01-27T15:34:26Z",
+      "current_task_number": null,
+      "tasks_path": "/Users/wesleyfrederick/.claude/tasks/15f324c6-e143-4a11-bcae-482ea2fa6d8b",
+      "task_summary": null,
+      "current_task_header": null
     }
   },
   "max_sessions": 5

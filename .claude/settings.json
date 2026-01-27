@@ -98,6 +98,15 @@
 				]
 			},
 			{
+				"matcher": "Write",
+				"hooks": [
+					{
+						"type": "command",
+						"command": "$CLAUDE_PROJECT_DIR/.claude/hooks/plan-path-sync.sh"
+					}
+				]
+			},
+			{
 				"matcher": "Read",
 				"hooks": [
 					{

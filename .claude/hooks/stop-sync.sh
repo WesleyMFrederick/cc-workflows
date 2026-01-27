@@ -64,6 +64,29 @@ else
   skipped_haiku=false
 fi
 
+# Scan task files for current state (same pattern as statusline-script.sh)
+tasks_dir="$HOME/.claude/tasks/$session_id"
+current_task_number=""
+task_summary=""
+if [[ -d "$tasks_dir" ]]; then
+  for task_file in "$tasks_dir"/*.json; do
+    [[ -f "$task_file" ]] || continue
+    task_status=$(jq -r '.status // ""' "$task_file" 2>/dev/null)
+    if [[ "$task_status" == "in_progress" ]]; then
+      current_task_number=$(jq -r '.id // ""' "$task_file" 2>/dev/null)
+      task_active_form=$(jq -r '.activeForm // ""' "$task_file" 2>/dev/null)
+      task_summary="Task #${current_task_number}: ${task_active_form}"
+      break
+    fi
+  done
+fi
+
+# Resolve current_task_header from plan file (actual H3 header text)
+current_task_header=""
+if [[ -n "$plan_path" && -f "$plan_path" && -n "$current_task_number" ]]; then
+  current_task_header=$(grep -m1 "^### .*${current_task_number}[:.)]" "$plan_path" || echo "")
+fi
+
 # Timing: End
 end_ms=$(get_ms)
 total_ms=$((end_ms - start_ms))
@@ -73,12 +96,20 @@ timestamp=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 jq --arg sid "$session_id" \
    --arg focus "$focus" \
    --arg ts "$timestamp" \
+   --arg task_num "${current_task_number:-}" \
+   --arg tasks_path "${tasks_dir:-}" \
+   --arg task_sum "${task_summary:-}" \
+   --arg task_hdr "${current_task_header:-}" \
    '.active_sessions[$sid].focus = $focus |
     .active_sessions[$sid].status = "idle" |
-    .active_sessions[$sid].last_active_at = $ts' \
+    .active_sessions[$sid].last_active_at = $ts |
+    .active_sessions[$sid].current_task_number = (if $task_num == "" then null else $task_num end) |
+    .active_sessions[$sid].tasks_path = (if $tasks_path == "" then null else $tasks_path end) |
+    .active_sessions[$sid].task_summary = (if $task_sum == "" then null else $task_sum end) |
+    .active_sessions[$sid].current_task_header = (if $task_hdr == "" then null else $task_hdr end)' \
    "$STATUS_FILE" > "${STATUS_FILE}.tmp" && mv "${STATUS_FILE}.tmp" "$STATUS_FILE"
 
 # Log metrics to stderr (visible in claude --debug)
-echo "[stop-sync] session=$session_id focus=\"$focus\" skipped_haiku=$skipped_haiku haiku_ms=$haiku_duration_ms total_ms=$total_ms" >&2
+echo "[stop-sync] session=$session_id focus=\"$focus\" task=\"${task_summary:-none}\" skipped_haiku=$skipped_haiku haiku_ms=$haiku_duration_ms total_ms=$total_ms" >&2
 
 exit 0

@@ -67,7 +67,8 @@ sync_session() {
     # Existing session - update last_active_at
     jq --arg sid "$session_id" \
        --arg ts "$timestamp" \
-       '.active_sessions[$sid].last_active_at = $ts' \
+       '.active_sessions[$sid].last_active_at = $ts |
+    .active_sessions[$sid].status = "active"' \
        "$STATUS_FILE" > "${STATUS_FILE}.tmp" && mv "${STATUS_FILE}.tmp" "$STATUS_FILE"
   fi
 }
