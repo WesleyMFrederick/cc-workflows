@@ -1,0 +1,39 @@
+# ProductTank SF - LLM Reference
+
+## Overview
+ProductTank SF is a monthly product management meetup. This folder contains tools and design docs for event operations.
+
+## Linear Integration
+
+### Key URLs
+- **Workspace:** https://linear.app/product-tank-sf
+- **Event Template (PRO-60):** https://linear.app/product-tank-sf/issue/PRO-60/yyyy-month-speaker-name
+- **Team ID:** Product Tank SF
+
+### Template Structure
+PRO-60 is the master event template with sub-issues organized by phase:
+- **Phase 1 (1.x):** Planning & Securing (Speaker, Venue, F&B, Videographer)
+- **Phase 2 (2.x):** Content Development (Speaker outline, slides)
+- **Phase 3 (3.x):** Pre-Event Execution (Marketing, logistics, final prep)
+- **Phase 4 (4.x):** Event Day
+- **Phase 5 (5.x):** Post-Event Follow-up
+
+### Template Sub-Issues (as of 2026-01-27)
+Fetch current list via: `Linear:list_issues` with `parentId` of PRO-60's UUID
+
+### Active Event Projects
+Fetch via: `Linear:list_projects` filtered by team "Product Tank SF"
+
+## Issue Naming Convention
+Template issues: `[Event Name] (i.e. Jan 2026): X.X - Task Name`
+Example: `[Event Name] (i.e. Jan 2026): 1.1 - Secure Speaker`
+
+## Labels
+- Event phases: `Speaker`, `Venue`, `Food & Drink`, `Videographer`, `Marketing`, `Volunteers`
+- Months: `Jan`, `Feb`, `Mar`, etc.
+- Other: `Event`, `Sponsors`, `Sponsor - Other`
+
+## Other Integrations
+- **Gmail:** wmfrederick+producttanksf@gmail.com
+- **Google Sheets (Events Tracker):** https://docs.google.com/spreadsheets/d/1GN2mAqlv_QRdCD4cuIplw_8IbwfjwpdlHTe7CSlcagY/edit
+- **Speaker Form Results:** gid=206355470 in Events Tracker

@@ -23,9 +23,19 @@
     "af265c9b-e0c2-4935-86a3-58d2814474d7": {
       "plan_path": null,
       "current_task_header": null,
+      "focus": "No conversation topic found.",
+      "status": "idle",
+      "last_active_at": "2026-01-28T16:23:51Z",
+      "current_task_number": null,
+      "tasks_path": "/Users/wesleyfrederick/.claude/tasks/af265c9b-e0c2-4935-86a3-58d2814474d7",
+      "task_summary": null
+    },
+    "5e3ee9e5-7a0a-4b57-a4a4-45ec9c06e5fc": {
+      "plan_path": null,
+      "current_task_header": null,
       "focus": "New session",
       "status": "active",
-      "last_active_at": "2026-01-28T16:23:04Z"
+      "last_active_at": "2026-01-28T16:42:55Z"
     }
   },
   "max_sessions": 5

@@ -1,5 +1,5 @@
 ---
-name: managing-github-issues
+name: github-managing-issues-skills
 description: Use when creating, viewing, or labeling GitHub issues - enforces project label conventions (component:Name, priority:level, type:category) and proper title format before any issue creation
 ---
 

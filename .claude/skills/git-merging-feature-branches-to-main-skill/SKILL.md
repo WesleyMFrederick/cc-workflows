@@ -1,5 +1,6 @@
 ---
-name: merging-feature-branches-to-main
+name: git-merging-feature-branches-to-main-skill
+
 description: Use when feature branch is complete and reviewed, ready to merge to main - squashes multiple commits into single clean commit in main using git merge --squash
 ---
 

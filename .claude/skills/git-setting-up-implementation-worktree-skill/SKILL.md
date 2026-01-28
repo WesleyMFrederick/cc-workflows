@@ -1,5 +1,5 @@
 ---
-name: setting-up-implementation-worktree
+name: git-setting-up-implementation-worktree-skill
 description: Use when starting implementation work, before executing implementation plans, or when user says to begin development - supports local worktree mode (isolated development) and online branch mode (Claude Code Online) with verified environment, committed state, and passing tests before ANY implementation begins
 ---
 

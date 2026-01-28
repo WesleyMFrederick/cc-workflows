@@ -5,7 +5,7 @@ argument-hint: "<title> (Optional) <feature> (Optional) <component> (Optional) <
 
 # Create Issue
 
-Use the `managing-github-issues` skill to create an issue.
+Use the `managing-github-issues-skill` to create an issue.
 
 ## Input
 
@@ -18,7 +18,7 @@ Use the `managing-github-issues` skill to create an issue.
 
 ## Execute
 
-1. Load `managing-github-issues` skill
+1. Load `managing-github-issues-skill` skill
 2. If $1 provided: Use as issue title
 3. If $2 provided: Add `feature: $2` label
 4. If $3 provided: Add `component:$3` label
