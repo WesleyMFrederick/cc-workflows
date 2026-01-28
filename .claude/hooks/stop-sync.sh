@@ -8,6 +8,9 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" && pwd)"
 PROJECT_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 STATUS_FILE="${PROJECT_ROOT}/current-status.json"
 
+# Source shared helpers
+source "${SCRIPT_DIR}/lib/status-helpers.sh"
+
 INPUT=$(cat)
 
 # Extract from stdin
@@ -33,8 +36,8 @@ start_ms=$(get_ms)
 plan_path=$(jq -r --arg sid "$session_id" '.active_sessions[$sid].plan_path // empty' "$STATUS_FILE" 2>/dev/null)
 
 if [[ -n "$plan_path" && -f "$plan_path" ]]; then
-  # Derive focus from plan title (first H1 header)
-  focus=$(head -5 "$plan_path" | grep -m1 "^# " | sed 's/^# //' || echo "Plan work")
+  # Use shared helper for focus derivation
+  focus=$(derive_focus_from_plan "$plan_path")
   skipped_haiku=true
   haiku_duration_ms=0
 else
@@ -64,27 +67,13 @@ else
   skipped_haiku=false
 fi
 
-# Scan task files for current state (same pattern as statusline-script.sh)
-tasks_dir="$HOME/.claude/tasks/$session_id"
-current_task_number=""
-task_summary=""
-if [[ -d "$tasks_dir" ]]; then
-  for task_file in "$tasks_dir"/*.json; do
-    [[ -f "$task_file" ]] || continue
-    task_status=$(jq -r '.status // ""' "$task_file" 2>/dev/null)
-    if [[ "$task_status" == "in_progress" ]]; then
-      current_task_number=$(jq -r '.id // ""' "$task_file" 2>/dev/null)
-      task_active_form=$(jq -r '.activeForm // ""' "$task_file" 2>/dev/null)
-      task_summary="Task #${current_task_number}: ${task_active_form}"
-      break
-    fi
-  done
-fi
+# Use shared helper for task scanning
+scan_tasks "$session_id"
 
-# Resolve current_task_header from plan file (actual H3 header text)
+# Use shared helper for header resolution
 current_task_header=""
-if [[ -n "$plan_path" && -f "$plan_path" && -n "$current_task_number" ]]; then
-  current_task_header=$(grep -m1 "^### .*${current_task_number}[:.)]" "$plan_path" || echo "")
+if [[ -n "$plan_path" && -n "$TASK_NUMBER" ]]; then
+  current_task_header=$(resolve_task_header "$plan_path" "$TASK_NUMBER")
 fi
 
 # Timing: End
@@ -96,9 +85,9 @@ timestamp=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 jq --arg sid "$session_id" \
    --arg focus "$focus" \
    --arg ts "$timestamp" \
-   --arg task_num "${current_task_number:-}" \
-   --arg tasks_path "${tasks_dir:-}" \
-   --arg task_sum "${task_summary:-}" \
+   --arg task_num "${TASK_NUMBER:-}" \
+   --arg tasks_path "${TASKS_DIR:-}" \
+   --arg task_sum "${TASK_SUMMARY:-}" \
    --arg task_hdr "${current_task_header:-}" \
    '.active_sessions[$sid].focus = $focus |
     .active_sessions[$sid].status = "idle" |
@@ -110,6 +99,6 @@ jq --arg sid "$session_id" \
    "$STATUS_FILE" > "${STATUS_FILE}.tmp.$$" && mv "${STATUS_FILE}.tmp.$$" "$STATUS_FILE"
 
 # Log metrics to stderr (visible in claude --debug)
-echo "[stop-sync] session=$session_id focus=\"$focus\" task=\"${task_summary:-none}\" skipped_haiku=$skipped_haiku haiku_ms=$haiku_duration_ms total_ms=$total_ms" >&2
+echo "[stop-sync] session=$session_id focus=\"$focus\" task=\"${TASK_SUMMARY:-none}\" skipped_haiku=$skipped_haiku haiku_ms=$haiku_duration_ms total_ms=$total_ms" >&2
 
 exit 0
