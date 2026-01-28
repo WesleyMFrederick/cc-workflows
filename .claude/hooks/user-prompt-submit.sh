@@ -45,7 +45,7 @@ sync_session() {
 
       if [[ -n "$planless_id" && "$planless_id" != "null" ]]; then
         # Safe to remove - no plan attached
-        jq --arg old "$planless_id" 'del(.active_sessions[$old])' "$STATUS_FILE" > "${STATUS_FILE}.tmp" && mv "${STATUS_FILE}.tmp" "$STATUS_FILE"
+        jq --arg old "$planless_id" 'del(.active_sessions[$old])' "$STATUS_FILE" > "${STATUS_FILE}.tmp.$$" && mv "${STATUS_FILE}.tmp.$$" "$STATUS_FILE"
       else
         # All sessions have plans - don't auto-remove, set flag for permission request
         export SESSIONS_FULL_WITH_PLANS="true"
@@ -62,14 +62,14 @@ sync_session() {
          focus: "New session",
          status: "active",
          last_active_at: $ts
-       }' "$STATUS_FILE" > "${STATUS_FILE}.tmp" && mv "${STATUS_FILE}.tmp" "$STATUS_FILE"
+       }' "$STATUS_FILE" > "${STATUS_FILE}.tmp.$$" && mv "${STATUS_FILE}.tmp.$$" "$STATUS_FILE"
   else
     # Existing session - update last_active_at
     jq --arg sid "$session_id" \
        --arg ts "$timestamp" \
        '.active_sessions[$sid].last_active_at = $ts |
     .active_sessions[$sid].status = "active"' \
-       "$STATUS_FILE" > "${STATUS_FILE}.tmp" && mv "${STATUS_FILE}.tmp" "$STATUS_FILE"
+       "$STATUS_FILE" > "${STATUS_FILE}.tmp.$$" && mv "${STATUS_FILE}.tmp.$$" "$STATUS_FILE"
   fi
 }
 

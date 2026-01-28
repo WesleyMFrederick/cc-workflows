@@ -107,7 +107,7 @@ jq --arg sid "$session_id" \
     .active_sessions[$sid].tasks_path = (if $tasks_path == "" then null else $tasks_path end) |
     .active_sessions[$sid].task_summary = (if $task_sum == "" then null else $task_sum end) |
     .active_sessions[$sid].current_task_header = (if $task_hdr == "" then null else $task_hdr end)' \
-   "$STATUS_FILE" > "${STATUS_FILE}.tmp" && mv "${STATUS_FILE}.tmp" "$STATUS_FILE"
+   "$STATUS_FILE" > "${STATUS_FILE}.tmp.$$" && mv "${STATUS_FILE}.tmp.$$" "$STATUS_FILE"
 
 # Log metrics to stderr (visible in claude --debug)
 echo "[stop-sync] session=$session_id focus=\"$focus\" task=\"${task_summary:-none}\" skipped_haiku=$skipped_haiku haiku_ms=$haiku_duration_ms total_ms=$total_ms" >&2

@@ -28,6 +28,6 @@ jq --arg sid "$session_id" \
    --arg focus "$plan_focus" \
    '.active_sessions[$sid].plan_path = $pp |
     .active_sessions[$sid].focus = $focus' \
-   "$STATUS_FILE" > "${STATUS_FILE}.tmp" && mv "${STATUS_FILE}.tmp" "$STATUS_FILE"
+   "$STATUS_FILE" > "${STATUS_FILE}.tmp.$$" && mv "${STATUS_FILE}.tmp.$$" "$STATUS_FILE"
 
 exit 0
