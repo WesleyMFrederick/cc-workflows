@@ -9,6 +9,8 @@ Execute plan by dispatching fresh subagent per task, with code review after each
 
 **Core principle:** Fresh subagent per task + review between tasks = high quality, fast iteration
 
+**Autonomy principle:** Execute ALL tasks without stopping for user input. Only stop on 3 consecutive errors OR all tasks complete. Commits, reviews, and fixes are subagent responsibilities — orchestrator never pauses to ask permission.
+
 ## Overview
 
 **vs. Executing Plans (parallel session):**
@@ -35,7 +37,10 @@ Execute plan by dispatching fresh subagent per task, with code review after each
 
 ### 1. Load Plan
 
-Read plan file, create TodoWrite with all tasks.
+- Read plan file if not in context window
+- Check it Task list exists for plan
+  - Validate tasks align with plan
+  - If task list does not exist, use `/decompose-plan` skill
 
 ### 2. Execute Task with Subagent
 
@@ -395,9 +400,60 @@ Task tool (general-purpose):
 
 ### 5. Mark Complete, Next Task
 
-- Mark task as completed in TodoWrite
-- Move to next task
+- Mark task as completed in Task tool
+- Reset consecutive error counter to 0
+- Move to next task immediately — do NOT pause for user input
 - Repeat steps 2-5
+
+## Autonomous Execution Rules
+
+### Never Stop For
+
+- Commit confirmation ("ready to commit?")
+- Task completion acknowledgment ("task done, proceed?")
+- Review results sharing (just log and continue)
+- Minor/Important issues (fix and continue)
+
+### Stop Only When
+
+1. **All tasks complete** — normal exit
+2. **3 consecutive task failures** — subagent fails same task 3 times after fix attempts
+3. **MAJOR architectural decision** — requires CEO approval (see 4a)
+
+### Error Tracking
+
+Track consecutive failures per task:
+
+```text
+consecutive_errors = 0
+
+For each task:
+  dispatch subagent → review
+  if review = APPROVED:
+    consecutive_errors = 0
+    next task
+  if review = FIX REQUIRED:
+    dispatch fix → re-review
+    if re-review = APPROVED:
+      consecutive_errors = 0
+      next task
+    else:
+      consecutive_errors += 1
+      if consecutive_errors >= 3:
+        STOP — report failures to user
+      else:
+        attempt fix again
+```
+
+### Rationalizations for Stopping Early (REJECT These)
+
+| Excuse | Reality |
+|--------|---------|
+| "Let me check with user first" | You have the plan. Execute it. |
+| "Ready to commit?" | Commits are subagent responsibility. Keep going. |
+| "Should I proceed?" | Yes. Always. Until done or 3 errors. |
+| "User might want to review" | Code reviewer subagent handles review. Keep going. |
+| "This task was complex, pause" | Complexity is not a stop condition. Next task. |
 
 ### 6. Final Review
 
@@ -482,6 +538,8 @@ Done!
 ## Red Flags
 
 **Never:**
+- Stop to ask user "ready to commit?" or "should I proceed?"
+- Pause between tasks for user acknowledgment
 - Skip code review between tasks
 - Skip process cleanup after task review (Step 3a)
 - Proceed with unfixed Critical issues
