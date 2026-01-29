@@ -20,35 +20,35 @@
       "tasks_path": "/Users/wesleyfrederick/.claude/tasks/8825e17c-022f-43d0-9ec9-9e3be19f2a50",
       "task_summary": "Plan updated: 4 exploration tasks (Slack → doc → Linear → doc). Awaiting plan approval."
     },
-    "5e3ee9e5-7a0a-4b57-a4a4-45ec9c06e5fc": {
-      "plan_path": null,
-      "current_task_header": null,
-      "focus": "No context established yet.",
-      "status": "idle",
-      "last_active_at": "2026-01-28T16:46:23Z",
-      "current_task_number": null,
-      "tasks_path": "/Users/wesleyfrederick/.claude/tasks/5e3ee9e5-7a0a-4b57-a4a4-45ec9c06e5fc",
-      "task_summary": null
-    },
     "85080d52-adf6-4b79-ad1b-b4fb404ca961": {
-      "plan_path": "/Users/wesleyfrederick/Documents/ObsidianVault/0_SoftwareDevelopment/cc-workflows/tools/citation-manager/design-docs/features/20251119-type-contract-restoration/typescript-migration-sequencing.md",
+      "plan_path": "/Users/wesleyfrederick/Documents/ObsidianVault/0_SoftwareDevelopment/cc-workflows/tools/citation-manager/design-docs/features/20251119-type-contract-restoration/user-stories/epic6-extraction-layer/epic6-extraction-layer-implementation-plan.md",
       "current_task_header": null,
-      "focus": "Design: TypeScript Migration - Sequencing",
-      "status": "active",
-      "last_active_at": "2026-01-28T18:30:59Z",
-      "current_task_number": null,
+      "focus": "Design: Epic 6: ContentExtractor TypeScript Migration — Implementation Plan",
+      "status": "idle",
+      "last_active_at": "2026-01-28T18:58:43Z",
+      "current_task_number": "10",
       "tasks_path": "/Users/wesleyfrederick/.claude/tasks/85080d52-adf6-4b79-ad1b-b4fb404ca961",
-      "task_summary": null
+      "task_summary": "Task #10: Updating contentExtractorTypes.ts"
     },
-    "99492a90-021c-4afb-af2a-33486b27fd98": {
+    "fa17f8ba-5f41-4357-9714-f0417a3953d1": {
       "plan_path": null,
       "current_task_header": null,
-      "focus": "Based on the plan file, **6 tasks** should be created - one for each H2 header in the plan:\n\n1. Task 1 - Create shared library `lib/status-helpers.sh`\n2. Task 2 - Refactor `task-status-sync.sh` to use library\n3. Task 3 - Refactor `stop-sync.sh` to use library\n4. Task 4 - Enhance `plan-path-sync.sh` for multi-plan types\n5. Task 5 - Create `/set-plan` slash command\n6. Task 6 - Verification\n\n---\n\n**Brainstorming summary: Plan-to-task decomposition skill**",
+      "focus": "Worktree hooks and task management",
       "status": "idle",
-      "last_active_at": "2026-01-28T17:39:34Z",
-      "current_task_number": null,
-      "tasks_path": "/Users/wesleyfrederick/.claude/tasks/99492a90-021c-4afb-af2a-33486b27fd98",
-      "task_summary": null
+      "last_active_at": "2026-01-29T00:12:33Z",
+      "current_task_number": "10",
+      "tasks_path": "/Users/wesleyfrederick/.claude/tasks/fa17f8ba-5f41-4357-9714-f0417a3953d1",
+      "task_summary": "Task #10: Updating contentExtractorTypes.ts"
+    },
+    "31f2bb99-beba-433e-9dcb-7f3b26abecf0": {
+      "plan_path": null,
+      "current_task_header": null,
+      "focus": "Task #13: Converting analyzeEligibility.js",
+      "status": "active",
+      "last_active_at": "2026-01-29T00:17:51Z",
+      "current_task_number": "13",
+      "tasks_path": "/Users/wesleyfrederick/.claude/tasks/31f2bb99-beba-433e-9dcb-7f3b26abecf0",
+      "task_summary": "Task #13: Converting analyzeEligibility.js"
     }
   },
   "max_sessions": 5
