@@ -31,11 +31,11 @@
       "task_summary": "Task #10: Updating contentExtractorTypes.ts"
     },
     "31f2bb99-beba-433e-9dcb-7f3b26abecf0": {
-      "plan_path": null,
+      "plan_path": "/Users/wesleyfrederick/Documents/ObsidianVault/0_SoftwareDevelopment/cc-workflows/.worktrees/typescript-refactor-epic6-extraction-layer-worktree/tools/citation-manager/design-docs/features/20251119-type-contract-restoration/typescript-migration-sequencing.md",
       "current_task_header": null,
-      "focus": "Task #16: Implementing Task 7: Convert ContentExtractor.js to TypeScript",
+      "focus": "Design: TypeScript Migration - Sequencing",
       "status": "active",
-      "last_active_at": "2026-01-29T00:55:49Z",
+      "last_active_at": "2026-01-29T01:43:13Z",
       "current_task_number": null,
       "tasks_path": "/Users/wesleyfrederick/.claude/tasks/31f2bb99-beba-433e-9dcb-7f3b26abecf0",
       "task_summary": null
@@ -43,9 +43,9 @@
     "fecd106e-2b69-4445-b7ed-a1d7fdedac3a": {
       "plan_path": null,
       "current_task_header": null,
-      "focus": "Sandbox worktree environment troubleshooting",
-      "status": "idle",
-      "last_active_at": "2026-01-29T01:28:37Z",
+      "focus": "Git worktree sandbox initialization issue",
+      "status": "active",
+      "last_active_at": "2026-01-29T01:42:30Z",
       "current_task_number": null,
       "tasks_path": "/Users/wesleyfrederick/.claude/tasks/fecd106e-2b69-4445-b7ed-a1d7fdedac3a",
       "task_summary": null
