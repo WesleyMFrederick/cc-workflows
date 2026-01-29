@@ -39,9 +39,13 @@
       "mcp__Context7__get-library-docs",
       "Bash(npx markdownlint:*)",
       "Bash(npm run mirror-workflows:*)",
-      "Bash(./scripts/calculate-event-date.sh:*)"
+      "Bash(./scripts/calculate-event-date.sh:*)",
+      "Bash(gh:*)"
     ],
-    "deny": [],
+    "deny": [
+      "Grep",
+      "Glob"
+    ],
     "ask": [],
     "additionalDirectories": [
       "/Users/wesleyfrederick/Documents/ObsidianVaultNew/0_SoftwareDevelopment/cc-workflows/design-docs",

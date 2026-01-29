@@ -58,6 +58,12 @@ if [[ ! "$file_path" =~ \.md$ ]]; then
     exit 0
 fi
 
+# Skip test fixtures
+if [[ "$file_path" =~ /test/fixtures/ ]]; then
+    # Test fixture - exit silently
+    exit 0
+fi
+
 # Check if file exists
 if [[ ! -f "$file_path" ]]; then
     echo -e "${YELLOW}[WARNING]${NC} File does not exist: $file_path" >&2
