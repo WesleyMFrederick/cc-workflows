@@ -17,4 +17,4 @@ Arguments: $1
 
 ## Invoke Component Expert
 
-Invoke the component-expert agent to validate @$1 against actual implementation code.
+Invoke the `component-expert` agent to validate @$1 against actual implementation code.
