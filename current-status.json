@@ -30,14 +30,14 @@
       "tasks_path": "/Users/wesleyfrederick/.claude/tasks/85080d52-adf6-4b79-ad1b-b4fb404ca961",
       "task_summary": "Task #10: Updating contentExtractorTypes.ts"
     },
-    "99492a90-021c-4afb-af2a-33486b27fd98": {
+    "fecd106e-2b69-4445-b7ed-a1d7fdedac3a": {
       "plan_path": null,
       "current_task_header": null,
-      "focus": "Based on the plan file, **6 tasks** should be created - one for each H2 header in the plan:\n\n1. Task 1 - Create shared library `lib/status-helpers.sh`\n2. Task 2 - Refactor `task-status-sync.sh` to use library\n3. Task 3 - Refactor `stop-sync.sh` to use library\n4. Task 4 - Enhance `plan-path-sync.sh` for multi-plan types\n5. Task 5 - Create `/set-plan` slash command\n6. Task 6 - Verification\n\n---\n\n**Brainstorming summary: Plan-to-task decomposition skill**",
-      "status": "idle",
-      "last_active_at": "2026-01-28T17:39:34Z",
+      "focus": "Git worktree sandbox initialization issue",
+      "status": "active",
+      "last_active_at": "2026-01-29T01:42:30Z",
       "current_task_number": null,
-      "tasks_path": "/Users/wesleyfrederick/.claude/tasks/99492a90-021c-4afb-af2a-33486b27fd98",
+      "tasks_path": "/Users/wesleyfrederick/.claude/tasks/fecd106e-2b69-4445-b7ed-a1d7fdedac3a",
       "task_summary": null
     },
     "0fe5cadb-455f-4f9b-bd89-36083f338a9e": {
