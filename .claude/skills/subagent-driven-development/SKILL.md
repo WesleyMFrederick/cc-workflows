@@ -47,7 +47,8 @@ Execute plan by dispatching fresh subagent per task, with code review after each
 For each task:
 
 **Dispatch fresh subagent:**
-- Use `haiku` model for subagent to use a lightweight llm model
+- Use `haiku` model for implementation subagents (lightweight, cost-effective)
+- Do NOT specify model for agent-type subagents (code-reviewer, app-tech-lead) — they define their own model in `.claude/agents/`
 
 ```plaintext
 Task tool (
@@ -106,11 +107,11 @@ Task tool (
 ### 3. Review Subagent's Work
 
 **Dispatch code-reviewer subagent:**
+- Use `code-reviewer` agent type (defined in `.claude/agents/code-reviewer.md`)
+- Do NOT specify a model override — the agent defines its own model (sonnet)
 
 ```plaintext
-Task tool (superpowers:code-reviewer):
-  Use template at requesting-code-review/code-reviewer.md
-
+Task tool (code-reviewer):
   prompt: |
     You are reviewing Task {{task-number}} implementation.
 
@@ -560,7 +561,7 @@ Done!
 
 **Required workflow skills:**
 - **writing-plans** - REQUIRED: Creates the plan that this skill executes
-- **requesting-code-review** - REQUIRED: Review after each task (see Step 3)
+- **code-reviewer** agent (`.claude/agents/code-reviewer.md`) - REQUIRED: Review after each task (see Step 3)
 - **finishing-a-development-branch** - REQUIRED: Complete development after all tasks (see Step 7)
 
 **Subagents must use:**
@@ -568,5 +569,3 @@ Done!
 
 **Alternative workflow:**
 - **executing-plans** - Use for parallel session instead of same-session execution
-
-See code-reviewer template: requesting-code-review/code-reviewer.md
