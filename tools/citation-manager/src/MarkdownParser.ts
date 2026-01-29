@@ -193,14 +193,6 @@ export class MarkdownParser {
 						}
 					}
 
-					// Resolve paths for cross-document links
-					const absolutePath = rawPath
-						? this.resolvePath(rawPath, sourceAbsolutePath)
-						: null;
-					const relativePath = absolutePath && sourceAbsolutePath
-						? relative(dirname(sourceAbsolutePath), absolutePath)
-						: null;
-
 					// Find line/column from raw match in content
 					const { line: lineNum, column } = this._findPosition(raw, lines);
 
@@ -305,27 +297,14 @@ export class MarkdownParser {
 				links
 			);
 			if (!alreadyExtracted) {
-				const absolutePath = this.resolvePath(rawPath, sourceAbsolutePath ?? "");
-				const relativePath =
-					absolutePath && sourceAbsolutePath
-						? relative(dirname(sourceAbsolutePath), absolutePath)
-						: null;
-
-				links.push({
-					linkType: "markdown" as const,
-					scope: "cross-document" as const,
-					anchorType: anchor ? this.determineAnchorType(anchor) : null,
-					source: { path: { absolute: sourceAbsolutePath } },
-					target: {
-						path: {
-							raw: rawPath,
-							absolute: absolutePath,
-							relative: relativePath,
-						},
-						anchor,
-					},
+				const linkObject = this._createLinkObject({
+					linkType: "markdown",
+					scope: "cross-document",
+					anchor,
+					rawPath,
+					sourceAbsolutePath,
 					text,
-					fullMatch: fullMatch,
+					fullMatch,
 					line: index + 1,
 					column: match.index,
 					extractionMarker: this._detectExtractionMarker(
@@ -333,6 +312,7 @@ export class MarkdownParser {
 						match.index + fullMatch.length
 					),
 				});
+				links.push(linkObject);
 			}
 			match = linkPattern.exec(line);
 		}
@@ -351,17 +331,14 @@ export class MarkdownParser {
 				links
 			);
 			if (!alreadyExtracted) {
-				links.push({
-					linkType: "markdown" as const,
-					scope: "internal" as const,
-					anchorType: this.determineAnchorType(anchor),
-					source: { path: { absolute: sourceAbsolutePath ?? "" } },
-					target: {
-						path: { raw: null, absolute: null, relative: null },
-						anchor,
-					},
+				const linkObject = this._createLinkObject({
+					linkType: "markdown",
+					scope: "internal",
+					anchor,
+					rawPath: null,
+					sourceAbsolutePath,
 					text,
-					fullMatch: fullMatch,
+					fullMatch,
 					line: index + 1,
 					column: match.index,
 					extractionMarker: this._detectExtractionMarker(
@@ -369,6 +346,7 @@ export class MarkdownParser {
 						match.index + fullMatch.length
 					),
 				});
+				links.push(linkObject);
 			}
 			match = internalAnchorRegex.exec(line);
 		}
@@ -395,27 +373,14 @@ export class MarkdownParser {
 					links
 				);
 				if (!alreadyExtracted) {
-					const absolutePath = this.resolvePath(rawPath, sourceAbsolutePath ?? "");
-					const relativePath =
-						absolutePath && sourceAbsolutePath
-							? relative(dirname(sourceAbsolutePath), absolutePath)
-							: null;
-
-					links.push({
-						linkType: "markdown" as const,
-						scope: "cross-document" as const,
-						anchorType: anchor ? this.determineAnchorType(anchor) : null,
-						source: { path: { absolute: sourceAbsolutePath } },
-						target: {
-							path: {
-								raw: rawPath,
-								absolute: absolutePath,
-								relative: relativePath,
-							},
-							anchor,
-						},
+					const linkObject = this._createLinkObject({
+						linkType: "markdown",
+						scope: "cross-document",
+						anchor,
+						rawPath,
+						sourceAbsolutePath,
 						text,
-						fullMatch: fullMatch,
+						fullMatch,
 						line: index + 1,
 						column: match.index,
 						extractionMarker: this._detectExtractionMarker(
@@ -423,6 +388,7 @@ export class MarkdownParser {
 							match.index + fullMatch.length
 						),
 					});
+					links.push(linkObject);
 				}
 			}
 			match = relativeDocRegex.exec(line);
@@ -445,22 +411,13 @@ export class MarkdownParser {
 			const rawPath = (match[1] ?? "").trim();
 			const text = `cite: ${rawPath}`;
 
-			const absolutePath = this.resolvePath(rawPath, sourceAbsolutePath ?? "");
-			const relativePath =
-				absolutePath && sourceAbsolutePath
-					? relative(dirname(sourceAbsolutePath), absolutePath)
-					: null;
-
-			links.push({
-				linkType: "markdown" as const,
-				scope: "cross-document" as const,
-				anchorType: null,
-				source: { path: { absolute: sourceAbsolutePath } },
-				target: {
-					path: { raw: rawPath, absolute: absolutePath, relative: relativePath },
-					anchor: null,
-				},
-				text: text,
+			const linkObject = this._createLinkObject({
+				linkType: "markdown",
+				scope: "cross-document",
+				anchor: null,
+				rawPath,
+				sourceAbsolutePath,
+				text,
 				fullMatch: match[0],
 				line: index + 1,
 				column: match.index,
@@ -469,6 +426,7 @@ export class MarkdownParser {
 					match.index + match[0].length
 				),
 			});
+			links.push(linkObject);
 			match = citePattern.exec(line);
 		}
 	}
@@ -490,25 +448,12 @@ export class MarkdownParser {
 			const anchor = match[3] ?? null;
 			const text = match[4] ?? "";
 
-			const absolutePath = this.resolvePath(rawPath, sourceAbsolutePath ?? "");
-			const relativePath =
-				absolutePath && sourceAbsolutePath
-					? relative(dirname(sourceAbsolutePath), absolutePath)
-					: null;
-
-			links.push({
-				linkType: "wiki" as const,
-				scope: "cross-document" as const,
-				anchorType: anchor ? this.determineAnchorType(anchor) : null,
-				source: { path: { absolute: sourceAbsolutePath } },
-				target: {
-					path: {
-						raw: rawPath,
-						absolute: absolutePath,
-						relative: relativePath,
-					},
-					anchor,
-				},
+			const linkObject = this._createLinkObject({
+				linkType: "wiki",
+				scope: "cross-document",
+				anchor,
+				rawPath,
+				sourceAbsolutePath,
 				text,
 				fullMatch: match[0],
 				line: index + 1,
@@ -518,6 +463,7 @@ export class MarkdownParser {
 					match.index + match[0].length
 				),
 			});
+			links.push(linkObject);
 			match = wikiCrossDocRegex.exec(line);
 		}
 	}
@@ -538,15 +484,12 @@ export class MarkdownParser {
 			const anchor = match[1] ?? "";
 			const text = match[2] ?? "";
 
-			links.push({
-				linkType: "wiki" as const,
-				scope: "internal" as const,
-				anchorType: this.determineAnchorType(anchor),
-				source: { path: { absolute: sourceAbsolutePath ?? "" } },
-				target: {
-					path: { raw: null, absolute: null, relative: null },
-					anchor,
-				},
+			const linkObject = this._createLinkObject({
+				linkType: "wiki",
+				scope: "internal",
+				anchor,
+				rawPath: null,
+				sourceAbsolutePath,
 				text,
 				fullMatch: match[0],
 				line: index + 1,
@@ -556,6 +499,7 @@ export class MarkdownParser {
 					match.index + match[0].length
 				),
 			});
+			links.push(linkObject);
 			match = wikiRegex.exec(line);
 		}
 	}
@@ -580,15 +524,12 @@ export class MarkdownParser {
 			const isSemanticVersion = /^\.\d/.test(afterMatch);
 
 			if (!isSemanticVersion) {
-				links.push({
-					linkType: "markdown" as const,
-					scope: "internal" as const,
-					anchorType: "block" as const,
-					source: { path: { absolute: sourceAbsolutePath ?? "" } },
-					target: {
-						path: { raw: null, absolute: null, relative: null },
-						anchor,
-					},
+				const linkObject = this._createLinkObject({
+					linkType: "markdown",
+					scope: "internal",
+					anchor,
+					rawPath: null,
+					sourceAbsolutePath,
 					text: null,
 					fullMatch: match[0],
 					line: index + 1,
@@ -598,6 +539,7 @@ export class MarkdownParser {
 						match.index + match[0].length
 					),
 				});
+				links.push(linkObject);
 			}
 			match = caretRegex.exec(line);
 		}
