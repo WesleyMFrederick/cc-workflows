@@ -43,9 +43,12 @@
     "0fe5cadb-455f-4f9b-bd89-36083f338a9e": {
       "plan_path": null,
       "current_task_header": null,
-      "focus": "New session",
-      "status": "active",
-      "last_active_at": "2026-01-29T01:48:09Z"
+      "focus": "I don't have access to the `git-finishing-a-development-branch` skill. The available skills in this session don't include that command. \n\nCould you clarify what you'd like to do? Are you looking to:\n- Clean up a git worktree?\n- Merge or delete a development branch?\n- Finalize commits on a branch?\n\nI can help with git operations using standard commands if you provide more details about what you need.",
+      "status": "idle",
+      "last_active_at": "2026-01-29T01:51:05Z",
+      "current_task_number": null,
+      "tasks_path": "/Users/wesleyfrederick/.claude/tasks/0fe5cadb-455f-4f9b-bd89-36083f338a9e",
+      "task_summary": null
     }
   },
   "max_sessions": 5
