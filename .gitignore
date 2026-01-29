@@ -122,3 +122,6 @@ _worktrees/
 
 #mc-porter
 config/mcporter.json
+
+# Session status tracking
+current-status.json
