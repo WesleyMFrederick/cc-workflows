@@ -78,14 +78,15 @@ export class MarkdownParser {
 	async parseFile(filePath: string): Promise<ParserOutput> {
 		const content = this.fs.readFileSync(filePath, "utf8");
 		const tokens = marked.lexer(content);
+		const headings = this.extractHeadings(tokens);
 
 		return {
 			filePath,
 			content,
 			tokens,
 			links: this.extractLinks(content, filePath),
-			headings: this.extractHeadings(tokens),
-			anchors: this.extractAnchors(content),
+			headings,
+			anchors: this.extractAnchors(content, headings),
 		};
 	}
 
@@ -651,7 +652,7 @@ export class MarkdownParser {
 	 * @param {string} content - Full markdown file content
 	 * @returns {Array<Object>} Array of { anchorType, id, rawText, fullMatch, line, column } anchor objects
 	 */
-	extractAnchors(content: string): AnchorObject[] {
+	extractAnchors(content: string, headings?: HeadingObject[]): AnchorObject[] {
 		const anchors: AnchorObject[] = [];
 		const lines = content.split("\n");
 
@@ -711,47 +712,53 @@ export class MarkdownParser {
 				match = emphasisRegex.exec(line);
 			}
 
-			// Standard header anchors with explicit IDs or auto-generated kebab-case
-			const headerRegex = /^(#+)\s+(.+)$/;
-			const headerMatch = line.match(headerRegex);
-			if (headerMatch) {
-				const headerText = headerMatch[2] ?? "";
+			});
 
-				// Check for explicit anchor ID like {#anchor-id}
+		// Derive header anchors from headings array (if provided)
+		if (headings) {
+			// Find line numbers for each heading in content
+			for (const heading of headings) {
+				const lineIndex = lines.findIndex(l => {
+					const headerRegex = /^(#+)\s+(.+)$/;
+					const match = l.match(headerRegex);
+					return match && match[2] && (match[2] === heading.text) && match[1] && (match[1].length === heading.level);
+				});
+
+				if (lineIndex === -1) continue;
+				const line = lines[lineIndex] ?? "";
+
+				// Check for explicit anchor ID
 				const explicitAnchorRegex = /^(.+?)\s*\{#([^}]+)\}$/;
-				const explicitMatch = headerText.match(explicitAnchorRegex);
+				const explicitMatch = heading.text.match(explicitAnchorRegex);
 
 				if (explicitMatch) {
-					// Use explicit anchor ID
 					const explicitId = explicitMatch[2] ?? "";
 					anchors.push({
 						anchorType: "header",
 						id: explicitId,
-						urlEncodedId: explicitId, // Explicit IDs are already URL-safe
+						urlEncodedId: explicitId,
 						rawText: (explicitMatch[1] ?? "").trim(),
-						fullMatch: headerMatch[0],
-						line: index + 1,
+						fullMatch: line ?? "",
+						line: lineIndex + 1,
 						column: 0,
 					});
 				} else {
-					// Generate URL-encoded ID (Obsidian-compatible format)
-					const urlEncodedId = headerText
-						.replace(/:/g, "") // Remove colons
-						.replace(/\s+/g, "%20"); // URL-encode spaces
+					const urlEncodedId = heading.text
+						.replace(/:/g, "")
+						.replace(/\s+/g, "%20");
 
-					// Create single anchor with both ID variants
 					anchors.push({
 						anchorType: "header",
-						id: headerText, // Raw text format
-						urlEncodedId: urlEncodedId, // Always populated (even when identical to id)
-						rawText: headerText,
-						fullMatch: headerMatch[0],
-						line: index + 1,
+						id: heading.text,
+						urlEncodedId,
+						rawText: heading.text,
+						fullMatch: line ?? "",
+						line: lineIndex + 1,
 						column: 0,
 					});
 				}
 			}
-		});
+		}
 
 		return anchors;
 	}
