@@ -40,10 +40,15 @@
       "Bash(npx markdownlint:*)",
       "Bash(npm run mirror-workflows:*)",
       "Bash(./scripts/calculate-event-date.sh:*)",
-      "Bash(gh:*)"
+      "Bash(gh:*)",
+      "Bash(mgrep:*)"
+
+
     ],
     "deny": [
       "Grep",
+      
+      
       "Glob"
     ],
     "ask": [],
@@ -156,6 +161,7 @@
     ]
   },
   "enabledPlugins": {
-    "code-review@claude-plugins-official": true
+    "code-review@claude-plugins-official": true,
+    "code-simplifier@claude-plugins-official": true
   }
 }

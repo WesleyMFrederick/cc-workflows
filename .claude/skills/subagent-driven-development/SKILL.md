@@ -90,10 +90,11 @@ Task tool (
     2. Implement exactly what the task specifies
     3. Write tests (following TDD if task says to)
     4. Verify implementation works
-    5. Commit your work
-    6. Clean up test processes (MANDATORY - see below)
-    7. Write results to file
-    8. Report back
+    5. Run diagnostic verification (MANDATORY - see below)
+    6. Commit your work
+    7. Clean up test processes (MANDATORY - see below)
+    8. Write results to file
+    9. Report back
 
     CRITICAL - Test Process Cleanup (Step 6):
     Before writing results, you MUST clean up any test processes you spawned:
@@ -111,11 +112,36 @@ Task tool (
 
     NEVER skip this step. Orphaned test processes consume ~14GB memory each.
 
+    CRITICAL - Diagnostic Verification (Step 5):
+    Before committing, you MUST verify zero diagnostic errors.
+
+    For TypeScript projects:
+    ```bash
+    npm run build -w {{workspace-package}}
+    ```
+    If build fails, fix ALL errors before committing. Do NOT commit with TypeScript errors.
+
+    For non-TypeScript projects, use IDE diagnostics:
+    ```
+    mcp__ide__getDiagnostics(uri: "file://{{changed-file}}")
+    ```
+
+    NEVER skip this step. Tests pass at runtime but miss compile-time type errors.
+    Task 4 baseline: subagent committed 3 TS errors (TS2532, TS2339) that tests didn't catch.
+
+    **Rationalizations to reject:**
+    - "Tests pass so it's correct" → Tests don't catch type errors. Build does.
+    - "I'll fix types later" → Later = reviewer catches it = fix subagent = 2x cost.
+    - "Build is slow" → 5 seconds vs full fix cycle. Build every time.
+
+  MANDATORY: Use the `writing-for-token-optimized-and-ceo-scannable-content` skill when writing your review results.
+
     CRITICAL: Write your results to {{epic-or-user-story-folder}}/tasks/task-{{task-number}}-dev-results.md with:
     - Model used for implementation
     - Task number and name
     - What you implemented
     - Tests written and test results
+    - Diagnostic verification results (build output or IDE diagnostics)
     - Files changed
     - Any issues encountered
     - Commit SHA
@@ -137,7 +163,7 @@ Task tool (code-reviewer):
   prompt: |
     You are reviewing Task {{task-number}} implementation.
 
-    MANDATORY: Use the `elements-of-style:writing-clearly-and-concisely` skill when writing your review.
+    MANDATORY: Use the `writing-for-token-optimized-and-ceo-scannable-content` skill when writing your review.
 
     CRITICAL: This is a task-level review. Be concise.
     - Target 10-30 lines for approved tasks
@@ -308,6 +334,8 @@ Code-reviewer may identify BLOCKING when:
        8. Update implementation plan with specific choice
        9. Write decision document
        10. Report back
+
+    MANDATORY: Use the `writing-for-token-optimized-and-ceo-scannable-content` skill when writing your review.
 
        CRITICAL: Write your decision to {{epic-or-user-story-folder}}/tasks/task-{{task-number}}-arch-decision.md with:
        - Task number and name
