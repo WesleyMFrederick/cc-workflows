@@ -5,10 +5,10 @@
       "current_task_header": null,
       "focus": "Design: Epic 7: CLI Integration — Implementation Plan",
       "status": "active",
-      "last_active_at": "2026-01-29T03:10:03Z",
-      "current_task_number": "20",
+      "last_active_at": "2026-01-29T03:47:32Z",
+      "current_task_number": "22",
       "tasks_path": "/Users/wesleyfrederick/.claude/tasks/31f2bb99-beba-433e-9dcb-7f3b26abecf0",
-      "task_summary": "Task #20: Implementing Task 3: componentFactory conversion"
+      "task_summary": "Task #22: Typing citation-manager.ts public methods"
     }
   },
   "max_sessions": 5
