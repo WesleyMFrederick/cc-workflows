@@ -1,0 +1,1 @@
+a second llm follows the transcript. when I say no, then it analyzes the exchange and makes a recomendation on updating a skill, or creating a new skill

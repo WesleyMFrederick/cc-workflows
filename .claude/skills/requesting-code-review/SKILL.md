@@ -5,7 +5,7 @@ description: Use when completing tasks, implementing major features, or before m
 
 # Requesting Code Review
 
-Dispatch superpowers:code-reviewer subagent to catch issues before they cascade.
+Dispatch `code-reviewer` subagent to catch issues before they cascade.
 
 **Core principle:** Review early, review often.
 

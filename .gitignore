@@ -16,6 +16,9 @@ build/
 .env.test.local
 .env.production.local
 
+# oAuth tokens and credentials
+.oauthtokens/
+
 # IDE files
 .vscode/
 .idea/
@@ -72,9 +75,6 @@ pids/
 # Yarn Integrity file
 .yarn-integrity
 
-# xml
-*.xml
-
 # archive files
 .archive/
 
@@ -113,3 +113,12 @@ _worktrees/
 
 # Claude Local Settings
 .claude/settings.local.json
+
+# JACT state folder
+.citation-manager/
+
+# lsmcp cache
+.lsmcp/cache
+
+#mc-porter
+config/mcporter.json

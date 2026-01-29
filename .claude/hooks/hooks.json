@@ -10,6 +10,39 @@
 					}
 				]
 			}
+		],
+		"UserPromptSubmit": [
+			{
+				"matcher": ".*",
+				"hooks": [
+					{
+						"type": "command",
+						"command": "${CLAUDE_PROJECT_ROOT}/.claude/hooks/user-prompt-submit.sh"
+					}
+				]
+			}
+		],
+		"PostToolUse": [
+			{
+				"matcher": "TaskCreate|TaskUpdate",
+				"hooks": [
+					{
+						"type": "command",
+						"command": "${CLAUDE_PROJECT_ROOT}/.claude/hooks/task-status-sync.sh"
+					}
+				]
+			}
+		],
+		"Stop": [
+			{
+				"matcher": ".*",
+				"hooks": [
+					{
+						"type": "command",
+						"command": "${CLAUDE_PROJECT_ROOT}/.claude/hooks/stop-sync.sh"
+					}
+				]
+			}
 		]
 	}
 }

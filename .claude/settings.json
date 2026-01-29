@@ -38,7 +38,8 @@
 			"mcp__Context7__resolve-library-id",
 			"mcp__Context7__get-library-docs",
 			"Bash(npx markdownlint:*)",
-			"Bash(npm run mirror-workflows:*)"
+			"Bash(npm run mirror-workflows:*)",
+			"Bash(./scripts/calculate-event-date.sh:*)"
 		],
 		"deny": [],
 		"ask": [],
@@ -49,9 +50,40 @@
 		]
 	},
 	"enableAllProjectMcpServers": false,
-	"enabledMcpjsonServers": ["Context7"],
+	"enabledMcpjsonServers": ["Context7", "gdrive"],
 	"hooks": {
+		"UserPromptSubmit": [
+			{
+				"matcher": "",
+				"hooks": [
+					{
+						"type": "command",
+						"command": "$CLAUDE_PROJECT_DIR/.claude/hooks/user-prompt-submit.sh"
+					}
+				]
+			}
+		],
+		"PreToolUse": [
+			{
+				"matcher": "Task",
+				"hooks": [
+					{
+						"type": "command",
+						"command": "$CLAUDE_PROJECT_DIR/.claude/hooks/pre-task-status-reminder.sh"
+					}
+				]
+			}
+		],
 		"PostToolUse": [
+			{
+				"matcher": "Task",
+				"hooks": [
+					{
+						"type": "command",
+						"command": "$CLAUDE_PROJECT_DIR/.claude/hooks/post-task-status-reminder.sh"
+					}
+				]
+			},
 			{
 				"matcher": "Write|Edit|MultiEdit",
 				"hooks": [
@@ -62,6 +94,24 @@
 					{
 						"type": "command",
 						"command": "$CLAUDE_PROJECT_DIR/.claude/hooks/citation-validator.sh"
+					}
+				]
+			},
+			{
+				"matcher": "Write|Edit",
+				"hooks": [
+					{
+						"type": "command",
+						"command": "$CLAUDE_PROJECT_DIR/.claude/hooks/plan-path-sync.sh"
+					}
+				]
+			},
+			{
+				"matcher": "TaskCreate|TaskUpdate",
+				"hooks": [
+					{
+						"type": "command",
+						"command": "$CLAUDE_PROJECT_DIR/.claude/hooks/task-status-sync.sh"
 					}
 				]
 			},
@@ -81,7 +131,7 @@
 				"hooks": [
 					{
 						"type": "command",
-						"command": "echo \\\"Do you have more todos in your todo list? If so, continue the tasks in your todo list \\\""
+						"command": "$CLAUDE_PROJECT_DIR/.claude/hooks/stop-sync.sh"
 					}
 				]
 			}

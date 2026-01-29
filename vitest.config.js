@@ -52,7 +52,7 @@ export default defineConfig({
 		setupFiles: ["./test/setup.js"],
 
 		// Reporter configuration
-		reporter: ["verbose"],
+		reporter: ["default"],
 
 		// Bail on first failure for CI
 		bail: process.env.CI ? 1 : 0,

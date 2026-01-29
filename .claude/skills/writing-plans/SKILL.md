@@ -3,6 +3,7 @@ name: writing-plans
 description: Use when design is complete and you need detailed implementation tasks for engineers with zero codebase context - creates comprehensive implementation plans with exact file paths, complete code examples, and verification steps assuming engineer has minimal domain knowledge
 ---
 
+<!-- markdownlint-disable-file MD048 -->
 # Writing Plans
 
 ## Overview
@@ -12,7 +13,11 @@ Write comprehensive implementation plans assuming the engineer has zero context 
 Assume they are a skilled developer, but know almost nothing about our toolset or problem domain. Assume they don't know good test design very well.
 
 **Announce at start:** "I'm using the writing-plans skill to create the implementation plan."
-**Save plans to:** [Save to the same location as the design plan. Display location to user]
+**Save plans to:** [Save implementation plan to the epic/user-story folder. If an implement plan already exists for the epic or user story, use that file by overwriting the placeholder text. If no plan exists, create a new one. Display location to user]
+
+## Required Pre-Flight Checklist
+1. Make sure [test-driven-development skill](../test-driven-development/SKILL.md) %% force-extract %% is in your context window
+2. Make sure [sub-agent-driven-development](../subagent-driven-development/SKILL.md) %% force-extract %% is in your contenxt window
 
 ## Bite-Sized Task Granularity
 
@@ -99,19 +104,25 @@ Use `create-git-commit` skill to commit
 
 After saving the plan, offer execution choice:
 
-**"Plan complete and saved to `{{implement-plan-path}}`. Two execution options:**
+**"Plan complete and saved to `{{implement-plan-path}}`. Ready to execute?**
 
-**1. Subagent-Driven (this session)** - I dispatch fresh subagent per task, review between tasks, fast iteration
+**1. Set up implementation worktree** - Create isolated workspace for this implementation
 
-**2. Parallel Session (separate)** - Open new session with executing-plans, batch execution with checkpoints
+**2. Execute in this session (Subagent-Driven)** - I dispatch fresh subagent per task, review between tasks, fast iteration
 
-**Which approach?"**
+**3. Execute in parallel session** - Open new session with executing-plans, batch execution with checkpoints
+
+**If Worktree Setup chosen:**
+- **REQUIRED SUB-SKILL:** Use setting-up-implementation-worktree
+- After worktree created, offer execution options again:
+  - Execute now in this session (Subagent-Driven)
+  - Execute later in new session (Parallel Session)
 
 **If Subagent-Driven chosen:**
-- **REQUIRED SUB-SKILL:** Use superpowers:subagent-driven-development
+- **REQUIRED SUB-SKILL:** Use subagent-driven-development
 - Stay in this session
 - Fresh subagent per task + code review
 
 **If Parallel Session chosen:**
 - Guide them to open new session in worktree
-- **REQUIRED SUB-SKILL:** New session uses superpowers:executing-plans
+- **REQUIRED SUB-SKILL:** New session uses executing-plans

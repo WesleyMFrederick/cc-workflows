@@ -1,0 +1,55 @@
+{
+  "active_sessions": {
+    "c6b7eea9-cb85-476e-af74-5a966f050661": {
+      "plan_path": "/Users/wesleyfrederick/Documents/ObsidianVault/0_SoftwareDevelopment/cc-workflows/tools/citation-manager/design-docs/features/20251119-type-contract-restoration/typescript-migration-sequencing.md",
+      "current_task_header": null,
+      "focus": "Design: TypeScript Migration - Sequencing",
+      "status": "idle",
+      "last_active_at": "2026-01-28T18:04:59Z",
+      "current_task_number": null,
+      "tasks_path": "/Users/wesleyfrederick/.claude/tasks/c6b7eea9-cb85-476e-af74-5a966f050661",
+      "task_summary": null
+    },
+    "8825e17c-022f-43d0-9ec9-9e3be19f2a50": {
+      "plan_path": "/Users/wesleyfrederick/.claude/plans/precious-questing-pond.md",
+      "current_task_header": "### Task #1: Explore Slack Channels (interactive, with user)",
+      "focus": "Slack-Linear Integration for ProductTank SF",
+      "status": "active",
+      "last_active_at": "2026-01-27T18:35:00Z",
+      "current_task_number": "1",
+      "tasks_path": "/Users/wesleyfrederick/.claude/tasks/8825e17c-022f-43d0-9ec9-9e3be19f2a50",
+      "task_summary": "Plan updated: 4 exploration tasks (Slack → doc → Linear → doc). Awaiting plan approval."
+    },
+    "85080d52-adf6-4b79-ad1b-b4fb404ca961": {
+      "plan_path": "/Users/wesleyfrederick/Documents/ObsidianVault/0_SoftwareDevelopment/cc-workflows/tools/citation-manager/design-docs/features/20251119-type-contract-restoration/user-stories/epic6-extraction-layer/epic6-extraction-layer-implementation-plan.md",
+      "current_task_header": null,
+      "focus": "Design: Epic 6: ContentExtractor TypeScript Migration — Implementation Plan",
+      "status": "idle",
+      "last_active_at": "2026-01-28T18:58:43Z",
+      "current_task_number": "10",
+      "tasks_path": "/Users/wesleyfrederick/.claude/tasks/85080d52-adf6-4b79-ad1b-b4fb404ca961",
+      "task_summary": "Task #10: Updating contentExtractorTypes.ts"
+    },
+    "8b62b7cf-8b31-456f-8c2b-6162d992c21f": {
+      "plan_path": "/Users/wesleyfrederick/.claude/plans/zippy-meandering-harp.md",
+      "current_task_header": null,
+      "focus": "Plan: MCPorter Slack Channel Caching Plan",
+      "status": "idle",
+      "last_active_at": "2026-01-29T03:54:01Z",
+      "current_task_number": null,
+      "tasks_path": "/Users/wesleyfrederick/.claude/tasks/8b62b7cf-8b31-456f-8c2b-6162d992c21f",
+      "task_summary": null
+    },
+    "7b181195-ac4d-472d-b071-9d091201f359": {
+      "plan_path": null,
+      "current_task_header": null,
+      "focus": "Current git branch check",
+      "status": "active",
+      "last_active_at": "2026-01-29T16:52:23Z",
+      "current_task_number": null,
+      "tasks_path": "/Users/wesleyfrederick/.claude/tasks/7b181195-ac4d-472d-b071-9d091201f359",
+      "task_summary": null
+    }
+  },
+  "max_sessions": 5
+}

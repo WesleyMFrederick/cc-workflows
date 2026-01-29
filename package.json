@@ -3,7 +3,10 @@
 	"version": "1.0.0",
 	"type": "module",
 	"main": "cli.beautify.js",
-	"workspaces": ["tools/*", "packages/*"],
+	"workspaces": [
+		"tools/*",
+		"packages/*"
+	],
 	"scripts": {
 		"test": "vitest run",
 		"test:watch": "vitest",
@@ -35,6 +38,7 @@
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^1.9.4",
+		"@types/marked": "^5.0.2",
 		"@vitest/ui": "^3.2.4",
 		"c8": "^10.1.3",
 		"typescript": "^5.9.3",

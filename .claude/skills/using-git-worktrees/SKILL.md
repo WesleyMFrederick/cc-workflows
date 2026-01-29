@@ -74,16 +74,33 @@ No .gitignore verification needed - outside project entirely.
 
 ## Creation Steps
 
-### 1. Detect Current Branch and Project Name
+### 1. Detect Current Branch and Epic/User-Story Context
 
-**ALWAYS use `{current-branch}-worktree` pattern. DO NOT ask user for branch name.**
+**ALWAYS use automatic naming based on plan file path. DO NOT ask user for branch name.**
+
+**Naming Patterns:**
+- With plan file: `{current-branch}-{epic-or-us-identifier}-worktree`
+- Without plan file: `{current-branch}-worktree` (fallback)
 
 ```bash
 # Get current branch name
 current_branch=$(git branch --show-current)
 
-# Create worktree branch name automatically
-worktree_branch="${current_branch}-worktree"
+# Extract epic/user-story identifier from plan file path if provided
+# Supported patterns:
+#   .../user-stories/epic2-leaf-components/... → epic2-leaf-components
+#   .../user-stories/us2.3-extract-links/...   → us2.3-extract-links
+if [[ -n "$PLAN_FILE_PATH" ]]; then
+  context_identifier=$(echo "$PLAN_FILE_PATH" | grep -oP 'user-stories/\K[^/]+')
+
+  if [[ -n "$context_identifier" ]]; then
+    worktree_branch="${current_branch}-${context_identifier}-worktree"
+  else
+    worktree_branch="${current_branch}-worktree"  # Fallback if pattern not found
+  fi
+else
+  worktree_branch="${current_branch}-worktree"  # Fallback for backward compatibility
+fi
 
 # Get project name
 project=$(basename "$(git rev-parse --show-toplevel)")
@@ -92,7 +109,9 @@ project=$(basename "$(git rev-parse --show-toplevel)")
 **Why automatic naming:**
 - Consistent, predictable pattern
 - No user friction
-- Clear relationship to parent branch
+- Clear relationship to parent branch and work unit (epic/user-story)
+- Enables concurrent worktrees for different epics/user-stories
+- Self-documenting: name shows exactly what work is in progress
 
 ### 2. Create Worktree
 
@@ -174,7 +193,24 @@ Ready for use
 ```text
 You: I'm using the using-git-worktrees skill to set up an isolated workspace.
 
+[Detect current branch: typescript-refactor]
+[Parse plan file path: .../user-stories/epic2-leaf-components/epic2-filecache-plan.md]
+[Extract context identifier: epic2-leaf-components]
+[Check .worktrees/ - exists]
+[Verify .gitignore - contains .worktrees/]
+[Create worktree: git worktree add .worktrees/typescript-refactor-epic2-leaf-components-worktree -b typescript-refactor-epic2-leaf-components-worktree]
+[Run npm install]
+
+Worktree created at /Users/jesse/myproject/.worktrees/typescript-refactor-epic2-leaf-components-worktree
+Dependencies installed
+Ready for use
+```
+
+**Example without plan file (backward compatible):**
+
+```text
 [Detect current branch: main]
+[No plan file path provided]
 [Check .worktrees/ - exists]
 [Verify .gitignore - contains .worktrees/]
 [Create worktree: git worktree add .worktrees/main-worktree -b main-worktree]
@@ -192,13 +228,14 @@ Ready for use
 - Assume directory location when ambiguous
 - Skip CLAUDE.md check
 - Ask user for branch name (automatic naming only)
-- Deviate from `{current-branch}-worktree` pattern
+- Deviate from naming pattern (`{branch}-{epic/us}-worktree` or `{branch}-worktree`)
 
 **Always:**
 - Follow directory priority: existing > CLAUDE.md > ask
 - Verify .gitignore for project-local
 - Auto-detect and run project setup
-- Use `{current-branch}-worktree` naming automatically
+- Parse epic/user-story context from plan file path when provided
+- Use automatic naming (never ask user)
 
 ## Common Rationalizations (STOP and Follow Skill)
 
@@ -208,9 +245,11 @@ If you catch yourself thinking ANY of these, you're rationalizing. Follow the sk
 - "Should ask to be flexible" → WRONG. Consistency > flexibility for worktrees
 - "What if user has conventions?" → WRONG. This IS the convention
 - "Pattern seems rigid" → WRONG. Predictability is the goal
+- "Plan file path might not have user-stories/" → WRONG. If it doesn't, use fallback pattern
+- "Should simplify to just epic number" → WRONG. Full identifier provides context
 - "Branch might already exist" → CORRECT. Let git error, then handle (delete old or use different approach)
 
-**All of these mean: Use automatic `{current-branch}-worktree` naming. No exceptions.**
+**All of these mean: Use automatic naming with epic/user-story context when available. No exceptions.**
 
 ## Integration
 

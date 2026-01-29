@@ -1,12 +1,19 @@
 {
 	"folders": [
 		{
-			"name": "cc-workflows",
 			"path": "."
 		},
 		{
-			"name": ".claude",
 			"path": "../../../../.claude"
+		},
+		{
+			"path": "../linear-cli"
+		},
+		{
+			"path": "../mcp-gdrive"
+		},
+		{
+			"path": "../slack-mcp-server"
 		}
 	],
 	"settings": {}

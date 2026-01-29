@@ -113,8 +113,8 @@
 >   - **Input**: Project structure from Phase 1 architectural context
 >   - **Output**: Working test configuration with utilities for isolated testing
 >   - **Files**: 
-> 	  - `vitest.config.js` (create)
-> 	  - `test/helpers/testUtils.js` (create)
+>    - `vitest.config.js` (create)
+>    - `test/helpers/testUtils.js` (create)
 >   - **Scope**:
 >     - Configure Vitest for ES modules support
 >     - Create test workspace utilities for isolation
@@ -247,4 +247,4 @@
 
 ## Next Phase
 
-When Phase 2 is complete, proceed to Phase 3 using the [task scoping prompt](../prompts/phase-3-task-scoping-prompt.md) to break down high-level tasks into atomic subtasks with detailed implementation specifications.
+When Phase 2 is complete, proceed to Phase 3 using the [task scoping prompt](../../tools/claude-code-cli-prompts/prompts/phase-3-task-scoping-prompt.md) to break down high-level tasks into atomic subtasks with detailed implementation specifications.
