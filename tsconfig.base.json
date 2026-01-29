@@ -20,6 +20,7 @@
 		"resolveJsonModule": true,
 		"forceConsistentCasingInFileNames": true,
 		"skipLibCheck": true,
-		"noEmit": false
+		"noEmit": false,
+		"allowImportingTsExtensions": true
 	}
 }

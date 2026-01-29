@@ -30,25 +30,25 @@
       "tasks_path": "/Users/wesleyfrederick/.claude/tasks/85080d52-adf6-4b79-ad1b-b4fb404ca961",
       "task_summary": "Task #10: Updating contentExtractorTypes.ts"
     },
-    "fa17f8ba-5f41-4357-9714-f0417a3953d1": {
-      "plan_path": null,
-      "current_task_header": null,
-      "focus": "Worktree hooks and task management",
-      "status": "idle",
-      "last_active_at": "2026-01-29T00:12:33Z",
-      "current_task_number": "10",
-      "tasks_path": "/Users/wesleyfrederick/.claude/tasks/fa17f8ba-5f41-4357-9714-f0417a3953d1",
-      "task_summary": "Task #10: Updating contentExtractorTypes.ts"
-    },
     "31f2bb99-beba-433e-9dcb-7f3b26abecf0": {
       "plan_path": null,
       "current_task_header": null,
-      "focus": "Task #15: Implementing Task 6: Convert extractLinksContent.js to TypeScript",
+      "focus": "Task #16: Implementing Task 7: Convert ContentExtractor.js to TypeScript",
       "status": "active",
       "last_active_at": "2026-01-29T00:55:49Z",
-      "current_task_number": "15",
+      "current_task_number": null,
       "tasks_path": "/Users/wesleyfrederick/.claude/tasks/31f2bb99-beba-433e-9dcb-7f3b26abecf0",
-      "task_summary": "Task #15: Implementing Task 6: Convert extractLinksContent.js to TypeScript"
+      "task_summary": null
+    },
+    "fecd106e-2b69-4445-b7ed-a1d7fdedac3a": {
+      "plan_path": null,
+      "current_task_header": null,
+      "focus": "Sandbox worktree environment troubleshooting",
+      "status": "idle",
+      "last_active_at": "2026-01-29T01:28:37Z",
+      "current_task_number": null,
+      "tasks_path": "/Users/wesleyfrederick/.claude/tasks/fecd106e-2b69-4445-b7ed-a1d7fdedac3a",
+      "task_summary": null
     }
   },
   "max_sessions": 5
