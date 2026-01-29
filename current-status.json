@@ -31,14 +31,14 @@
       "task_summary": null
     },
     "85080d52-adf6-4b79-ad1b-b4fb404ca961": {
-      "plan_path": "/Users/wesleyfrederick/Documents/ObsidianVault/0_SoftwareDevelopment/cc-workflows/tools/citation-manager/design-docs/features/20251119-type-contract-restoration/typescript-migration-sequencing.md",
+      "plan_path": "/Users/wesleyfrederick/Documents/ObsidianVault/0_SoftwareDevelopment/cc-workflows/tools/citation-manager/design-docs/features/20251119-type-contract-restoration/user-stories/epic6-extraction-layer/epic6-extraction-layer-implementation-plan.md",
       "current_task_header": null,
-      "focus": "Design: TypeScript Migration - Sequencing",
-      "status": "active",
-      "last_active_at": "2026-01-28T18:30:59Z",
-      "current_task_number": null,
+      "focus": "Design: Epic 6: ContentExtractor TypeScript Migration — Implementation Plan",
+      "status": "idle",
+      "last_active_at": "2026-01-28T18:58:43Z",
+      "current_task_number": "10",
       "tasks_path": "/Users/wesleyfrederick/.claude/tasks/85080d52-adf6-4b79-ad1b-b4fb404ca961",
-      "task_summary": null
+      "task_summary": "Task #10: Updating contentExtractorTypes.ts"
     },
     "99492a90-021c-4afb-af2a-33486b27fd98": {
       "plan_path": null,

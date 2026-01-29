@@ -232,9 +232,9 @@ Code-reviewer may identify BLOCKING when:
 
 **When code-reviewer returns BLOCKING issues:**
 
-1. **MANDATORY - Launch app-tech-lead subagent**
+1. **MANDATORY - Launch `application-tech-lead` subagent**
 
-   You MUST launch app-tech-lead. This is NOT optional. This is NOT a suggestion.
+   You MUST launch `application-tech-lead`. This is NOT optional. This is NOT a suggestion.
 
    **DO NOT:**
    - ❌ Ask user "What should I do?"
@@ -250,7 +250,7 @@ Code-reviewer may identify BLOCKING when:
    - User escalation = undocumented decision without principle evaluation
    - Interrupts workflow unnecessarily
 
-2. **Launch app-tech-lead with this task:**
+2. **Launch `application-tech-lead` with this task:**
 
    ```plaintext
    Task tool (application-tech-lead):
@@ -296,7 +296,7 @@ Code-reviewer may identify BLOCKING when:
        Critical: Your decision must be grounded in architecture principles, not just "best practice" popularity.
    ```
 
-3. **After app-tech-lead returns:**
+3. **After `application-tech-lead` returns:**
    - Review decision rationale
    - Verify plan updated with specific choice
    - Determine if change is MAJOR (see criteria below)
@@ -457,7 +457,7 @@ For each task:
 
 ### 6. Final Review
 
-After all tasks complete, dispatch final code-reviewer:
+After all tasks complete, dispatch final `code-reviewer`:
 - Reviews entire implementation
 - Checks all plan requirements met
 - Validates overall architecture
