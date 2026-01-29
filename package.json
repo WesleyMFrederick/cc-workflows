@@ -25,7 +25,8 @@
 		"citation:extract:header": "sh -c 'node tools/citation-manager/src/citation-manager.js extract header \"$1\" \"$2\"' --",
 		"citation:fix": "node tools/citation-manager/src/citation-manager.js validate --fix",
 		"mock:run": "node tools/mock-tool/src/mock-tool.js",
-		"qr-gen": "node tools/linkedin-qr-generator/src/linkedin-qr-generator.js"
+		"qr-gen": "node tools/linkedin-qr-generator/src/linkedin-qr-generator.js",
+		"postinstall": "npm run build -w tools/citation-manager && mkdir -p dist && ln -sf ../tools/citation-manager/dist/citation-manager.js dist/citation-manager.js"
 	},
 	"keywords": [],
 	"author": "",
