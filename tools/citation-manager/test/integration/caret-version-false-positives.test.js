@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import fs from "node:fs";
-import { MarkdownParser } from "../../src/MarkdownParser.js";
+import { MarkdownParser } from "../../src/core/MarkdownParser/index.js";
 
 describe("Caret version false positives (Issue #37)", () => {
 	it("should NOT extract semantic version strings as caret citations", () => {

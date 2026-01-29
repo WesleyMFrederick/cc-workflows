@@ -100,14 +100,14 @@ Task tool (
     Before writing results, you MUST clean up any test processes you spawned:
 
     ```bash
-    # Check for running vitest processes
-    ps aux | grep -i vitest | grep -v grep
+    # Check for running vitest processes (pgrep works in sandbox; ps does not)
+    pgrep -fl vitest
 
     # If any found, kill them
     pkill -f "vitest" || true
 
     # Verify cleanup succeeded (should return nothing)
-    ps aux | grep -i vitest | grep -v grep
+    pgrep -fl vitest
     ```
 
     NEVER skip this step. Orphaned test processes consume ~14GB memory each.
@@ -193,14 +193,14 @@ Task tool (code-reviewer):
     Before writing results, you MUST clean up any test processes you spawned:
 
     ```bash
-    # Check for running vitest processes
-    ps aux | grep -i vitest | grep -v grep
+    # Check for running vitest processes (pgrep works in sandbox; ps does not)
+    pgrep -fl vitest
 
     # If any found, kill them
     pkill -f "vitest" || true
 
     # Verify cleanup succeeded (should return nothing)
-    ps aux | grep -i vitest | grep -v grep
+    pgrep -fl vitest
     ```
 
     NEVER skip this step. Orphaned test processes consume ~14GB memory each.
