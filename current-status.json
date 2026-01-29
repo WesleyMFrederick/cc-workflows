@@ -30,24 +30,24 @@
       "tasks_path": "/Users/wesleyfrederick/.claude/tasks/85080d52-adf6-4b79-ad1b-b4fb404ca961",
       "task_summary": "Task #10: Updating contentExtractorTypes.ts"
     },
-    "fecd106e-2b69-4445-b7ed-a1d7fdedac3a": {
-      "plan_path": null,
+    "8b62b7cf-8b31-456f-8c2b-6162d992c21f": {
+      "plan_path": "/Users/wesleyfrederick/.claude/plans/zippy-meandering-harp.md",
       "current_task_header": null,
-      "focus": "Git worktree sandbox initialization issue",
-      "status": "active",
-      "last_active_at": "2026-01-29T01:42:30Z",
+      "focus": "Plan: MCPorter Slack Channel Caching Plan",
+      "status": "idle",
+      "last_active_at": "2026-01-29T03:54:01Z",
       "current_task_number": null,
-      "tasks_path": "/Users/wesleyfrederick/.claude/tasks/fecd106e-2b69-4445-b7ed-a1d7fdedac3a",
+      "tasks_path": "/Users/wesleyfrederick/.claude/tasks/8b62b7cf-8b31-456f-8c2b-6162d992c21f",
       "task_summary": null
     },
-    "0fe5cadb-455f-4f9b-bd89-36083f338a9e": {
+    "7b181195-ac4d-472d-b071-9d091201f359": {
       "plan_path": null,
       "current_task_header": null,
-      "focus": "I don't have access to the `git-finishing-a-development-branch` skill. The available skills in this session don't include that command. \n\nCould you clarify what you'd like to do? Are you looking to:\n- Clean up a git worktree?\n- Merge or delete a development branch?\n- Finalize commits on a branch?\n\nI can help with git operations using standard commands if you provide more details about what you need.",
-      "status": "idle",
-      "last_active_at": "2026-01-29T01:51:05Z",
+      "focus": "Current git branch check",
+      "status": "active",
+      "last_active_at": "2026-01-29T16:51:14Z",
       "current_task_number": null,
-      "tasks_path": "/Users/wesleyfrederick/.claude/tasks/0fe5cadb-455f-4f9b-bd89-36083f338a9e",
+      "tasks_path": "/Users/wesleyfrederick/.claude/tasks/7b181195-ac4d-472d-b071-9d091201f359",
       "task_summary": null
     }
   },
