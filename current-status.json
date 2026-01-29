@@ -20,16 +20,6 @@
       "tasks_path": "/Users/wesleyfrederick/.claude/tasks/8825e17c-022f-43d0-9ec9-9e3be19f2a50",
       "task_summary": "Plan updated: 4 exploration tasks (Slack → doc → Linear → doc). Awaiting plan approval."
     },
-    "5e3ee9e5-7a0a-4b57-a4a4-45ec9c06e5fc": {
-      "plan_path": null,
-      "current_task_header": null,
-      "focus": "No context established yet.",
-      "status": "idle",
-      "last_active_at": "2026-01-28T16:46:23Z",
-      "current_task_number": null,
-      "tasks_path": "/Users/wesleyfrederick/.claude/tasks/5e3ee9e5-7a0a-4b57-a4a4-45ec9c06e5fc",
-      "task_summary": null
-    },
     "85080d52-adf6-4b79-ad1b-b4fb404ca961": {
       "plan_path": "/Users/wesleyfrederick/Documents/ObsidianVault/0_SoftwareDevelopment/cc-workflows/tools/citation-manager/design-docs/features/20251119-type-contract-restoration/user-stories/epic6-extraction-layer/epic6-extraction-layer-implementation-plan.md",
       "current_task_header": null,
@@ -49,6 +39,13 @@
       "current_task_number": null,
       "tasks_path": "/Users/wesleyfrederick/.claude/tasks/99492a90-021c-4afb-af2a-33486b27fd98",
       "task_summary": null
+    },
+    "0fe5cadb-455f-4f9b-bd89-36083f338a9e": {
+      "plan_path": null,
+      "current_task_header": null,
+      "focus": "New session",
+      "status": "active",
+      "last_active_at": "2026-01-29T01:48:09Z"
     }
   },
   "max_sessions": 5
