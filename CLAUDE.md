@@ -79,6 +79,16 @@ markdownlint "**/*.md"
 markdownlint "**/*.md" --fix
 ```
 
+## TypeScript Coding Standards
+
+**NEVER use `any` type** - Defeats the purpose of TypeScript. Instead:
+- Use proper type definitions, interfaces, or types
+- Use type guards (`is` predicates) for runtime validation
+- Use `unknown` with type narrowing for truly unknown values
+- Use generic types to maintain type safety
+
+**Why:** TypeScript's value is compile-time type safety. Using `any` disables all type checking and defeats the entire purpose of using TypeScript.
+
 ## Citation Manager
 
 ```bash

@@ -529,6 +529,30 @@ Components define their own dependency interfaces inline. This enforces the [Int
 
 **Anti-Pattern:** Never import a dependency interface from another component (e.g., `ContentExtractor` importing from `CitationValidator`). This creates nonsensical coupling where one component breaks when another changes its requirements.
 
+### TypeScript Type Safety Standards
+
+**NEVER use `any` type** - Using `any` defeats the entire purpose of TypeScript by disabling type checking. Instead:
+
+- **Use proper type definitions** - Define explicit interfaces or types for your data structures
+- **Use type guards** - Create runtime type guards with `is` predicates for unknown types
+- **Use `unknown` with type narrowing** - For truly unknown values, use `unknown` and narrow with type guards
+- **Use generic types** - Parameterize types to maintain type safety across transformations
+
+**Type Guards Over Type Assertions:**
+- Prefer runtime type guards (`is` predicates) over type assertions (`as` casts)
+- Type assertions bypass type checking and can hide bugs
+- Type guards provide runtime validation that aligns with compile-time types
+
+**Explicit Types for Public APIs:**
+- All exported functions must have explicit parameter and return type annotations
+- All exported classes must have explicit property type annotations
+- Internal/private code may use type inference when the type is obvious
+
+**Strict TypeScript Configuration:**
+- All projects use `strict: true` in `tsconfig.json`
+- `noExplicitAny` rule is enforced in `biome.json`
+- These settings catch maximum number of type errors at compile time
+
 ### Formatting Conventions
 
 - **Indentation**: Use **tabs** for indentation (configured via Biome)
