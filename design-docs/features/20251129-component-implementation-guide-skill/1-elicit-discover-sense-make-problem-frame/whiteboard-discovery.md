@@ -6,7 +6,7 @@
 **Phase**: Discovery & Ideation
 
 > [!CRITICAL] Source of Truth
-> The [Markdown Parser Implementation Guide](../../../../tools/citation-manager/design-docs/component-guides/Markdown%20Parser%20Implementation%20Guide.md) IS the canonical source for all patterns documented here. If divergence exists between this whiteboard and that guide, update this whiteboard to match.
+> The [MarkdownParser Component Guide](../../../../tools/citation-manager/design-docs/component-guides/MarkdownParser%20Component%20Guide.md) IS the canonical source for all patterns documented here. If divergence exists between this whiteboard and that guide, update this whiteboard to match.
 
 > [!CRITICAL] Critical Skills
 > Use the [writing-for-token-optimized-and-ceo-scannable-content](../../../../.claude/skills/writing-for-token-optimized-and-ceo-scannable-content/SKILL.md) when writing to this document AND when using its Patterns to update a component guide

@@ -71,7 +71,7 @@ Use Language Server Protocol tools for precision validation:
 
 ### 4. REPORT GAPS
 
-Use structured format below. Do NOT auto-update documentation.
+**MANDATORY**: Your output MUST use the exact Gap Report Format below. Do NOT auto-update documentation. Do NOT invent custom table layouts, sub-sections, or alternative headings. Every gap goes into the single unified table.
 
 ## Gap Report Format
 
@@ -108,31 +108,32 @@ Guides document **external-facing contracts only**, following the Modular Design
 
 ### ❌ Gaps Found
 
-#### Contract Mismatches
-| Contract | Documented | Actual | Location |
-|----------|------------|--------|----------|
-| Parser.parse() | returns void | returns Promise<void> | parser.ts:42 |
-
-#### Missing Files (documented but not found)
-| Documented Path | Status |
-|-----------------|--------|
-| path/to/file.ts | NOT FOUND |
-
-#### Undocumented Public Behavior (affects consumers)
-| Behavior | Description | Location |
-|----------|-------------|----------|
-| Cross-dir resolution | Returns warning status, not documented | validator.ts:536 |
-
-#### Undocumented Consumers (from LSP references)
-| File | Usage |
-|------|-------|
-| src/other/consumer.ts | Calls undocumented public method |
+| ID | Priority | Discrepancy | Guide Line(s) | Details |
+|----|----------|-------------|----------------|---------|
+| 1 | 🔴 | Parser.parse() return type wrong | L42 | Documented: `void` · Actual: `Promise<void>` (parser.ts:42) |
+| 2 | 🟠 | File not found: path/to/file.ts | L18 | Documented path does not exist on disk |
+| 3 | 🟠 | Undocumented: cross-dir resolution warning | — | Returns warning status, affects consumers (validator.ts:536) |
+| 4 | 🟡 | Undocumented consumer | — | src/other/consumer.ts calls undocumented public method |
 
 ### Recommendations
-- [Actionable items for updating guide]
-- Example: "Update Parser.parse() return type from void to Promise<void>"
-- Example: "Document warning status for cross-directory resolution"
+- [Actionable items for updating guide, referencing gap IDs]
+- Example: "**#1** — Update Parser.parse() return type from void to Promise<void>"
+- Example: "**#3** — Document warning status for cross-directory resolution"
 ```
+
+### Priority Classification
+
+| Emoji | Level | When to use |
+|-------|-------|-------------|
+| 🔴 | Critical | Contract mismatches (wrong types, signatures), wrong file paths |
+| 🟠 | Medium | Missing files, undocumented public behavior affecting consumers |
+| 🟡 | Low | Stale notes, minor doc drift, undocumented consumers with no contract impact |
+
+**Format rules:**
+- ALL gaps go in the single `### ❌ Gaps Found` table — no sub-tables, no custom sections
+- Each row MUST have a sequential numeric ID, an **emoji** priority (🔴, 🟠, or 🟡 — never text like "High" or "Medium"), and guide line reference (use `—` if no guide line applies)
+- If zero gaps found, write: `No gaps found — full compliance with documented contracts.`
+- Do NOT create headings like `#### Contract Mismatches` or `#### Missing Files` — those categories belong in the Priority column
 
 ## LSP Tool Usage Patterns
 
