@@ -42,13 +42,9 @@
       "Bash(./scripts/calculate-event-date.sh:*)",
       "Bash(gh:*)",
       "Bash(mgrep:*)"
-
-
     ],
     "deny": [
       "Grep",
-      
-      
       "Glob"
     ],
     "ask": [],
