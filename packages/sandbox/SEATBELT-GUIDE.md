@@ -7,6 +7,7 @@ This guide explains how to use macOS Seatbelt for sandboxing, extracted from the
 Seatbelt is macOS's kernel-level access control system. It uses policies written in a Scheme-like language to restrict what programs can do.
 
 **Key command:**
+
 ```bash
 sandbox-exec -f policy.sb your-command [args...]
 ```
@@ -207,11 +208,13 @@ rm -f "$policy"
 ## Debugging Policies
 
 **View generated policy:**
+
 ```bash
 CCO_DEBUG=1 ./git-sandbox.sh ls
 ```
 
 **Test a policy:**
+
 ```bash
 # Create test policy
 cat > test.sb <<'EOF'
@@ -304,6 +307,23 @@ EOF
 
 exec sandbox-exec -f "$policy" claude --dangerously-skip-permissions "$@"
 ```
+
+## Process Management
+
+To allow programs to signal processes (e.g., `pkill`, `kill`):
+
+```scheme
+; Process management (pkill/kill for stale test runners like vitest)
+(allow process-info*)
+(allow signal)
+```
+
+| Operation | What it enables |
+|-----------|----------------|
+| `process-info*` | Process info queries (used internally by `pkill`) |
+| `signal` | `pkill`, `kill` to send signals (SIGTERM, SIGKILL, etc.) |
+
+⚠️ **macOS Sequoia limitation:** `/bin/ps` is setuid root + SIP-restricted (`-rwsr-xr-x restricted`). Sequoia blocks setuid+restricted binaries inside `sandbox-exec` — no policy can override this. Use `pgrep`/`pkill` instead (not setuid, works fine in sandbox).
 
 ## Resources
 
