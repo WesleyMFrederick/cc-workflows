@@ -52,8 +52,9 @@ consecutive_errors = 0
 6. Dispatch code-reviewer subagent (Step 3)
 7. Cleanup processes (Step 3a)
 8. Handle review feedback (Step 4)
-9. Mark task completed via TaskUpdate
-10. GOTO 1
+9. MANDATORY: Close GitHub issue (Step 5) [if task has issue number - DO NOT skip this]
+10. Mark task completed via TaskUpdate
+11. GOTO 1
 ```
 
 **Pre-flight check (once, before first loop):**
@@ -85,13 +86,21 @@ Task tool (
 
     Then follow any additional context-gathering steps specified in the task (e.g., pulling GH issues, reading related files).
 
+    **GitHub Issue Context (if task has issue number):**
+    ```bash
+    gh issue view {{issue-number}} --json title,body,labels --template '{{.title}}
+
+    {{.body}}'
+    ```
+    Extract acceptance criteria from the issue body. These are your requirements.
+
     Your job is to:
     1. Navigate to and work in {{worktree directory | feature-branch if worktree missing}}
     2. Implement exactly what the task specifies
     3. Write tests (following TDD if task says to)
     4. Verify implementation works
     5. Run diagnostic verification (MANDATORY - see below)
-    6. Commit your work
+    6. Commit your work (include `Fixes: #{{issue-number}}` in footer if task has GH issue)
     7. Clean up test processes (MANDATORY - see below)
     8. Write results to file
     9. Report back
@@ -100,14 +109,14 @@ Task tool (
     Before writing results, you MUST clean up any test processes you spawned:
 
     ```bash
-    # Check for running vitest processes
-    ps aux | grep -i vitest | grep -v grep
+    # Check for running vitest processes (pgrep works in sandbox; ps does not)
+    pgrep -fl vitest
 
     # If any found, kill them
     pkill -f "vitest" || true
 
     # Verify cleanup succeeded (should return nothing)
-    ps aux | grep -i vitest | grep -v grep
+    pgrep -fl vitest
     ```
 
     NEVER skip this step. Orphaned test processes consume ~14GB memory each.
@@ -133,6 +142,14 @@ Task tool (
     - "Tests pass so it's correct" → Tests don't catch type errors. Build does.
     - "I'll fix types later" → Later = reviewer catches it = fix subagent = 2x cost.
     - "Build is slow" → 5 seconds vs full fix cycle. Build every time.
+
+    CRITICAL - GitHub Issue Reference (Step 6):
+    If task has a GitHub issue number, include in commit footer:
+    ```
+    Fixes: #{{issue-number}}
+    ```
+    Place BEFORE the Claude attribution footer. This links the commit to the issue.
+    If no issue number, omit the Fixes footer.
 
   MANDATORY: Use the `writing-for-token-optimized-and-ceo-scannable-content` skill when writing your review results.
 
@@ -178,29 +195,39 @@ Task tool (code-reviewer):
 
     2. Follow any additional context-gathering steps in the task (e.g., GH issues).
 
-    3. Read implementation results:
+    3. Fetch GitHub issue acceptance criteria (if task has issue number):
+    ```bash
+    gh issue view {{issue-number}} --json title,body,labels --template '{{.title}}
+
+    {{.body}}'
+    ```
+    Extract acceptance criteria — verify implementation against each one.
+
+    4. Read implementation results:
     - Dev results: {{epic-or-user-story-folder}}/tasks/task-{{task-number}}-dev-results.md
 
     Your job:
     1. Read plan task to understand requirements
-    2. Read dev results to understand what was implemented
-    3. Review code changes (BASE_SHA to HEAD_SHA)
-    4. Identify issues (BLOCKING/Critical/Important/Minor)
-    5. Clean up test processes (MANDATORY - see below)
-    6. Write concise review results
+    2. Read GH issue acceptance criteria (if issue number provided)
+    3. Read dev results to understand what was implemented
+    4. Review code changes (BASE_SHA to HEAD_SHA)
+    5. Verify implementation satisfies EACH acceptance criterion
+    6. Identify issues (BLOCKING/Critical/Important/Minor)
+    7. Clean up test processes (MANDATORY - see below)
+    8. Write concise review results
 
     CRITICAL - Test Process Cleanup (Step 5):
     Before writing results, you MUST clean up any test processes you spawned:
 
     ```bash
-    # Check for running vitest processes
-    ps aux | grep -i vitest | grep -v grep
+    # Check for running vitest processes (pgrep works in sandbox; ps does not)
+    pgrep -fl vitest
 
     # If any found, kill them
     pkill -f "vitest" || true
 
     # Verify cleanup succeeded (should return nothing)
-    ps aux | grep -i vitest | grep -v grep
+    pgrep -fl vitest
     ```
 
     NEVER skip this step. Orphaned test processes consume ~14GB memory each.
@@ -212,6 +239,44 @@ Task tool (code-reviewer):
     - Verdict: APPROVED or FIX REQUIRED
 
     CRITICAL VERDICT RULE: If you found ANY issues (BLOCKING/Critical/Important/Minor), you MUST set verdict to FIX REQUIRED. NEVER approve tasks that have documented issues.
+
+    CRITICAL - Acceptance Criteria Verification (if task has GH issue):
+    Include in review results:
+
+    **Acceptance Criteria Verification**
+    | Criterion | Status | Notes |
+    |-----------|--------|-------|
+    | AC1: [from issue] | ✅ PASS / ❌ FAIL | [brief] |
+
+    If ANY criterion fails → verdict MUST be FIX REQUIRED.
+
+    CRITICAL - New Issues from Review:
+    If you discover problems NOT in the original task scope, dispatch `github-assistant`
+    agent to create GH issues with proper labels:
+
+    ```plaintext
+    Task tool (github-assistant):
+      description: "Create GH issue for [problem]"
+      prompt: |
+        Create a GitHub issue using the `managing-github-issues` skill.
+
+        Title: <type>(<scope>): <description>
+        Body: [Problem description]. Found during review of Task {{task-number}} (#{{issue-number}}).
+        Labels (REQUIRED):
+        - Type: bug / enhancement / tech-debt
+        - Component: component:<PascalCase>
+        - Priority: priority:low / priority:medium / priority:high
+
+        ```bash
+        gh issue create \
+          --title "<type>(<scope>): <description>" \
+          --body "..." \
+          --label "bug,component:MarkdownParser,priority:medium"
+        ```
+    ```
+
+    Record created issues in review results:
+    **New Issues Created:** #N — description
 
     Keep it brief:
     - Skip "Strengths" section for approved tasks (ZERO issues)
@@ -452,12 +517,28 @@ Task tool (general-purpose):
   model: haiku
 ```
 
-### 5. Mark Complete, Next Task
+### 5. Close GitHub Issue and Mark Complete
 
-- Mark task as completed in Task tool
-- Reset consecutive error counter to 0
-- Move to next task immediately — do NOT pause for user input
-- Repeat steps 2-5
+1. **Close GitHub issue** (if task has issue number):
+
+   Dispatch `github-assistant` agent:
+
+   ```plaintext
+   Task tool (github-assistant):
+     description: "Close GH issue #{{issue-number}}"
+     prompt: |
+       Close GitHub issue #{{issue-number}} — Task {{task-number}} approved.
+
+       ```bash
+       gh issue close {{issue-number}} --comment "Resolved via commit $(git rev-parse HEAD). Task {{task-number}} reviewed and approved."
+       ```
+
+       Report: Confirm issue closed.
+   ```
+
+2. **Mark task completed** via TaskUpdate
+3. **Reset** consecutive error counter to 0
+4. **Next task** immediately — do NOT pause for user input
 
 ## Autonomous Execution Rules
 
@@ -494,6 +575,8 @@ Error counter resets on each successful task. Increments on failed fix attempts:
 | "Should I proceed?" | Yes. Always. Until done or 3 errors. |
 | "User might want to review" | Code reviewer subagent handles review. Keep going. |
 | "This task was complex, pause" | Complexity is not a stop condition. Next task. |
+| "Separation of concerns — issue closure is external" | Issue closure is Step 5 of the workflow. Not optional. |
+| "Issue lifecycle is separate from task completion" | Step 5 explicitly closes issue BEFORE marking complete. |
 
 ### Rationalizations for Doing Research (REJECT These)
 

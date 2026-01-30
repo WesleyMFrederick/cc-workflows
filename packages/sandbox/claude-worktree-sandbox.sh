@@ -217,6 +217,12 @@ trap 'rm -f "$policy_file"' EXIT
     echo "(allow mach-lookup (global-name \"com.apple.security.othersigning\"))"
     echo "(allow mach-lookup (global-name \"com.apple.security.credentialstore\"))"
 
+    # Process management (pgrep/pkill/kill for stale test runners like vitest)
+    # NOTE: /bin/ps is setuid root + SIP-restricted — macOS Sequoia blocks
+    # setuid+restricted binaries inside sandbox-exec. Use pgrep/pkill instead.
+    echo "(allow process-info*)"
+    echo "(allow signal)"
+
 } > "$policy_file"
 
 # Debug mode: show generated policy
