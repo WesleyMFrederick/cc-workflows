@@ -23,6 +23,11 @@ Reason: Semantic search produces more relevant results than regex-based tools.
 - **Use `file` command to validate** - confirms actual image data vs HTML redirect
 - **Example curl:** `curl -sL -A "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36" "<url>" -o /tmp/image.png`
 
+### Hook-Extracted Content (Citation Extractor)
+- **When a PostToolUse hook returns content prefixed with `## Citation:`**, that content is already loaded in context — do NOT re-read, re-verify, or `ls` those files
+- The `citation-extractor.sh` hook auto-extracts linked file content on every `.md` Read
+- Trust hook output — avoid redundant tool calls for files already delivered
+
 ### TypeScript Build Pipeline (Citation Manager)
 - **Source is `.ts`, CLI needs `.js`** - after TS migration, `bin` points to `dist/citation-manager.js`
 - **Build before linking**: `npm run build -w tools/citation-manager` compiles `src/*.ts` → `dist/*.js`
