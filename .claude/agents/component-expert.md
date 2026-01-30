@@ -75,42 +75,63 @@ Use structured format below. Do NOT auto-update documentation.
 
 ## Gap Report Format
 
+Guides document **external-facing contracts only**, following the Modular Design principle of [Black Box Interfaces](../../ARCHITECTURE-PRINCIPLES.md#^black-box-interfaces): expose clean, documented APIs; hide implementation details.
+
+**What to validate and report:**
+- Public method signatures and return types
+- Constructor contracts and dependency injection interfaces
+- Data contracts (input/output types consumed by other components)
+- Behavioral rules that affect public results (e.g., status rules, resolution strategies)
+- Factory functions and public entry points
+
+**What to skip (internal implementation details):**
+- Private/helper methods (unless changing them would break a boundary contract)
+- Internal data transformations between private methods
+- Utility functions only used within the component
+- Line counts or file size changes
+
+**File structure vs. contracts distinction:**
+- The guide's **File Structure tree** lists ALL methods (including helpers) as a navigational map of what's in the file
+- The guide's **Public Contracts section** only documents external-facing methods and types
+- A helper appearing in the file structure tree but NOT in contracts is **correct by design** — do NOT flag this as a gap
+- Mono-file components (e.g., `MarkdownParser.ts`) list helpers inline in the tree; after refactoring to action-based file organization (e.g., `ContentExtractor/`), those helpers become their own files and remain internal unless exported
+
+**Boundary test:** Would changing this method/type break a consumer that depends only on the public API? If no → skip it.
+
 ```markdown
 ## Component Validation Report: [ComponentName]
 
 ### ✅ Validated
 - [List confirmed matches between guide and code]
 - Example: "ParserOutput interface matches documented contract"
-- Example: "All 5 documented methods exist with correct signatures"
+- Example: "All 3 public methods exist with correct signatures"
 
 ### ❌ Gaps Found
+
+#### Contract Mismatches
+| Contract | Documented | Actual | Location |
+|----------|------------|--------|----------|
+| Parser.parse() | returns void | returns Promise<void> | parser.ts:42 |
 
 #### Missing Files (documented but not found)
 | Documented Path | Status |
 |-----------------|--------|
 | path/to/file.ts | NOT FOUND |
 
-#### Missing Documentation (code exists, not in guide)
-| Actual File | Description |
-|-------------|-------------|
-| test/integration/foo.test.js | Integration test not referenced in guide |
-| src/utils/helper.ts | Utility file not documented |
-
-#### Contract Mismatches
-| Contract | Documented | Actual |
-|----------|------------|--------|
-| ParserOutput.foo | string | number |
-| Parser.parse() | returns void | returns Promise<void> |
+#### Undocumented Public Behavior (affects consumers)
+| Behavior | Description | Location |
+|----------|-------------|----------|
+| Cross-dir resolution | Returns warning status, not documented | validator.ts:536 |
 
 #### Undocumented Consumers (from LSP references)
 | File | Usage |
 |------|-------|
-| src/other/consumer.ts | Calls undocumented method |
+| src/other/consumer.ts | Calls undocumented public method |
 
 ### Recommendations
 - [Actionable items for updating guide]
-- Example: "Add test/integration/parser.test.ts to testing strategy"
-- Example: "Update ParserOutput.foo type from string to number"
+- Example: "Update Parser.parse() return type from void to Promise<void>"
+- Example: "Document warning status for cross-directory resolution"
 ```
 
 ## LSP Tool Usage Patterns
@@ -203,6 +224,33 @@ When answering questions about a component:
 - Be specific about what's unclear or contradictory
 - Provide file paths and line numbers
 - Show both guide excerpt and code excerpt
+
+## Pseudocode Section Rules
+
+Guides may contain a `## Pseudocode` section. Apply these rules when validating:
+
+**Keep pseudocode only for:**
+- Non-obvious algorithms (multi-strategy resolution, matching cascades)
+- Complex state machines or decision trees
+- Logic where the "why" isn't clear from the TypeScript source
+
+**Flag for removal if pseudocode covers:**
+- Straightforward orchestration (get items, process each, return)
+- Simple if/else branching or try/catch flows
+- Counter loops or CRUD operations
+- Methods under ~10 lines of actual code
+
+**In gap report, add a Pseudocode Assessment section:**
+
+```markdown
+#### Pseudocode Assessment
+| Method | Verdict | Reason |
+|--------|---------|--------|
+| validateFile | REMOVE | Straightforward orchestration |
+| resolveTargetPath | KEEP | 4-strategy fallback algorithm |
+```
+
+If no pseudocode section exists, do not recommend adding one unless the component contains algorithms that meet the "keep" criteria above.
 
 ## Red Flags - Stop and Report
 

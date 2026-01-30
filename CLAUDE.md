@@ -1,5 +1,15 @@
 # Project Reference
 
+## Search Tools
+ALWAYS use `mgrep` skill for local file/code searching. NEVER use built-in Grep or Glob (for content search) tools.
+
+- **Local file/code search**: `mgrep "query"` or `mgrep "query" path/to/dir`
+- **Limit results**: `mgrep -m 10 "query"`
+
+Reason: Semantic search produces more relevant results than regex-based tools.
+
+---
+
 ## LLM Learnings
 
 ### File Uploads (MCP Tools)
@@ -12,6 +22,12 @@
 - **Verify file type after download** - small files (< 1KB) may be error pages/HTML
 - **Use `file` command to validate** - confirms actual image data vs HTML redirect
 - **Example curl:** `curl -sL -A "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36" "<url>" -o /tmp/image.png`
+
+### TypeScript Build Pipeline (Citation Manager)
+- **Source is `.ts`, CLI needs `.js`** - after TS migration, `bin` points to `dist/citation-manager.js`
+- **Build before linking**: `npm run build -w tools/citation-manager` compiles `src/*.ts` → `dist/*.js`
+- **Re-link after build**: `npm link -w tools/citation-manager` updates the global `citation-manager` CLI
+- **Hook dependency**: The `citation-validator.sh` PostToolUse hook calls `citation-manager` — if CLI is stale, hook silently fails
 
 ---
 
@@ -61,6 +77,9 @@ markdownlint "**/*.md" --fix
 ## Citation Manager
 
 ```bash
+# Build TypeScript and re-link CLI (run after TS changes)
+npm run build -w tools/citation-manager && npm link -w tools/citation-manager
+
 # Validate citations in a file
 citation-manager validate <file-path>
 

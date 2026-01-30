@@ -14,6 +14,9 @@
 		},
 		{
 			"path": "../slack-mcp-server"
+		},
+		{
+			"path": "../../../../.zeroshot"
 		}
 	],
 	"settings": {}

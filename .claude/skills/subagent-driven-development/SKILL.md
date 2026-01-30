@@ -11,6 +11,8 @@ Execute plan by dispatching fresh subagent per task, with code review after each
 
 **Autonomy principle:** Execute ALL tasks without stopping for user input. Only stop on 3 consecutive errors OR all tasks complete. Commits, reviews, and fixes are subagent responsibilities — orchestrator never pauses to ask permission.
 
+**Orchestrator identity:** You are a DISPATCHER, not a researcher. You read TaskList, dispatch subagents, process their results, and loop. Subagents self-gather all context specified in the plan (task details, related files, external references). You NEVER read plan files, gather context, explore code, or check git state yourself.
+
 ## Overview
 
 **vs. Executing Plans (parallel session):**
@@ -35,12 +37,29 @@ Execute plan by dispatching fresh subagent per task, with code review after each
 - Task result files save to `{{epic-or-user-story-folder}}/tasks/` subfolder
 - This pattern applies to BOTH epic-level (`epic{{X}}-{{name}}/tasks/`) AND user-story-level (`us{{X.Y}}-{{name}}/tasks/`) implementations
 
-### 1. Load Plan
+### 1. Loop Through Task List
 
-- Read plan file if not in context window
-- Check it Task list exists for plan
-  - Validate tasks align with plan
-  - If task list does not exist, use `/decompose-plan` skill
+**The orchestrator loop — repeat until all tasks complete or 3 consecutive errors:**
+
+```text
+consecutive_errors = 0
+
+1. Read TaskList
+2. Find next task: first in_progress, then first pending (not blocked)
+3. If no tasks remain → go to Step 6 (Final Review)
+4. Mark task in_progress via TaskUpdate
+5. Dispatch implementation subagent (Step 2)
+6. Dispatch code-reviewer subagent (Step 3)
+7. Cleanup processes (Step 3a)
+8. Handle review feedback (Step 4)
+9. Mark task completed via TaskUpdate
+10. GOTO 1
+```
+
+**Pre-flight check (once, before first loop):**
+- Verify TaskList exists for plan
+  - If not, use `/decompose-plan` skill to create it
+- Do NOT read the plan file yourself — subagents extract their own task context
 
 ### 2. Execute Task with Subagent
 
@@ -57,43 +76,72 @@ Task tool (
   prompt: |
     You are implementing Task {{task-number}} from {{plan-file-path}}.
 
-    Use `citation extract header` tool to extract {{Task N}} context:
+    **Self-gather context (orchestrator does NOT provide this):**
 
+    Extract your task from the plan:
     ```bash
-    npm run citation:extract:header {{plan-file-path}} {{task-number-section-header}}
+    citation-manager extract header {{plan-file-path}} "{{task-header-name}}"
     ```
+
+    Then follow any additional context-gathering steps specified in the task (e.g., pulling GH issues, reading related files).
 
     Your job is to:
     1. Navigate to and work in {{worktree directory | feature-branch if worktree missing}}
     2. Implement exactly what the task specifies
     3. Write tests (following TDD if task says to)
     4. Verify implementation works
-    5. Commit your work
-    6. Clean up test processes (MANDATORY - see below)
-    7. Write results to file
-    8. Report back
+    5. Run diagnostic verification (MANDATORY - see below)
+    6. Commit your work
+    7. Clean up test processes (MANDATORY - see below)
+    8. Write results to file
+    9. Report back
 
     CRITICAL - Test Process Cleanup (Step 6):
     Before writing results, you MUST clean up any test processes you spawned:
 
     ```bash
-    # Check for running vitest processes
-    ps aux | grep -i vitest | grep -v grep
+    # Check for running vitest processes (pgrep works in sandbox; ps does not)
+    pgrep -fl vitest
 
     # If any found, kill them
     pkill -f "vitest" || true
 
     # Verify cleanup succeeded (should return nothing)
-    ps aux | grep -i vitest | grep -v grep
+    pgrep -fl vitest
     ```
 
     NEVER skip this step. Orphaned test processes consume ~14GB memory each.
+
+    CRITICAL - Diagnostic Verification (Step 5):
+    Before committing, you MUST verify zero diagnostic errors.
+
+    For TypeScript projects:
+    ```bash
+    npm run build -w {{workspace-package}}
+    ```
+    If build fails, fix ALL errors before committing. Do NOT commit with TypeScript errors.
+
+    For non-TypeScript projects, use IDE diagnostics:
+    ```
+    mcp__ide__getDiagnostics(uri: "file://{{changed-file}}")
+    ```
+
+    NEVER skip this step. Tests pass at runtime but miss compile-time type errors.
+    Task 4 baseline: subagent committed 3 TS errors (TS2532, TS2339) that tests didn't catch.
+
+    **Rationalizations to reject:**
+    - "Tests pass so it's correct" → Tests don't catch type errors. Build does.
+    - "I'll fix types later" → Later = reviewer catches it = fix subagent = 2x cost.
+    - "Build is slow" → 5 seconds vs full fix cycle. Build every time.
+
+  MANDATORY: Use the `writing-for-token-optimized-and-ceo-scannable-content` skill when writing your review results.
 
     CRITICAL: Write your results to {{epic-or-user-story-folder}}/tasks/task-{{task-number}}-dev-results.md with:
     - Model used for implementation
     - Task number and name
     - What you implemented
     - Tests written and test results
+    - Diagnostic verification results (build output or IDE diagnostics)
     - Files changed
     - Any issues encountered
     - Commit SHA
@@ -115,19 +163,22 @@ Task tool (code-reviewer):
   prompt: |
     You are reviewing Task {{task-number}} implementation.
 
-    MANDATORY: Use the `elements-of-style:writing-clearly-and-concisely` skill when writing your review.
+    MANDATORY: Use the `writing-for-token-optimized-and-ceo-scannable-content` skill when writing your review.
 
     CRITICAL: This is a task-level review. Be concise.
     - Target 10-30 lines for approved tasks
     - Target 30-80 lines for tasks with issues
 
-    CRITICAL: Extract task context from plan using citation tool:
+    **Self-gather context:**
 
+    1. Extract task from plan:
     ```bash
     citation-manager extract header {{plan-file-path}} "{{task-header-name}}"
     ```
 
-    Read implementation results:
+    2. Follow any additional context-gathering steps in the task (e.g., GH issues).
+
+    3. Read implementation results:
     - Dev results: {{epic-or-user-story-folder}}/tasks/task-{{task-number}}-dev-results.md
 
     Your job:
@@ -142,14 +193,14 @@ Task tool (code-reviewer):
     Before writing results, you MUST clean up any test processes you spawned:
 
     ```bash
-    # Check for running vitest processes
-    ps aux | grep -i vitest | grep -v grep
+    # Check for running vitest processes (pgrep works in sandbox; ps does not)
+    pgrep -fl vitest
 
     # If any found, kill them
     pkill -f "vitest" || true
 
     # Verify cleanup succeeded (should return nothing)
-    ps aux | grep -i vitest | grep -v grep
+    pgrep -fl vitest
     ```
 
     NEVER skip this step. Orphaned test processes consume ~14GB memory each.
@@ -283,6 +334,8 @@ Code-reviewer may identify BLOCKING when:
        8. Update implementation plan with specific choice
        9. Write decision document
        10. Report back
+
+    MANDATORY: Use the `writing-for-token-optimized-and-ceo-scannable-content` skill when writing your review.
 
        CRITICAL: Write your decision to {{epic-or-user-story-folder}}/tasks/task-{{task-number}}-arch-decision.md with:
        - Task number and name
@@ -423,28 +476,14 @@ Task tool (general-purpose):
 
 ### Error Tracking
 
-Track consecutive failures per task:
+Error counter resets on each successful task. Increments on failed fix attempts:
 
-```text
-consecutive_errors = 0
-
-For each task:
-  dispatch subagent → review
-  if review = APPROVED:
-    consecutive_errors = 0
-    next task
-  if review = FIX REQUIRED:
-    dispatch fix → re-review
-    if re-review = APPROVED:
-      consecutive_errors = 0
-      next task
-    else:
-      consecutive_errors += 1
-      if consecutive_errors >= 3:
-        STOP — report failures to user
-      else:
-        attempt fix again
-```
+- **APPROVED** → `consecutive_errors = 0`, next task
+- **FIX REQUIRED** → dispatch fix → re-review
+  - Re-review APPROVED → `consecutive_errors = 0`, next task
+  - Re-review FAILED → `consecutive_errors += 1`
+    - If `>= 3` → STOP, report to user
+    - Else → attempt fix again
 
 ### Rationalizations for Stopping Early (REJECT These)
 
@@ -455,6 +494,37 @@ For each task:
 | "Should I proceed?" | Yes. Always. Until done or 3 errors. |
 | "User might want to review" | Code reviewer subagent handles review. Keep going. |
 | "This task was complex, pause" | Complexity is not a stop condition. Next task. |
+
+### Rationalizations for Doing Research (REJECT These)
+
+The orchestrator is a dispatcher. It reads TaskList and dispatches subagents. It does NOT gather context.
+
+| Excuse | Reality |
+|--------|---------|
+| "Let me read the plan first" | Subagent extracts its own task via citation-manager. |
+| "Let me pull additional context" | Subagent self-gathers per plan instructions. |
+| "Let me check what's been done" | TaskList status tells you. Subagent explores if needed. |
+| "I need the BASE_SHA" | Subagent gets its own git state. |
+| "Let me find the tasks folder" | Subagent discovers paths from plan context. |
+| "I need to build context for the prompt" | The prompt template IS the context. Fill in placeholders only. |
+| "Just a quick check" | Quick checks = 500+ tokens wasted. Subagent does it in its own context. |
+
+**What orchestrator knows (from TaskList + task description):**
+- Plan file path
+- Task number and header name
+- GH issue number
+- Results folder path
+- Task status and dependencies
+
+**What orchestrator NEVER does:**
+- ❌ Read plan files (Read tool)
+- ❌ Gather task context (GH issues, related files, etc.)
+- ❌ Explore codebase (Explore subagent for "preparation")
+- ❌ Check git log/status/diff
+- ❌ Read source files
+- ❌ Check folder contents
+
+**All of these are subagent responsibilities.** Orchestrator fills prompt template placeholders and dispatches.
 
 ### 6. Final Review
 
@@ -472,53 +542,49 @@ After final review passes:
 
 ## Example Workflow
 
-```plaintext
-You: I'm using Subagent-Driven Development to execute this plan.
+```text
+You: I'm using Subagent-Driven Development to execute the task list.
 
-[Load plan, create TodoWrite]
+[Read TaskList → Task 3 is next (in_progress)]
+[TaskUpdate: Task 3 → in_progress]
 
-Task 4.1.1: Validation script
+[Dispatch implementation subagent with: plan path, task header, GH issue #1]
+  ← Subagent self-gathers: extracts task from plan, pulls GH issue, implements, commits
+  → Returns: "Implemented, wrote task-3-dev-results.md, SHA abc123"
 
-[Dispatch implementation subagent]
-Subagent: Implemented validation script with 7 checkpoints, wrote task-4.1.1-dev-results.md
+[Dispatch code-reviewer with: plan path, task header, GH issue #1, results folder]
+  ← Reviewer self-gathers: extracts task, pulls issue, reads dev results, reviews diff
+  → Returns: "APPROVED, wrote task-3-review-results.md"
 
-[Get git SHAs, dispatch code-reviewer]
-Reviewer: Read task-4.1.1-dev-results.md, wrote task-4.1.1-review-results.md
-         Strengths: Good test coverage. Issues: None. Ready.
+[Cleanup vitest processes]
+[TaskUpdate: Task 3 → completed]
 
-[Mark Task 4.1.1 complete]
+[Read TaskList → Task 4 is next (pending, now unblocked)]
+[TaskUpdate: Task 4 → in_progress]
 
-Task 4.1.2: Type library
-
-[Dispatch implementation subagent]
-Subagent: Created citationTypes.ts, wrote task-4.1.2-dev-results.md
+[Dispatch implementation subagent with: plan path, task header, GH issue #28]
+  → Returns: "Implemented, wrote task-4-dev-results.md, SHA def456"
 
 [Dispatch code-reviewer]
-Reviewer: Read task-4.1.2-dev-results.md, wrote task-4.1.2-review-results.md
-         Issues (BLOCKING): No architectural decision on type organization pattern
+  → Returns: "FIX REQUIRED — Critical: missing characterization test baseline"
 
-[Launch app-tech-lead]
-App-tech-lead: Evaluated options, wrote task-4.1.2-arch-decision.md
-               Recommendation: Colocation pattern (minor change)
+[Dispatch fix subagent with: plan path, task header, GH issue, review issues]
+  → Returns: "Fixed, wrote task-4-fix-results.md, SHA ghi789"
 
-[Check: arch decision exists, minor change - proceed autonomously]
+[Dispatch code-reviewer for re-review]
+  → Returns: "APPROVED"
 
-[Dispatch fix subagent with arch decision file]
-Fix agent: Read arch decision, reorganized types, wrote task-4.1.2-fix-results.md
+[Cleanup processes]
+[TaskUpdate: Task 4 → completed]
 
-[Dispatch code-reviewer for fixes]
-Reviewer: BLOCKING resolved, implementation matches decision. Approved.
+... [loop continues until all tasks complete] ...
 
-[Mark Task 4.1.2 complete]
-
-...
-
-[After all tasks]
-[Dispatch final code-reviewer]
-Final reviewer: All requirements met, ready to merge
-
+[Dispatch final code-reviewer for entire implementation]
+[Use finishing-a-development-branch skill]
 Done!
 ```
+
+**Key pattern:** Orchestrator only uses TaskList, TaskUpdate, Task (dispatch), and cleanup Bash. All context gathering happens inside subagents.
 
 ## Advantages
 
@@ -546,6 +612,8 @@ Done!
 - Proceed with unfixed Critical issues
 - Dispatch multiple implementation subagents in parallel (conflicts)
 - Implement without reading plan task
+- Read plan files, GH issues, or source code as orchestrator (subagents self-gather)
+- Use Read, Grep, Glob, Bash, or Explore tools for context gathering (dispatcher only)
 
 **Process cleanup rationalizations to reject:**
 - "No processes showing up now" → Verify EVERY time with evidence
