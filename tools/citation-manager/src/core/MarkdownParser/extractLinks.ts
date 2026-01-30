@@ -8,13 +8,17 @@ import { detectExtractionMarker } from "./detectExtractionMarker.js";
  * Type guard for tokens with nested token arrays
  */
 function hasNestedTokens(token: Token): token is Token & { tokens: Token[] } {
-	return "tokens" in token && Array.isArray((token as { tokens?: unknown }).tokens);
+	return (
+		"tokens" in token && Array.isArray((token as { tokens?: unknown }).tokens)
+	);
 }
 
 /**
  * Type guard for link tokens from marked.js
  */
-function isLinkToken(token: Token): token is Token & { href: string; text: string; raw: string } {
+function isLinkToken(
+	token: Token,
+): token is Token & { href: string; text: string; raw: string } {
 	return (
 		token.type === "link" &&
 		typeof (token as any).href === "string" &&
@@ -27,7 +31,10 @@ function isLinkToken(token: Token): token is Token & { href: string; text: strin
  * Find line number and column for a raw match string in content lines.
  * Returns 1-based line, 0-based column.
  */
-function findPosition(raw: string, lines: string[]): { line: number; column: number } {
+function findPosition(
+	raw: string,
+	lines: string[],
+): { line: number; column: number } {
 	for (let i = 0; i < lines.length; i++) {
 		const line = lines[i];
 		if (line === undefined) continue;
@@ -45,15 +52,20 @@ function findPosition(raw: string, lines: string[]): { line: number; column: num
  * Compares: rawPath, anchor, line, column (stricter than fullMatch alone)
  */
 function isDuplicateLink(
-	candidate: { rawPath: string | null; anchor: string | null; line: number; column: number },
-	existingLinks: LinkObject[]
+	candidate: {
+		rawPath: string | null;
+		anchor: string | null;
+		line: number;
+		column: number;
+	},
+	existingLinks: LinkObject[],
 ): boolean {
 	return existingLinks.some(
-		l =>
+		(l) =>
 			l.target.path.raw === candidate.rawPath &&
 			l.target.anchor === candidate.anchor &&
 			l.line === candidate.line &&
-			l.column === candidate.column
+			l.column === candidate.column,
 	);
 }
 
@@ -83,26 +95,39 @@ function isInsideInlineCode(line: string, position: number): boolean {
  * Build a set of line numbers that are inside code blocks.
  * Uses a state machine to track fenced code block boundaries.
  * Lines inside code blocks should be excluded from regex-based link extraction.
+ * Per CommonMark 0.30 Section 4.6: fence types must match (``` closes with ```, ~~~ with ~~~).
  */
 function getCodeBlockLines(lines: string[]): Set<number> {
 	const codeLines = new Set<number>();
 	let inCodeBlock = false;
+	let openingFenceChar: "`" | "~" | null = null;
 
 	for (let i = 0; i < lines.length; i++) {
 		const line = lines[i];
 		if (line === undefined) continue;
 
-		// Check for fence markers (``` or ~~~)
 		const trimmed = line.trim();
-		if (trimmed.startsWith("```") || trimmed.startsWith("~~~")) {
+		const startsWithBackticks = trimmed.startsWith("```");
+		const startsWithTildes = trimmed.startsWith("~~~");
+
+		if (startsWithBackticks || startsWithTildes) {
+			const currentFenceChar = startsWithBackticks ? "`" : "~";
+
 			if (inCodeBlock) {
-				// Closing fence - add this line too
-				codeLines.add(i + 1); // 1-based line number
-				inCodeBlock = false;
+				// Only close if fence type matches opening fence
+				if (currentFenceChar === openingFenceChar) {
+					codeLines.add(i + 1); // 1-based line number
+					inCodeBlock = false;
+					openingFenceChar = null;
+				} else {
+					// Mismatched fence type - treat as content inside code block
+					codeLines.add(i + 1);
+				}
 			} else {
 				// Opening fence
 				codeLines.add(i + 1); // 1-based line number
 				inCodeBlock = true;
+				openingFenceChar = currentFenceChar;
 			}
 		} else if (inCodeBlock) {
 			// We're inside a code block
@@ -121,7 +146,7 @@ function extractLinksFromTokens(
 	tokens: Token[],
 	lines: string[],
 	sourceAbsolutePath: string,
-	links: LinkObject[]
+	links: LinkObject[],
 ): void {
 	const walkTokens = (tokenList: Token[]): void => {
 		for (const token of tokenList) {
@@ -146,7 +171,9 @@ function extractLinksFromTokens(
 
 				// Determine scope and parse anchor
 				const isInternal = href.startsWith("#");
-				const scope = isInternal ? ("internal" as const) : ("cross-document" as const);
+				const scope = isInternal
+					? ("internal" as const)
+					: ("cross-document" as const);
 
 				let rawPath: string | null = null;
 				let anchor: string | null = null;
@@ -181,7 +208,7 @@ function extractLinksFromTokens(
 						lineNum > 0
 							? detectExtractionMarker(
 									lines[lineNum - 1] || "",
-									column + raw.length
+									column + raw.length,
 								)
 							: null,
 				});
@@ -215,11 +242,12 @@ function extractMarkdownLinksRegex(
 	line: string,
 	index: number,
 	sourceAbsolutePath: string,
-	links: LinkObject[]
+	links: LinkObject[],
 ): void {
 	// Pattern for markdown links: [text](path#anchor)
 	// Permissive anchor pattern allows spaces, colons, parens
-	const linkPattern = /\[([^\]]+)\]\(([^)#]+\.md)(?:#((?:[^()]|\([^)]*\))+))?\)/g;
+	const linkPattern =
+		/\[([^\]]+)\]\(([^)#]+\.md)(?:#((?:[^()]|\([^)]*\))+))?\)/g;
 	let match = linkPattern.exec(line);
 	while (match !== null) {
 		const text = match[1] ?? "";
@@ -236,7 +264,7 @@ function extractMarkdownLinksRegex(
 		// Skip if already extracted by token parser using robust deduplication
 		const alreadyExtracted = isDuplicateLink(
 			{ rawPath, anchor, line: index + 1, column: match.index },
-			links
+			links,
 		);
 		if (!alreadyExtracted) {
 			const linkObject = createLinkObject({
@@ -251,7 +279,7 @@ function extractMarkdownLinksRegex(
 				column: match.index,
 				extractionMarker: detectExtractionMarker(
 					line,
-					match.index + fullMatch.length
+					match.index + fullMatch.length,
 				),
 			});
 			links.push(linkObject);
@@ -276,7 +304,7 @@ function extractMarkdownLinksRegex(
 		// Skip if already extracted using robust deduplication
 		const alreadyExtracted = isDuplicateLink(
 			{ rawPath: null, anchor, line: index + 1, column: match.index },
-			links
+			links,
 		);
 		if (!alreadyExtracted) {
 			const linkObject = createLinkObject({
@@ -291,7 +319,7 @@ function extractMarkdownLinksRegex(
 				column: match.index,
 				extractionMarker: detectExtractionMarker(
 					line,
-					match.index + fullMatch.length
+					match.index + fullMatch.length,
 				),
 			});
 			links.push(linkObject);
@@ -300,7 +328,8 @@ function extractMarkdownLinksRegex(
 	}
 
 	// Relative doc links without .md extension: [text](path/to/file#anchor)
-	const relativeDocRegex = /\[([^\]]+)\]\(([^)]*\/[^)#]+)(?:#((?:[^()]|\([^)]*\))+))?\)/g;
+	const relativeDocRegex =
+		/\[([^\]]+)\]\(([^)]*\/[^)#]+)(?:#((?:[^()]|\([^)]*\))+))?\)/g;
 	match = relativeDocRegex.exec(line);
 	while (match !== null) {
 		const filepath = match[2] ?? "";
@@ -320,7 +349,7 @@ function extractMarkdownLinksRegex(
 				// Skip if already extracted using robust deduplication
 				const alreadyExtracted = isDuplicateLink(
 					{ rawPath, anchor, line: index + 1, column: match.index },
-					links
+					links,
 				);
 				if (!alreadyExtracted) {
 					const linkObject = createLinkObject({
@@ -335,7 +364,7 @@ function extractMarkdownLinksRegex(
 						column: match.index,
 						extractionMarker: detectExtractionMarker(
 							line,
-							match.index + fullMatch.length
+							match.index + fullMatch.length,
 						),
 					});
 					links.push(linkObject);
@@ -354,7 +383,7 @@ function extractCiteLinks(
 	line: string,
 	index: number,
 	sourceAbsolutePath: string,
-	links: LinkObject[]
+	links: LinkObject[],
 ): void {
 	const citePattern = /\[cite:\s*([^\]]+)\]/g;
 	let match = citePattern.exec(line);
@@ -380,7 +409,7 @@ function extractCiteLinks(
 			column: match.index,
 			extractionMarker: detectExtractionMarker(
 				line,
-				match.index + match[0].length
+				match.index + match[0].length,
 			),
 		});
 		links.push(linkObject);
@@ -396,7 +425,7 @@ function extractWikiCrossDocLinks(
 	line: string,
 	index: number,
 	sourceAbsolutePath: string,
-	links: LinkObject[]
+	links: LinkObject[],
 ): void {
 	const wikiCrossDocRegex = /\[\[([^#\]]+\.md)(#([^|]+?))?\|([^\]]+)\]\]/g;
 	let match = wikiCrossDocRegex.exec(line);
@@ -423,7 +452,7 @@ function extractWikiCrossDocLinks(
 			column: match.index,
 			extractionMarker: detectExtractionMarker(
 				line,
-				match.index + match[0].length
+				match.index + match[0].length,
 			),
 		});
 		links.push(linkObject);
@@ -439,7 +468,7 @@ function extractWikiInternalLinks(
 	line: string,
 	index: number,
 	sourceAbsolutePath: string,
-	links: LinkObject[]
+	links: LinkObject[],
 ): void {
 	const wikiRegex = /\[\[#([^|]+)\|([^\]]+)\]\]/g;
 	let match = wikiRegex.exec(line);
@@ -465,7 +494,7 @@ function extractWikiInternalLinks(
 			column: match.index,
 			extractionMarker: detectExtractionMarker(
 				line,
-				match.index + match[0].length
+				match.index + match[0].length,
 			),
 		});
 		links.push(linkObject);
@@ -481,7 +510,7 @@ function extractCaretLinks(
 	line: string,
 	index: number,
 	sourceAbsolutePath: string,
-	links: LinkObject[]
+	links: LinkObject[],
 ): void {
 	const caretRegex = /\^([A-Za-z0-9-]+)/g;
 	let match = caretRegex.exec(line);
@@ -511,7 +540,7 @@ function extractCaretLinks(
 				column: match.index,
 				extractionMarker: detectExtractionMarker(
 					line,
-					match.index + match[0].length
+					match.index + match[0].length,
 				),
 			});
 			links.push(linkObject);
@@ -536,7 +565,10 @@ function extractCaretLinks(
  * @param sourcePath - Absolute path to the source file being parsed
  * @returns Array of link objects with { linkType, scope, anchorType, source, target, text, fullMatch, line, column }
  */
-export function extractLinks(content: string, sourcePath: string): LinkObject[] {
+export function extractLinks(
+	content: string,
+	sourcePath: string,
+): LinkObject[] {
 	const links: LinkObject[] = [];
 	const lines = content.split("\n");
 	const sourceAbsolutePath = sourcePath;

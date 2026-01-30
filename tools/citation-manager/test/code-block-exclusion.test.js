@@ -1,6 +1,6 @@
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { describe, expect, it, beforeAll } from "vitest";
+import { beforeAll, describe, expect, it } from "vitest";
 import { createMarkdownParser } from "../src/factories/componentFactory.js";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -32,17 +32,17 @@ describe("extractLinks() — Code Block Exclusion (Issue #39)", () => {
 		// - [docs](./api-docs.md) on line 19 (in javascript code block)
 		// - [Plain Code Block](./should-not-validate.md) on line 32 (in plain code block)
 
-		const allLinks = result.links.filter(l => l.linkType === "markdown");
+		const allLinks = result.links.filter((l) => l.linkType === "markdown");
 		expect(allLinks.length).toBe(2);
 
 		// Check the cross-document link
-		const crossDocLinks = allLinks.filter(l => l.scope === "cross-document");
+		const crossDocLinks = allLinks.filter((l) => l.scope === "cross-document");
 		expect(crossDocLinks.length).toBe(1);
 		expect(crossDocLinks[0].text).toBe("Real Link");
 		expect(crossDocLinks[0].line).toBe(5);
 
 		// Check the internal link
-		const internalLinks = allLinks.filter(l => l.scope === "internal");
+		const internalLinks = allLinks.filter((l) => l.scope === "internal");
 		expect(internalLinks.length).toBe(1);
 		expect(internalLinks[0].target.anchor).toBe("real-section");
 		expect(internalLinks[0].line).toBe(27);
@@ -55,7 +55,7 @@ describe("extractLinks() — Code Block Exclusion (Issue #39)", () => {
 		// The fixture has:
 		// - 1 real markdown link outside code (should be extracted)
 		// - 1 link inside inline code backticks (should be ignored)
-		const markdownLinks = result.links.filter(l => l.linkType === "markdown");
+		const markdownLinks = result.links.filter((l) => l.linkType === "markdown");
 
 		expect(markdownLinks.length).toBe(1);
 		expect(markdownLinks[0].text).toBe("Valid Link");
@@ -67,7 +67,7 @@ describe("extractLinks() — Code Block Exclusion (Issue #39)", () => {
 
 		// Check for internal links (anchors starting with #)
 		const internalLinks = result.links.filter(
-			l => l.scope === "internal" && l.linkType === "markdown"
+			(l) => l.scope === "internal" && l.linkType === "markdown",
 		);
 
 		// Only the real internal link should be extracted, not the ones in code blocks
