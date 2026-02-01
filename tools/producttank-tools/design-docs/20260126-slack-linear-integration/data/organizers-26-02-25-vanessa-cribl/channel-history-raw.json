@@ -1,0 +1,9 @@
+{
+  "server": "slack",
+  "tool": "conversations_history",
+  "error": "MCP error -32603: channel \"#organizers-26-02-25-vanessa-cribl\" not found in empty cache",
+  "issue": {
+    "kind": "other",
+    "rawMessage": "MCP error -32603: channel \"#organizers-26-02-25-vanessa-cribl\" not found in empty cache"
+  }
+}

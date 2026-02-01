@@ -1,0 +1,61 @@
+{
+  "channel_id": "C0A1XLFQZLJ",
+  "channel_name": "#organizers-26-02-25-vanessa-cribl",
+  "member_count": 6,
+  "fetched_at": "2026-01-30T13:54:00Z",
+  "message_count": 38,
+  "date_range": {
+    "oldest": "2025-12-06T00:58:57Z",
+    "newest": "2026-01-27T03:18:22Z"
+  },
+  "threads": [
+    {
+      "thread_ts": "1769483902.589269",
+      "subject": "DRI/Status as of 1/26/26",
+      "author": "Jerry Young",
+      "date": "2026-01-27T03:18:22Z"
+    },
+    {
+      "thread_ts": "1769459108.097719",
+      "subject": "Video editing experiment with AI tools",
+      "author": "Jerry Young",
+      "date": "2026-01-26T20:25:08Z"
+    },
+    {
+      "thread_ts": "1769458321.350549",
+      "subject": "A/V: Cribl recording → MTP upload process",
+      "author": "Karsh",
+      "date": "2026-01-26T20:12:01Z"
+    },
+    {
+      "thread_ts": "1769189335.778509",
+      "subject": "DRI assignment for Feb/March events",
+      "author": "Jerry Young",
+      "date": "2026-01-23T17:28:55Z"
+    },
+    {
+      "thread_ts": "1769187180.337389",
+      "subject": "Scheduling: Avoid Lenny's meetup conflict?",
+      "author": "Karsh",
+      "date": "2026-01-23T16:53:00Z"
+    },
+    {
+      "thread_ts": "1769182093.557599",
+      "subject": "Date confirmation: 2/18 vs 2/25 with Cribl",
+      "author": "Melissa Hsu",
+      "date": "2026-01-23T15:28:13Z"
+    },
+    {
+      "thread_ts": "1768075812.373719",
+      "subject": "Setup: Cribl venue/sponsor, Meetup page by 1/21",
+      "author": "Melissa Hsu",
+      "date": "2026-01-10T20:10:12Z"
+    },
+    {
+      "thread_ts": "1766509201.648629",
+      "subject": "Speaker topic selection (strategy focus)",
+      "author": "Melissa Hsu",
+      "date": "2025-12-23T17:00:01Z"
+    }
+  ]
+}
