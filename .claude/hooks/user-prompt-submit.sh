@@ -25,11 +25,11 @@ sync_session() {
 
   # Create status file if missing
   if [[ ! -f "$STATUS_FILE" ]]; then
-    echo '{"active_sessions": {}, "max_sessions": 5}' > "$STATUS_FILE"
+    echo '{"active_sessions": {}, "max_sessions": 15}' > "$STATUS_FILE"
   fi
 
   timestamp=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
-  max_sessions=$(jq -r '.max_sessions // 5' "$STATUS_FILE" 2>/dev/null)
+  max_sessions=$(jq -r '.max_sessions // 15' "$STATUS_FILE" 2>/dev/null)
   session_count=$(jq -r '.active_sessions | length' "$STATUS_FILE" 2>/dev/null)
 
   # Check if session exists

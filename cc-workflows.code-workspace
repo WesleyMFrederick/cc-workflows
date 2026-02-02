@@ -17,6 +17,9 @@
 		},
 		{
 			"path": "../everything-claude-code"
+		},
+		{
+			"path": "../cc-workflows.worktree.ptsf-tools"
 		}
 	],
 	"settings": {}

@@ -1,18 +1,17 @@
 ---
 name: writing-requirements-documents
-description: Use when creating requirements documents, PRDs, or epics with user stories - ensures Obsidian block anchors, wiki links for traceability, and citation-manager validation for link integrity
+description: Use when creating requirements documents or PRDs - ensures Obsidian block anchors, wiki links for traceability, and citation-manager validation for link integrity
 ---
 
 # Writing Requirements Documents
 
-Create requirements documents with Obsidian-native linking (block anchors + wiki links) and mandatory link validation.
+Create PRDs with Obsidian-native linking (block anchors + wiki links) and mandatory link validation.
 
 ## When to Use
 
 Use this skill when:
 - Creating new PRD (Product Requirements Document)
 - Writing functional/non-functional requirements
-- Documenting epics with user stories
 - Adding acceptance criteria that need traceability
 - Any requirements documentation needing cross-references
 
@@ -27,13 +26,12 @@ Use this skill when:
 |---------|-----------|--------------|-------------------|
 | Functional Requirement | FR1, FR2... | `^FR1` | `[[#^FR1\|FR1]]` |
 | Non-Functional Requirement | NFR1, NFR2... | `^NFR1` | `[[#^NFR1\|NFR1]]` |
-| Epic (header-based) | Epic 1, Epic 2... | None | `[[#Epic 1 - Name\|Epic 1]]` |
-| User Story (header-based) | Story 1.1, 1.2... | None | `[[#Story 1.1 Title\|Story 1.1]]` |
-| Acceptance Criteria | AC within story | `^US1-1AC1` | `[[#^US1-1AC1\|AC1]]` |
+| Acceptance Criteria (in Sequencing docs) | AC1, AC2... | `^AC1` | `[[#^AC1\|AC1]]` with `([[#^FR1\|FR1]])` traceability |
+| Draft AC (in whiteboards) | AC-draft-1... | `^AC-draft-1` | Promoted to `^AC1` in Sequencing phase |
 
 **Link Types:**
 - **Internal wiki link to block anchor**: `[[#^FR1|FR1]]` - For requirements/ACs
-- **Internal wiki link to header**: `[[#Story 1.1 Title|Story 1.1]]` - For epics/stories
+- **Internal wiki link to header**: `[[#Requirements|Requirements]]` - For sections
 - **Internal markdown link**: `[Requirements](#requirements)` - Alternative for headers
 - **Cross-document link**: `[Architecture](../design-docs/Architecture.md)` - Always use markdown syntax
 
@@ -95,7 +93,37 @@ Related Requirements: REQ-F1, REQ-NF1  <!-- Plain text, not clickable -->
 - FR3: The system MAY cache validation results for performance. ^FR3
 ```
 
-### 4. Reference Template PRD
+### 4. Follow JTBD → FR → AC Layering
+
+**Conceptual model source:** `.claude/agents/product-manager.md` (Requirements Pipeline section)
+
+Requirements follow a three-layer structure that progresses from motivation to specification to verification:
+
+**JTBD (Job To Be Done) — Why:**
+- Captured in **Overview/Business Value** section of PRD
+- Explains user needs and business outcomes
+- No block anchors needed (contextual, not referenced)
+
+**FR (Functional Requirement) — What:**
+- Listed in **Requirements** section with block anchors: `^FR1`, `^FR2`
+- Outcome-oriented and testable
+- NOT implementation details
+
+**Success Criteria — How you'll know the feature works:**
+- Already exists in PRD **Overview** section
+- High-level, outcome-focused verification
+- NOT the same as detailed Acceptance Criteria
+
+**Acceptance Criteria (AC) — Detailed test conditions:**
+- **Do NOT belong in PRD** — emerge during Design/Sequencing phases
+- During whiteboarding, capture draft ACs as `^AC-draft-1`, `^AC-draft-2`
+- Formalized in **Sequencing Document** with `^AC1`, `^AC2` anchors
+- Each AC must trace back to an FR: `([[#^FR1|FR1]])`
+- ACs become literal test cases during Implementation phase
+
+**Why this matters:** PRDs are high-level and generic. Detailed, testable ACs require system context that only exists after Design. Don't force premature precision.
+
+### 5. Reference Template PRD
 
 Before writing, use citation-manager to extract template sections:
 
@@ -103,13 +131,63 @@ Before writing, use citation-manager to extract template sections:
 # Extract Requirements section
 npm run citation:extract:header /path/to/template-prd.md -- "Requirements"
 
-# Extract Epic with user stories
-npm run citation:extract:header /path/to/template-prd.md -- "Epic 1"
+# Extract Acceptance Criteria
+npm run citation:extract:header /path/to/template-prd.md -- "Acceptance Criteria"
 ```
 
-**Template Source:** `/Users/wesleyfrederick/Documents/ObsidianVaultNew/0_SoftwareDevelopment/claude-code-knowledgebase/design-docs/features/version-based-analysis/version-based-analysis-prd.md`
+**Template Source:** `/Users/wesleyfrederick/Documents/ObsidianVault/0_SoftwareDevelopment/cc-workflows/tools/citation-manager/design-docs/features/20251119-type-contract-restoration/typescript-migration-prd.md`
 
-## Document Structure
+## PRD Document Structure
+
+A PRD follows this section structure:
+
+```text
+- Overview (Business Value, Success Criteria)
+- Scope (In Scope / Out of Scope)
+- Requirements (FR + NFR with block anchors)
+- Non-Goals
+- Dependencies (Technical, Knowledge, Process)
+- Risks & Mitigations
+- Acceptance Criteria (with block anchors)
+- References (Context Docs, Architecture Standards, Technical Baseline)
+```
+
+### Overview Section
+
+```markdown
+## Overview
+
+[1-2 sentence description of what this PRD covers and why.]
+
+### Business Value
+
+- **[Category]**: [Concrete benefit]
+- **[Category]**: [Concrete benefit]
+
+### Success Criteria
+
+**[Feature/Migration] complete when:**
+- [Measurable criterion 1]
+- [Measurable criterion 2]
+- [Measurable criterion 3]
+```
+
+### Scope Section
+
+```markdown
+## Scope
+
+### In Scope
+
+**[Category]:**
+- [Specific deliverable or activity]
+- [Specific deliverable or activity]
+
+### Out of Scope
+
+- [Explicitly excluded item]
+- [Explicitly excluded item]
+```
 
 ### Requirements Section
 
@@ -123,31 +201,84 @@ npm run citation:extract:header /path/to/template-prd.md -- "Epic 1"
 
 ### Non-Functional Requirements
 
-- NFR1: [Quality attribute like performance, security]. ^NFR1
-- NFR2: [Maintainability, scalability requirement]. ^NFR2
+#### Quality Requirements
+
+- NFR1: The system SHALL NOT [constraint]. ^NFR1
+- NFR2: [Quality attribute] SHALL [measurable target]. ^NFR2
+
+#### Maintainability Requirements
+
+- NFR3: [Maintainability requirement]. ^NFR3
+
+#### Process Requirements
+
+- NFR4: [Process constraint or workflow requirement]. ^NFR4
 ```
 
-### Epic with User Stories
+### Non-Goals Section
 
 ```markdown
-## Epic 1 - [Epic Name]
+## Non-Goals
 
-[Epic description and business value]
+Explicitly **out of scope** for this effort:
 
-### Story 1.1: [Story Title]
+- **[Category]**: [Why this is excluded]
+- **[Category]**: [Why this is excluded]
+```
 
-**As a** [role],
-**I want** [capability],
-**so that** [business value].
+### Dependencies Section
 
-#### Acceptance Criteria
+```markdown
+## Dependencies
 
-1. WHEN [condition], THEN the system SHALL [expected behavior]. ^US1-1AC1
-2. IF [condition], THEN the system shall [behavior]. ^US1-1AC2
+### Technical Dependencies
 
-*Depends On*: None
-*Functional Requirements*: [[#^FR1|FR1]], [[#^FR2|FR2]]
-*Non-Functional Requirements*: [[#^NFR1|NFR1]]
+- [Technology/tool and version requirement]
+- [Existing infrastructure dependency]
+
+### Knowledge Dependencies
+
+- [Documentation or expertise needed]
+- [Understanding of existing systems]
+
+### Process Dependencies
+
+- [Workflow or process requirement]
+- [Team or organizational dependency]
+```
+
+### Risks & Mitigations Section
+
+```markdown
+## Risks and Mitigations
+
+### Risk 1: [Risk Title]
+**Impact**: [What happens if this risk materializes]
+**Mitigation**: [How to prevent or address it]
+
+### Risk 2: [Risk Title]
+**Impact**: [What happens if this risk materializes]
+**Mitigation**: [How to prevent or address it]
+```
+
+**Note:** PRDs do NOT include detailed Acceptance Criteria sections. The **Success Criteria** in the Overview section serves as the high-level completion criteria. Detailed, testable ACs emerge during the Design/Sequencing phase when system context is available.
+
+### References Section
+
+```markdown
+## References
+
+### Context Documents
+
+- **[Doc Name]**: [link](path/to/doc.md) - [Brief description]
+
+### Architecture Standards
+
+- **[Principle Name]**: [link](path/to/ARCHITECTURE-PRINCIPLES.md#Section) - [Why relevant]
+
+### Technical Baseline
+
+- **[Baseline Name]**: [Commit hash or version] - [What it represents]
 ```
 
 ## Mandatory Validation Checklist
@@ -171,7 +302,11 @@ After writing requirements documentation, create TodoWrite todos for:
 | Missing block anchors | Cannot create precise links | Add `^FR1` at end of line |
 | "Portability" rationalization | We use Obsidian for linked docs | Wiki links are our standard |
 | Skipping validation | Broken links in docs | Run citation-manager validate |
-| Wrong ID format (REQ-F1) | Inconsistent with templates | Use FR1, NFR1, US1.1 |
+| Wrong ID format (REQ-F1) | Inconsistent with templates | Use FR1, NFR1, AC1 |
+| Missing Non-Goals section | Scope creep without boundaries | Always document what's excluded |
+| Requirements without categories | Hard to navigate large PRDs | Group NFRs by Quality, Maintainability, Process |
+| ACs in PRD instead of Sequencing | Violates progressive disclosure | PRD gets Success Criteria; ACs formalize in Sequencing |
+| ACs without FR traceability | Can't verify which requirement is satisfied | Add `([[#^FR1\|FR1]])` to each AC |
 
 ## Red Flags
 
@@ -182,6 +317,9 @@ After writing requirements documentation, create TodoWrite todos for:
 🚩 "Plain text is more portable"
 🚩 Skipping citation-manager validate step
 🚩 Using inconsistent ID formats
+🚩 Missing Non-Goals or Scope sections
+🚩 Detailed acceptance criteria in PRD (use Success Criteria instead)
+🚩 Acceptance criteria without FR traceability links
 
 ## Common Rationalizations (And Why They're Wrong)
 
@@ -189,11 +327,11 @@ After writing requirements documentation, create TodoWrite todos for:
 |----------------|--------------------------|-----------|
 | "Plain text IDs are more portable for export to Word/PDF" | Requirements docs often get exported | We use Obsidian specifically for linked documentation. Portability is not our goal—traceability is. |
 | "Easier to reference REQ-F1 in conversations" | Plain text feels simpler | Wiki links display as text (FR1) but provide navigation. No conversation difference, huge usability gain. |
-| "This follows professional agile standards" | Generic requirements patterns | Professional ≠ Obsidian-optimized. We have specific standards for our workflow. |
+| "This follows professional standards" | Generic requirements patterns | Professional ≠ Obsidian-optimized. We have specific standards for our workflow. |
 | "I can validate links manually or write a script" | Automation seems unnecessary | We already have citation-manager. Use it. Manual validation is error-prone. |
 | "Block anchors aren't necessary for simple docs" | Only complex docs need anchors | Every requirement needs traceability from day one. "Simple" docs become complex. |
 | "I'll add the anchors and links later" | Focus on content first | Never happens. Add them now or they'll be missing forever. |
-| "Header links are good enough for stories" | Markdown links work | Yes! Headers can use `[[#Story 1.1 Title\|Story 1.1]]` or `[Story 1.1](#story-11-title)`. This is correct. |
+| "Non-Goals aren't needed for small PRDs" | Seems like overhead | Non-Goals prevent scope creep. Even small PRDs benefit from explicit boundaries. |
 
 ## Example: Before vs After
 
@@ -204,7 +342,7 @@ After writing requirements documentation, create TodoWrite todos for:
 
 **REQ-F1:** System shall export to JSON.
 
-Related User Stories: US-001
+Related: See acceptance criteria in appendix.
 ```
 
 ### After (Correct)
@@ -216,15 +354,17 @@ Related User Stories: US-001
 
 - FR1: The system SHALL export validation reports to JSON format. ^FR1
 
-### User Story Reference
+## Acceptance Criteria
+
+1. **Export**: JSON output matches documented schema. ^AC1
 
 *Functional Requirements*: [[#^FR1|FR1]]
 ```
 
 ## Integration with Other Tools
 
-- **After brainstorming**: Use this skill to formalize design into requirements
-- **Before writing-plans**: Requirements feed into implementation plans
+- **After brainstorming**: Use this skill to formalize design into PRD requirements
+- **Before writing-plans**: PRD requirements feed into implementation plans
 - **With citation-manager**: Always validate links before committing
 
 ---

@@ -147,6 +147,19 @@ graph TD
 3. **Sequencing** (Blue) - Work decomposition, higher detail
 4. **Implementation** (Dark green) - Maximum detail, executable
 
+### Requirements Artifacts Flow Across Phases
+
+Requirements artifacts follow the JTBD → FR → AC layering framework and progressively disclose detail at each phase:
+
+| Phase | JTBD (Why) | FR (What) | AC (How you'll know) |
+|-------|------------|-----------|----------------------|
+| **Phase 1: Requirements/PRD** | Formalized in Overview/Business Value section | Anchored as `^FR1`, `^FR2` in Requirements section | NOT in PRD — Success Criteria (outcome-level) only |
+| **Phase 2: Design** | Referenced from PRD (informs design decisions) | Referenced from PRD using `[[#^FR1\|FR1]]` | Draft ACs may emerge as `^AC-draft-1` in whiteboard |
+| **Phase 3: Sequencing** | Context for prioritization | Drive task ordering and dependencies | Formalized with `^AC1` + FR traceability `([[#^FR1\|FR1]])` |
+| **Phase 4: Implementation** | Informs "why we're doing this" | Validates task coverage | Become literal test cases in implementation plan |
+
+**Key insight:** ACs do NOT belong in PRDs. PRDs have Success Criteria (outcome-level). Detailed testable ACs emerge during Design/Sequencing when system context exists.
+
 ## The Four Phases (Progressive Disclosure)
 
 ### Phase 1: Discovery & Ideation → Requirements
@@ -160,8 +173,14 @@ graph TD
 4. **Problem Framing** - Define the actual problem to solve
 
 **First Output:** **Whiteboard** document (informal, exploratory)
+- May capture draft ACs as `^AC-draft-N` if they emerge during discovery
+- These are exploratory, not formalized yet
 
 **Second Output:** **Requirements Document** (formal, high-level, generic)
+- **JTBD** in Overview/Business Value section (why we're building this)
+- **FRs** anchored as `^FR1`, `^FR2` (what the system must do)
+- **Success Criteria** in Overview section (outcome-level completion criteria)
+- **NO detailed Acceptance Criteria** — those emerge in Phase 3
 
 **Skills used:**
 - `writing-requirements-documents` - Transform whiteboard into formal requirements
@@ -199,6 +218,9 @@ graph TD
    - Feed findings back to hypothesis
 
 **Intermediate Output:** **Whiteboard (Phase 2)** - captures research findings
+- Draft ACs may emerge here as design reveals testable conditions
+- Format: `^AC-draft-N` in Phase 2 whiteboard
+- FRs from PRD are **referenced** using `[[#^FR1|FR1]]`, not redefined
 
 **Final Output:** **Design Document** - system-specific technical design
 
@@ -215,8 +237,8 @@ graph TD
 **Goal:** Decompose design into ordered work units
 
 **Inputs:**
-- Requirements (strong input)
-- Design (strong input)
+- Requirements (strong input) - FRs drive task coverage
+- Design (strong input) - Technical approach informs decomposition
 - Whiteboards (weak input - may or may not be referenced)
 
 **Activities:**
@@ -224,8 +246,13 @@ graph TD
 - Identify dependencies
 - Order tasks for incremental delivery
 - Consider risk, resources, proof-of-concept needs
+- **Formalize Acceptance Criteria** with `^AC1` anchors and FR traceability `([[#^FR1|FR1]])`
+- ACs inform risk analysis (which ACs are riskiest to satisfy?)
 
 **Output:** **Sequencing Document** - work breakdown with ordering rationale
+- Contains formalized ACs with block anchors: `^AC1`, `^AC2`
+- Each AC traces to an FR: `([[#^FR1|FR1]])`
+- ACs are atomic, testable, and drive implementation tasks
 
 **Skills used:** None specific
 
@@ -238,14 +265,18 @@ graph TD
 **Goal:** Maximum detail - every action specified
 
 **Input:** Sequencing Document
+- ACs from Sequencing become the test cases to implement
 
 **Output:** **Task Implementation Plan** - bite-sized tasks (2-5 min each)
+- ACs referenced from Sequencing doc drive test creation
+- Implementation tasks prove ACs are satisfied
 
 **REQUIRED SKILL:** `writing-plans`
 - Each task is one action (TDD cycle)
 - Exact file paths, complete code examples
 - Test commands with expected output
 - Commit after each task
+- **ACs from Sequencing become literal test cases**
 
 **Progressive disclosure level:** Maximum detail - executable instructions
 
@@ -293,7 +324,7 @@ Phase 1: Discovery & Ideation
 - Sense Making: Links break = docs become unreliable
 - Problem Framing: Need automated validation before commit
 Output: Whiteboard with problem understanding
-Output: Requirements Doc (FR1-FR5 with block anchors)
+Output: Requirements Doc (FR1-FR5 with block anchors, Success Criteria)
 Level: HIGH-LEVEL, GENERIC
 
 Phase 2: Research & Design (The Bridge)
@@ -310,7 +341,8 @@ Phase 3: Sequencing
 - Input: Requirements + Design (+ optional whiteboard context)
 - Break into phases: Phase 1 (validation script), Phase 2 (git hook), Phase 3 (tests)
 - Sequence by risk: Prove validation logic first, then integrate
-Output: Sequencing Document with ordered phases
+- Formalize ACs with FR traceability
+Output: Sequencing Document with formalized ACs tracing to FRs
 Level: HIGHER DETAIL, WORK DECOMPOSITION
 
 Phase 4: Implementation Plan
@@ -345,6 +377,8 @@ See [Development Flow Diagram](#Development%20Flow%20Diagram)  for complete flow
 🚩 Treating Requirements as system-specific (they should be generic)
 🚩 Treating Design as generic (it should be adapted to your system)
 🚩 Going straight from Requirements to Implementation (missing 2 layers of disclosure)
+🚩 Detailed ACs in PRD instead of Sequencing
+🚩 ACs without FR traceability links
 
 ## Integration with Other Skills
 
