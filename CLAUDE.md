@@ -146,6 +146,12 @@ npm install <package-name> -w @cc-workflows/tool-name
 npm list --workspaces
 ```
 
+## GitHub CLI (`gh`)
+ALWAYS use `-R WesleyMFrederick/cc-workflows` flag with `gh` commands. The sandbox proxy configuration means `gh` cannot auto-detect the repo from git remotes.
+
+- **Example:** `gh pr view 72 -R WesleyMFrederick/cc-workflows`
+- **Example:** `gh issue list -R WesleyMFrederick/cc-workflows`
+
 ## Linear.app Integration
 ALWAYS use `linear-cli` for Linear.app operations. NEVER use Linear MCP tools.
 
