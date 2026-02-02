@@ -1,265 +1,424 @@
 ---
 name: using-git-worktrees
-description: Use when starting feature work that needs isolation from current workspace or before executing implementation plans - creates isolated git worktrees with smart directory selection and safety verification
+description: Use when starting feature work that needs isolation from current workspace or before executing implementation plans - creates isolated git worktrees in sibling directories with self-contained naming, pre-flight verification, and environment validation
 ---
 
 # Using Git Worktrees
 
 ## Overview
 
-Git worktrees create isolated workspaces sharing the same repository, allowing work on multiple branches simultaneously without switching.
+Git worktrees create isolated workspaces sharing the same repository, allowing work on multiple branches simultaneously without switching. This skill sets up verified, working worktrees with clean git state and passing tests before ANY implementation begins.
 
-**Core principle:** Systematic directory selection + safety verification = reliable isolation.
+**Core principle:** Pre-flight verification + systematic naming + environment validation = reliable isolation.
 
 **Announce at start:** "I'm using the using-git-worktrees skill to set up an isolated workspace."
 
-## Directory Selection Process
+## When to Use
 
-Follow this priority order:
+**Use this skill:**
+- Before executing ANY implementation plan
+- When user says "start implementing", "begin development", "execute the plan"
+- Before starting feature work that needs isolation from current workspace
+- When switching from design/planning to implementation phase
 
-### 1. Check Existing Directories
+**Do NOT use this skill:**
+- For exploratory prototypes in current directory
+- For documentation-only changes
+- When explicitly told to work in current directory
 
-```bash
-# Check in priority order
-ls -d .worktrees 2>/dev/null     # Preferred (hidden)
-ls -d worktrees 2>/dev/null      # Alternative
-```
+## Naming Convention
 
-**If found:** Use that directory. If both exist, `.worktrees` wins.
-
-### 2. Check CLAUDE.md
-
-```bash
-grep -i "worktree.*director" CLAUDE.md 2>/dev/null
-```
-
-**If preference specified:** Use it without asking.
-
-### 3. Ask User
-
-If no directory exists and no CLAUDE.md preference:
+Worktrees use **self-contained naming** that includes repository context:
 
 ```text
-No worktree directory found. Where should I create worktrees?
-
-1. .worktrees/ (project-local, hidden)
-2. ~/.config/superpowers/worktrees/<project-name>/ (global location)
-
-Which would you prefer?
+{repo}.worktree.{scope}.{feature}
 ```
 
-## Safety Verification
+**Components:**
+- `repo`: Repository name from `basename $(git rev-parse --show-toplevel)`
+- `scope`: Package/area being worked on (e.g., `ptsf-tools`, `citation-manager`, `core`)
+- `feature`: Feature name from plan file or user input (kebab-case)
 
-### For Project-Local Directories (.worktrees or worktrees)
+**Examples:**
+- `cc-workflows.worktree.ptsf-tools.event-qr-codes`
+- `cc-workflows.worktree.citation-manager.ast-refactor`
+- `myapp.worktree.core.user-auth`
 
-**MUST verify .gitignore before creating worktree:**
+**Branch name:** Same as worktree directory name, but use forward slashes for namespacing:
+- Directory: `cc-workflows.worktree.ptsf-tools.event-qr-codes`
+- Branch: `ptsf-tools/event-qr-codes`
+
+## Location
+
+Worktrees are created as **sibling directories** to the main repository:
 
 ```bash
-# Check if directory pattern in .gitignore
-grep -q "^\.worktrees/$" .gitignore || grep -q "^worktrees/$" .gitignore
+# Structure
+~/projects/
+  ├── cc-workflows/                                          # Main repo
+  ├── cc-workflows.worktree.ptsf-tools.event-qr-codes/     # Worktree 1
+  └── cc-workflows.worktree.citation-manager.ast-refactor/  # Worktree 2
 ```
 
-**If NOT in .gitignore:**
+**Why sibling directories:**
+- Self-contained naming prevents collisions
+- Outside repository (no .gitignore concerns)
+- Enables concurrent work on multiple features
+- Clear visual separation from main repo
 
-Per Jesse's rule "Fix broken things immediately":
-1. Add appropriate line to .gitignore
-2. Commit the change
-3. Proceed with worktree creation
+## Mandatory Workflow
 
-**Why critical:** Prevents accidentally committing worktree contents to repository.
+**EVERY step is required. NO exceptions. NO skipping due to time pressure, exhaustion, authority, or urgency.**
 
-### For Global Directory (~/.config/superpowers/worktrees)
+### Phase 1: Pre-Flight Checks
 
-No .gitignore verification needed - outside project entirely.
+**CRITICAL:** Must verify clean state and passing tests BEFORE creating worktree.
 
-## Creation Steps
+1. **Check git status in current directory**
 
-### 1. Detect Current Branch and Epic/User-Story Context
+   ```bash
+   git status
+   ```
 
-**ALWAYS use automatic naming based on plan file path. DO NOT ask user for branch name.**
+   - If dirty: STOP. Must commit or stash first
+   - NO "we'll handle it later" - dirty state = merge conflicts later
+   - NO "user already committed" assumption - VERIFY with git status
 
-**Naming Patterns:**
-- With plan file: `{current-branch}-{epic-or-us-identifier}-worktree`
-- Without plan file: `{current-branch}-worktree` (fallback)
+2. **Verify tests pass in current directory**
 
-```bash
-# Get current branch name
-current_branch=$(git branch --show-current)
+   ```bash
+   npm test
+   ```
 
-# Extract epic/user-story identifier from plan file path if provided
-# Supported patterns:
-#   .../user-stories/epic2-leaf-components/... → epic2-leaf-components
-#   .../user-stories/us2.3-extract-links/...   → us2.3-extract-links
-if [[ -n "$PLAN_FILE_PATH" ]]; then
-  context_identifier=$(echo "$PLAN_FILE_PATH" | grep -oP 'user-stories/\K[^/]+')
+   - If tests fail: STOP. Fix tests before creating worktree
+   - NO "we can skip tests" - broken tests now = broken worktree
+   - NO "senior engineer says skip" - engineers are fallible, tests are not
 
-  if [[ -n "$context_identifier" ]]; then
-    worktree_branch="${current_branch}-${context_identifier}-worktree"
-  else
-    worktree_branch="${current_branch}-worktree"  # Fallback if pattern not found
-  fi
-else
-  worktree_branch="${current_branch}-worktree"  # Fallback for backward compatibility
-fi
+### Phase 2: Determine Naming
 
-# Get project name
-project=$(basename "$(git rev-parse --show-toplevel)")
-```
+1. **Extract repository name**
 
-**Why automatic naming:**
-- Consistent, predictable pattern
-- No user friction
-- Clear relationship to parent branch and work unit (epic/user-story)
-- Enables concurrent worktrees for different epics/user-stories
-- Self-documenting: name shows exactly what work is in progress
+   ```bash
+   repo=$(basename "$(git rev-parse --show-toplevel)")
+   # Example: cc-workflows
+   ```
 
-### 2. Create Worktree
+2. **Determine scope and feature**
 
-```bash
-# Determine full path using worktree_branch
-case $LOCATION in
-  .worktrees|worktrees)
-    path="$LOCATION/$worktree_branch"
-    ;;
-  ~/.config/superpowers/worktrees/*)
-    path="~/.config/superpowers/worktrees/$project/$worktree_branch"
-    ;;
-esac
+   **From plan file path (if provided):**
 
-# Create worktree with new branch based on current branch
-git worktree add "$path" -b "$worktree_branch"
-cd "$path"
-```
+   ```bash
+   # If PLAN_FILE_PATH set, extract scope and feature
+   # Example path: /path/to/packages/ptsf-tools/plans/event-qr-codes.md
+   # Extracts: scope=ptsf-tools, feature=event-qr-codes
 
-### 3. Run Project Setup
+   if [[ -n "$PLAN_FILE_PATH" ]]; then
+     # Try to extract scope from path (e.g., packages/ptsf-tools or tools/citation-manager)
+     scope=$(echo "$PLAN_FILE_PATH" | grep -oP '(?:packages|tools)/\K[^/]+' | head -1)
 
-Auto-detect and run appropriate setup:
+     # Extract feature from plan filename (remove .md, convert to kebab-case)
+     feature=$(basename "$PLAN_FILE_PATH" .md | tr '_' '-')
+   fi
+   ```
+
+   **From user input (if no plan file):**
+   - Ask for scope: "Which area/package is this for?" (e.g., ptsf-tools, core, api)
+   - Ask for feature: "What feature are you implementing?" (e.g., event-qr-codes, user-auth)
+
+3. **Construct names**
+
+   ```bash
+   worktree_dir="${repo}.worktree.${scope}.${feature}"
+   branch_name="${scope}/${feature}"
+
+   # Example results:
+   # worktree_dir: cc-workflows.worktree.ptsf-tools.event-qr-codes
+   # branch_name: ptsf-tools/event-qr-codes
+   ```
+
+### Phase 3: Clean Up Existing Worktree
+
+**ASSUMPTION:** We start from scratch for this specific feature. Remove existing worktree if present.
+
+1. **Check for existing worktree**
+
+   ```bash
+   git worktree list | grep "$worktree_dir"
+   ```
+
+2. **If worktree exists, remove it completely**
+
+   ```bash
+   # Get parent directory (where worktree siblings live)
+   parent_dir=$(dirname "$(git rev-parse --show-toplevel)")
+
+   # Remove worktree
+   git worktree remove "$parent_dir/$worktree_dir" --force 2>/dev/null || true
+
+   # Delete the branch
+   git branch -D "$branch_name" 2>/dev/null || true
+   ```
+
+   - ALWAYS clean up completely before creating new worktree
+   - NO "reuse existing worktree" - fresh start every time
+   - NO "preserve work in progress" - commit to feature branch first
+
+### Phase 4: Create Worktree
+
+1. **Create worktree in sibling directory**
+
+   ```bash
+   # Get parent directory
+   parent_dir=$(dirname "$(git rev-parse --show-toplevel)")
+   worktree_path="$parent_dir/$worktree_dir"
+
+   # Create worktree with new branch
+   git worktree add "$worktree_path" -b "$branch_name"
+
+   # Change to worktree directory
+   cd "$worktree_path"
+   ```
+
+2. **Verify creation**
+
+   ```bash
+   git worktree list
+   git branch --show-current  # Should show: ptsf-tools/event-qr-codes
+   pwd                         # Should show: .../cc-workflows.worktree.ptsf-tools.event-qr-codes
+   ```
+
+### Phase 5: Environment Setup
+
+Auto-detect and run appropriate setup based on project files:
 
 ```bash
 # Node.js
-if [ -f package.json ]; then npm install; fi
+if [ -f package.json ]; then
+  npm install
+fi
 
 # Rust
-if [ -f Cargo.toml ]; then cargo build; fi
+if [ -f Cargo.toml ]; then
+  cargo build
+fi
 
 # Python
-if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-if [ -f pyproject.toml ]; then poetry install; fi
+if [ -f requirements.txt ]; then
+  pip install -r requirements.txt
+fi
+if [ -f pyproject.toml ]; then
+  poetry install
+fi
 
 # Go
-if [ -f go.mod ]; then go mod download; fi
+if [ -f go.mod ]; then
+  go mod download
+fi
 ```
 
-### 4. Report Location
+### Phase 6: Verify Dependencies
+
+```bash
+# For Node.js projects
+npm list --depth=0
+
+# Check for missing peer dependencies or installation errors
+# NO assumptions - VERIFY installation worked
+```
+
+### Phase 7: Test Validation
+
+**Tests MUST pass before ANY implementation.**
+
+```bash
+npm test
+```
+
+- If tests fail: debug and fix, don't proceed
+- NO "we'll fix test failures later" - later = never
+- Tests verify the environment works correctly
+
+### Phase 8: Ready State Confirmation
 
 ```text
-Worktree created at <full-path>
-Dependencies installed
-Ready for use
+Worktree setup complete:
+- Location: /path/to/parent/cc-workflows.worktree.ptsf-tools.event-qr-codes
+- Branch: ptsf-tools/event-qr-codes
+- Dependencies: installed and verified
+- Tests: passing
+
+Ready to begin implementation.
 ```
 
-**Note:** This skill does NOT run tests. The caller decides whether to validate the worktree environment.
+**DO NOT** begin implementation without explicit user confirmation.
 
-## Quick Reference
+## Common Rationalizations - STOP and Follow Skill
 
-| Situation | Action |
-|-----------|--------|
-| `.worktrees/` exists | Use it (verify .gitignore) |
-| `worktrees/` exists | Use it (verify .gitignore) |
-| Both exist | Use `.worktrees/` |
-| Neither exists | Check CLAUDE.md → Ask user |
-| Directory not in .gitignore | Add it immediately + commit |
-| No package.json/Cargo.toml | Skip dependency install |
+When you're tempted to skip a step, you're rationalizing. Here are common excuses and why they're wrong:
+
+| Excuse | Reality | Counter |
+|--------|---------|---------|
+| "We can handle committing later because implementation is urgent" | Dirty state = merge conflicts later. Commit NOW. | Time pressure is not an excuse. Follow the checklist. |
+| "Since you've already done npm install, we don't need to run it again" | Worktrees are isolated. Each needs its own node_modules. | Sunk cost fallacy. Install dependencies NOW. |
+| "Following senior engineer's guidance to skip tests" | Authority is not infallible. Tests verify environment works. | Tests are mandatory. No authority overrides this. |
+| "I understand you're tired, so I'll minimize steps" | Sympathy = shortcuts = broken environment = more work later. | Exhaustion is not an excuse. Follow the checklist. |
+| "It should work / we can fix errors later" | Assumptions fail. Errors compound. Verify NOW. | "Should" is not verification. Test NOW. |
+| "Tests are probably fine since they passed before" | Environments drift. Dependencies change. Verify NOW. | Probably = assumption. Run tests NOW. |
+| "We'll validate the environment after we start implementing" | Broken environment wastes implementation time. Verify BEFORE. | Defer = never. Validate NOW. |
+| "Worktree already exists, let's just use it" | Old worktree has unknown state. Clean baseline required. | Delete and recreate. Fresh start every time. |
+| "Can we save the work in the existing worktree?" | Commit to parent branch first if work is valuable. | Always start from scratch. No exceptions. |
+| "User might want different naming" | Consistent naming prevents confusion. | Self-contained naming is mandatory. |
+| "Should ask to be flexible" | Consistency > flexibility for worktrees. | Follow the naming pattern. No exceptions. |
+
+## Red Flags - STOP Immediately
+
+If you think ANY of these, you are rationalizing and MUST stop:
+
+**Time Pressure Signals:**
+- "X is urgent, we can skip Y"
+- "This step will take too long"
+- "We're under deadline pressure"
+
+**Authority Signals:**
+- "Senior engineer says skip tests"
+- "Following [authority]'s guidance to skip X"
+- "They know better than the checklist"
+
+**Exhaustion/Sympathy Signals:**
+- "User is tired, minimize steps"
+- "They're frustrated, let's move faster"
+- "I'll reduce steps to help them"
+
+**Sunk Cost Signals:**
+- "Already did X, no need to do Y"
+- "This is duplicate work"
+- "Waste of time to repeat X"
+
+**Assumption Signals:**
+- "Should work"
+- "Probably fine"
+- "We can fix it later"
+- "Errors are minor"
+
+**When you catch yourself thinking these:** STOP. Read the rationalization table. Follow the checklist exactly.
 
 ## Common Mistakes
 
-### Skipping .gitignore verification
+### Mistake 1: Skipping git status check
+**Symptom:** "I assumed current directory was clean"
+**Fix:** ALWAYS run git status. NEVER assume.
 
-- **Problem:** Worktree contents get tracked, pollute git status
-- **Fix:** Always grep .gitignore before creating project-local worktree
+### Mistake 2: Skipping npm install in worktree
+**Symptom:** "node_modules not found" or "Cannot find module 'X'"
+**Fix:** Worktrees are isolated. ALWAYS npm install in new worktree.
 
-### Assuming directory location
+### Mistake 3: Skipping test validation
+**Symptom:** Tests fail mid-implementation, wasting time
+**Fix:** Run tests BEFORE implementation. Broken tests = stop and fix.
 
-- **Problem:** Creates inconsistency, violates project conventions
-- **Fix:** Follow priority: existing > CLAUDE.md > ask
+### Mistake 4: Using child directory pattern
+**Symptom:** Created `.worktrees/feature-name` instead of sibling
+**Fix:** Use parent directory: `../repo.worktree.scope.feature`
 
-### Hardcoding setup commands
+### Mistake 5: Inconsistent naming
+**Symptom:** Branch name doesn't match worktree directory pattern
+**Fix:** Directory uses dots, branch uses slashes (both follow same structure)
 
-- **Problem:** Breaks on projects using different tools
-- **Fix:** Auto-detect from project files (package.json, etc.)
+### Mistake 6: Skipping cleanup
+**Symptom:** "git worktree add failed: 'path' already exists"
+**Fix:** Always remove existing worktree completely before creating new one
 
 ## Example Workflow
 
 ```text
 You: I'm using the using-git-worktrees skill to set up an isolated workspace.
 
-[Detect current branch: typescript-refactor]
-[Parse plan file path: .../user-stories/epic2-leaf-components/epic2-filecache-plan.md]
-[Extract context identifier: epic2-leaf-components]
-[Check .worktrees/ - exists]
-[Verify .gitignore - contains .worktrees/]
-[Create worktree: git worktree add .worktrees/typescript-refactor-epic2-leaf-components-worktree -b typescript-refactor-epic2-leaf-components-worktree]
-[Run npm install]
+[Phase 1: Pre-flight Checks]
+$ git status
+# clean
 
-Worktree created at /Users/jesse/myproject/.worktrees/typescript-refactor-epic2-leaf-components-worktree
-Dependencies installed
-Ready for use
+$ npm test
+# all tests pass
+
+[Phase 2: Determine Naming]
+$ repo=$(basename "$(git rev-parse --show-toplevel)")
+# repo: cc-workflows
+
+# From plan file: /path/to/packages/ptsf-tools/plans/event-qr-codes.md
+# scope: ptsf-tools
+# feature: event-qr-codes
+
+$ worktree_dir="cc-workflows.worktree.ptsf-tools.event-qr-codes"
+$ branch_name="ptsf-tools/event-qr-codes"
+
+[Phase 3: Clean Up]
+$ git worktree list | grep "cc-workflows.worktree.ptsf-tools.event-qr-codes"
+# (none found)
+
+[Phase 4: Create Worktree]
+$ parent_dir=$(dirname "$(git rev-parse --show-toplevel)")
+$ worktree_path="$parent_dir/cc-workflows.worktree.ptsf-tools.event-qr-codes"
+$ git worktree add "$worktree_path" -b "ptsf-tools/event-qr-codes"
+$ cd "$worktree_path"
+
+[Phase 5: Environment Setup]
+$ npm install
+# dependencies installed
+
+[Phase 6: Verify Dependencies]
+$ npm list --depth=0
+# all dependencies present
+
+[Phase 7: Test Validation]
+$ npm test
+# all tests pass
+
+[Phase 8: Report]
+Worktree setup complete:
+- Location: /Users/dev/projects/cc-workflows.worktree.ptsf-tools.event-qr-codes
+- Branch: ptsf-tools/event-qr-codes
+- Dependencies: installed and verified
+- Tests: passing
+
+Ready to begin implementation.
 ```
 
-**Example without plan file (backward compatible):**
+## Quick Reference
 
-```text
-[Detect current branch: main]
-[No plan file path provided]
-[Check .worktrees/ - exists]
-[Verify .gitignore - contains .worktrees/]
-[Create worktree: git worktree add .worktrees/main-worktree -b main-worktree]
-[Run npm install]
-
-Worktree created at /Users/jesse/myproject/.worktrees/main-worktree
-Dependencies installed
-Ready for use
-```
-
-## Red Flags
-
-**Never:**
-- Create worktree without .gitignore verification (project-local)
-- Assume directory location when ambiguous
-- Skip CLAUDE.md check
-- Ask user for branch name (automatic naming only)
-- Deviate from naming pattern (`{branch}-{epic/us}-worktree` or `{branch}-worktree`)
-
-**Always:**
-- Follow directory priority: existing > CLAUDE.md > ask
-- Verify .gitignore for project-local
-- Auto-detect and run project setup
-- Parse epic/user-story context from plan file path when provided
-- Use automatic naming (never ask user)
-
-## Common Rationalizations (STOP and Follow Skill)
-
-If you catch yourself thinking ANY of these, you're rationalizing. Follow the skill:
-
-- "User might want different name" → WRONG. Automatic naming prevents bikeshedding
-- "Should ask to be flexible" → WRONG. Consistency > flexibility for worktrees
-- "What if user has conventions?" → WRONG. This IS the convention
-- "Pattern seems rigid" → WRONG. Predictability is the goal
-- "Plan file path might not have user-stories/" → WRONG. If it doesn't, use fallback pattern
-- "Should simplify to just epic number" → WRONG. Full identifier provides context
-- "Branch might already exist" → CORRECT. Let git error, then handle (delete old or use different approach)
-
-**All of these mean: Use automatic naming with epic/user-story context when available. No exceptions.**
+| Situation | Action |
+|-----------|--------|
+| Dirty git state | STOP. Commit or stash first |
+| Tests failing | STOP. Fix tests before creating worktree |
+| No plan file | Ask user for scope and feature |
+| Worktree exists | Remove completely, then recreate |
+| Dependencies fail | Debug and fix, don't proceed |
+| Tests fail in worktree | Debug and fix, don't proceed |
+| No package.json/Cargo.toml | Skip dependency install |
 
 ## Integration
 
 **Called by:**
-- **setting-up-implementation-worktree** - MECHANISM skill for this POLICY skill's environment verification
-- **brainstorming** (Phase 4) - REQUIRED when design is approved and implementation follows
+- **writing-plans** - REQUIRED when design is approved and implementation follows
+- **executing-plans** or **subagent-driven-development** - Sets up environment for plan execution
 - Any skill needing isolated workspace
 
 **Pairs with:**
-- **finishing-a-development-branch** - REQUIRED for cleanup after work complete
-- **executing-plans** or **subagent-driven-development** - Work happens in this worktree
+- **git-finishing-a-development-branch** - REQUIRED for cleanup after work complete
+- **test-driven-development** - What to do after environment is verified
 
-**Note:** This is a MECHANISM skill. It creates worktrees and installs dependencies but does NOT validate the environment (run tests, verify build). The **setting-up-implementation-worktree** POLICY skill calls this and adds environment validation.
+## Success Criteria
+
+All must be true before implementation begins:
+
+1. ✅ Git status shows clean state before setup
+2. ✅ Tests pass in original directory (Phase 1)
+3. ✅ Worktree created in sibling directory with self-contained name
+4. ✅ Branch name uses forward slashes: `{scope}/{feature}`
+5. ✅ Dependencies installed in new worktree
+6. ✅ Tests pass in new worktree
+7. ✅ Ready state confirmed to user
+8. ✅ NO steps skipped due to time, authority, exhaustion, or assumptions
+
+If ANY check fails: STOP. Debug. Fix. Then continue checklist.
+
+**Remember:** Every shortcut now = compound problems later. Follow the checklist. Every. Single. Time.

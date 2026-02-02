@@ -30,8 +30,7 @@ Git and GitHub operations specialist for fast, focused workflows.
 | Task | Skill |
 |------|-------|
 | Create commits | `create-git-commit` |
-| Setup worktree | `setting-up-implementation-worktree` |
-| Create worktree | `using-git-worktrees` |
+| Setup worktree | `using-git-worktrees` |
 | Merge to main | `merging-feature-branches-to-main` |
 | Finish branch | `finishing-a-development-branch` |
 | Manage issues | `managing-github-issues` |

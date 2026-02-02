@@ -168,7 +168,7 @@ When creating skills that build on each other, use this separation pattern:
 - Strict orchestrators enforcing standards
 - Delegates to MECHANISM skills for execution
 - Focus: validation, enforcement, workflow
-- Example: `setting-up-implementation-worktree` (verifies clean state, delegates creation, enforces tests)
+- Example: Task orchestration skills that enforce TDD, code review, and verification steps
 
 **Benefits:**
 - Reusability: MECHANISM skills usable in multiple contexts
@@ -180,21 +180,20 @@ When creating skills that build on each other, use this separation pattern:
 - Strict enforcement needed in some contexts but not others
 - Skills have significant overlap that could be modularized
 
-**Example from worktree skills:**
+**Example - Evolution of worktree skills:**
+
+Originally split as POLICY/MECHANISM, later consolidated into single skill:
 
 ```text
-setting-up-implementation-worktree (POLICY)
-  ├─ Enforces: clean git state, passing tests
-  ├─ Cleans up: existing worktrees
-  ├─ Delegates to: using-git-worktrees (MECHANISM)
-  └─ Validates: dependencies, tests, build after creation
-
-using-git-worktrees (MECHANISM)
-  ├─ Selects: directory location
-  ├─ Creates: worktree with auto-naming
-  ├─ Installs: project dependencies
-  └─ Reports: ready (no test enforcement)
+using-git-worktrees (CONSOLIDATED - current)
+  ├─ Pre-flight: clean git state, passing tests (was POLICY)
+  ├─ Creates: worktree in sibling directory with self-contained naming
+  ├─ Installs: project dependencies (was MECHANISM)
+  ├─ Validates: dependencies installed correctly (was POLICY)
+  └─ Verifies: tests pass in worktree (was POLICY)
 ```
+
+**Why consolidated:** Single responsibility (worktree setup), no need for separation. POLICY/MECHANISM pattern is most valuable when MECHANISM is reused across multiple policies.
 
 ## Directory Structure
 

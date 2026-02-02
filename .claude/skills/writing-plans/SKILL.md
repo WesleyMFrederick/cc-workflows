@@ -113,7 +113,7 @@ After saving the plan, offer execution choice:
 **3. Execute in parallel session** - Open new session with executing-plans, batch execution with checkpoints
 
 **If Worktree Setup chosen:**
-- **REQUIRED SUB-SKILL:** Use setting-up-implementation-worktree
+- **REQUIRED SUB-SKILL:** Use using-git-worktrees
 - After worktree created, offer execution options again:
   - Execute now in this session (Subagent-Driven)
   - Execute later in new session (Parallel Session)
