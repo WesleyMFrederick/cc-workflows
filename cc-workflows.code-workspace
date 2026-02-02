@@ -16,7 +16,7 @@
 			"path": "../slack-mcp-server"
 		},
 		{
-			"path": "../../../../.zeroshot"
+			"path": "../everything-claude-code"
 		}
 	],
 	"settings": {}
