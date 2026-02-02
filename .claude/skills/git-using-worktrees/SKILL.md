@@ -1,5 +1,5 @@
 ---
-name: using-git-worktrees
+name: git-using-worktrees
 description: Use when starting feature work that needs isolation from current workspace or before executing implementation plans - creates isolated git worktrees in sibling directories with self-contained naming, pre-flight verification, and environment validation
 ---
 

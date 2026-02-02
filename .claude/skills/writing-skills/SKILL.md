@@ -162,7 +162,7 @@ When creating skills that build on each other, use this separation pattern:
 - Flexible, reusable building blocks
 - No opinions on when/why to use
 - Focus: technical execution
-- Example: `using-git-worktrees` (creates worktrees, installs deps, reports ready)
+- Example: `git-using-worktrees` (creates worktrees, installs deps, reports ready)
 
 **POLICY Skills** = "When/why to do X"
 - Strict orchestrators enforcing standards
@@ -185,7 +185,7 @@ When creating skills that build on each other, use this separation pattern:
 Originally split as POLICY/MECHANISM, later consolidated into single skill:
 
 ```text
-using-git-worktrees (CONSOLIDATED - current)
+git-using-worktrees (CONSOLIDATED - current)
   ├─ Pre-flight: clean git state, passing tests (was POLICY)
   ├─ Creates: worktree in sibling directory with self-contained naming
   ├─ Installs: project dependencies (was MECHANISM)

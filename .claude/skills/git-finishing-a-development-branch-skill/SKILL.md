@@ -258,4 +258,4 @@ Please investigate manually before removing.
 - **executing-plans** (Step 5) - After all batches complete
 
 **Pairs with:**
-- **using-git-worktrees** - Cleans up worktree created by that skill
+- **git-using-worktrees** - Cleans up worktree created by that skill
