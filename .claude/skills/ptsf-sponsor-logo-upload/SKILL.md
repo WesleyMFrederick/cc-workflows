@@ -1,5 +1,5 @@
 ---
-name: sponsor-logo-upload
+name: ptsf-sponsor-logo-upload
 description: Use when uploading sponsor logos to ProductTank SF Google Drive - downloads image from URL (handles Cloudflare), validates it's actual image data, uploads to Drive folder, returns shareable link
 ---
 
