@@ -142,6 +142,54 @@ Save to: `{{feature-dir}}/2-design-phase/phase2-design-whiteboard.md`
 - **Phase 1 Whiteboard**: [Phase 1 Whiteboard](../1-elicit-discover-sense-make-problem-frame/whiteboard-phase1.md)
 ```
 
+## Two Phase 2 Artifacts
+
+Phase 2 produces two distinct artifacts with different purposes:
+
+### -design.md (Whiteboard + Design Doc)
+- **Purpose:** WHY rationale — documents decision history
+- **Stability:** Stable — survives spec changes
+- **Contains:** Design decisions, rationale, trade-offs discussed
+- **When spec changes:** Design doc explains WHY the change was made
+
+### -spec.md (Implementation Spec)
+- **Purpose:** Current HOW — concrete implementation instructions
+- **Stability:** Evolves — changes in Phase 3 (Sequencing) and Phase 4 (Implementation)
+- **Contains:** Component specs, interfaces, data schemas, port instructions
+- **Format:** XML in codeblock (see Spec Template)
+
+**Relationship:** Design doc provides stable rationale. Spec doc is living implementation guide.
+
+## Draft AC Validation
+
+Phase 1 whiteboards may contain draft ACs (`^AC-draft-N`). Phase 2 must validate ALL of them.
+
+### Process
+
+1. List every draft AC from Phase 1 whiteboard
+2. Review each against design decisions made in Phase 2
+3. Mark status: ✅ Validated | ⚠️ Revised | ❌ Dropped
+4. Document revision rationale inline
+
+### Format in Whiteboard
+
+```markdown
+## Draft AC Validation
+
+**Observation Capture (FR1):**
+
+- AC-draft-1: ✅ Validated
+- AC-draft-2: ✅ Validated
+- AC-draft-3: ⚠️ REVISED — capture ALL tools (not filtered list) per Decision 2
+- AC-draft-4: ✅ Validated
+
+**Performance (NFR1):**
+
+- AC-draft-25: ✅ Validated — jq rewrite supports <100ms target
+```
+
+**Why:** Draft ACs inform sequencing. Unvalidated ACs create downstream confusion.
+
 ## Design Document Structure
 
 Save to: `{{feature-dir}}/{{feature-name}}-design.md` (feature root, NOT nested in `2-design-phase/`)
@@ -252,9 +300,11 @@ After writing design documentation, create TodoWrite todos for:
 | Presenting raw evaluation output | Overwhelms with non-actionable items | Filter through MVP lens first |
 | Nesting design doc in 2-design-phase/ | Design doc is a feature-level artifact | Save to feature root |
 | Design decisions without rationale | Can't understand "why" later | Always document Choice + Rationale |
+| Using tables for linkable items | Obsidian `^anchor` doesn't work on table rows | Use bullet lists with anchors for items needing traceability |
 
 ## Red Flags
 
+- Tables containing items that need to be linked (use bullet lists with `^anchor` instead)
 - Creating more than 2 artifacts (whiteboard + design doc)
 - Design decisions without documented rationale
 - Component designs without file locations

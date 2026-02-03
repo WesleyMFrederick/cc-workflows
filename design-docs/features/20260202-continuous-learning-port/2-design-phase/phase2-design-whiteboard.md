@@ -5,21 +5,18 @@
 **Date**: 2026-02-02
 **Status**: Active
 
+> **Phase 1 Context:**
+> - [Source System Analysis](../1-elicit-discover-sense-make-problem-frame/whiteboard-phase1.md#Source%20System%20Analysis)
+> - [Decisions Made](../1-elicit-discover-sense-make-problem-frame/whiteboard-phase1.md#Decisions%20Made)
+> - [Draft ACs](../1-elicit-discover-sense-make-problem-frame/whiteboard-phase1.md#Draft%20Acceptance%20Criteria)
+>
+> **Requirements:** [PRD](../continuous-learning-port-prd.md)%%force-extract%%
+
 ---
 
-## Baseline: Source System (everything-claude-code)
+## Source System Research Findings
 
-### Component Inventory (Verified)
-
-| Component | File | Lines | Language | Dependencies |
-|-----------|------|-------|----------|--------------|
-| observe.sh | `skills/continuous-learning-v2/hooks/observe.sh` | 153 | Bash + embedded Python3 | python3 (JSON parsing) |
-| instinct-cli.py | `skills/continuous-learning-v2/scripts/instinct-cli.py` | 494 | Python3 | stdlib only (pathlib, json, argparse) |
-| start-observer.sh | `skills/continuous-learning-v2/agents/start-observer.sh` | 135 | Bash | claude CLI (haiku model) |
-| observer.md | `skills/continuous-learning-v2/agents/observer.md` | 138 | Markdown | N/A (agent prompt) |
-| evaluate-session.js | `scripts/hooks/evaluate-session.js` | 79 | Node.js | utils.js (5 functions) |
-| config.json | `skills/continuous-learning-v2/config.json` | 42 | JSON | N/A |
-| utils.js | `scripts/lib/utils.js` | 418 | Node.js (CommonJS) | fs, path, os, child_process |
+> **Component inventory:** See [Phase 1 Source System Analysis](../1-elicit-discover-sense-make-problem-frame/whiteboard-phase1.md#Source%20System%20Analysis)
 
 ### Key Architecture Insight
 
@@ -90,52 +87,30 @@ When rewritten to bash (cc-workflows convention), these become trivial: `wc -l`,
 
 ## Design Decisions
 
-### Decision 1: observe.sh JSON Parsing → jq
+- **D1: observe.sh JSON parsing → jq** — Rewrite embedded Python3 blocks to jq. cc-workflows hooks consistently use jq. The 3 python3 blocks are simple JSON parsing (~30 lines of logic). Low translation risk, high convention consistency. Impact: observe.sh drops from 153 to ~80 lines of pure bash+jq. ^decision-observe-jq _([FR1](../continuous-learning-port-prd.md#^FR1), [FR3](../continuous-learning-port-prd.md#^FR3), [NFR1](../continuous-learning-port-prd.md#^NFR1))_
 
-**Choice:** Rewrite embedded Python3 blocks to jq
-**Rationale:** cc-workflows hooks consistently use jq. The 3 python3 blocks are simple JSON parsing (~30 lines of logic). Low translation risk, high convention consistency.
+- **D2: Instinct CLI location → `.claude/scripts/instinct-cli.js`** — MVP-first single JS file. Port what works. Source is single Python file — keep the same simplicity. Future: migrate to `tools/instinct-cli/` as TypeScript workspace package when justified. ^decision-cli-location
 
-**Impact:** observe.sh drops from 153 lines to ~80 lines of pure bash+jq.
+- **D3: /learn and /instinct-status → Skills** — Create as `.claude/skills/learn/SKILL.md` and `.claude/skills/instinct-status/SKILL.md`. Anthropic merged slash commands into skills system (Jan 2026). Skills are canonical extension mechanism in cc-workflows. Auto-discoverable, can bundle scripts. ^decision-skills
 
-### Decision 2: Instinct CLI Location → `.claude/scripts/instinct-cli.js`
+- **D4: evaluate-session → Standalone Hook** — New `.claude/hooks/evaluate-session.sh`. stop-sync.sh is 100+ lines with its own concerns. Evaluate-session is simple (~30 lines). Single responsibility. Port approach: Rewrite JS to bash (cc-workflows convention). ^decision-evaluate-session
 
-**Choice:** Lightweight single JS file in `.claude/scripts/`
-**Rationale:** MVP-first. Port what works. The source is a single Python file — keep the same simplicity. Refactor to `tools/` workspace package later when justified.
+- **D5: Utils → New `.claude/scripts/lib/learning-utils.js`** — Create new shared JS utility file, add functions as needed during port. instinct-cli.js needs file I/O helpers. Start fresh (don't port 80% unused source utils). Initial functions: ensureDir, readFile, writeFile, appendFile, findFiles, log, output. ^decision-utils
 
-**Future:** When instinct-cli grows or needs tests/types, migrate to `tools/instinct-cli/` as TypeScript workspace package (like citation-manager).
+- **D6: Observer Daemon → Include in Port** — Port start-observer.sh and observer.md. Full pipeline parity. Daemon already optional/disabled-by-default per PRD. Core loop is simple bash. Low risk. Adaptation: path changes (`~/.claude/homunculus/` → `$CLAUDE_PROJECT_DIR/.claude/learned/`). ^decision-observer-daemon
 
-### Decision 3: /learn and /instinct-status → Skills
+---
 
-**Choice:** Create as `.claude/skills/learn/SKILL.md` and `.claude/skills/instinct-status/SKILL.md`
-**Rationale:** Anthropic merged slash commands into skills system (Jan 2026). Skills are the canonical extension mechanism in cc-workflows. Auto-discoverable, can bundle scripts.
+## Requirements Traceability
 
-### Decision 4: evaluate-session → Standalone Hook
-
-**Choice:** New `.claude/hooks/evaluate-session.sh` (standalone)
-**Rationale:** stop-sync.sh is 100+ lines with its own concerns (haiku focus derivation, task scanning, status JSON update). Evaluate-session is simple (~30 lines: count messages, log readiness signal). Single responsibility.
-
-**Port approach:** Rewrite JS to bash (following cc-workflows convention). Source imports 5 utils.js functions — all trivial in bash.
-
-### Decision 5: Utils → New `.claude/scripts/lib/learning-utils.js`
-
-**Choice:** Create new shared JS utility file, add functions as needed during port
-**Rationale:** instinct-cli.js needs file I/O helpers. Start fresh (don't port 80% unused source utils). Build up organically. Useful foundation for future JS tools.
-
-**Initial functions:**
-- `ensureDir(dirPath)` — mkdir recursive
-- `readFile(filePath)` — safe fs.readFileSync
-- `writeFile(filePath, content)` — writeFileSync with ensureDir
-- `appendFile(filePath, content)` — appendFileSync with ensureDir
-- `findFiles(dir, pattern)` — readdirSync + filter
-- `log(message)` — stderr output
-- `output(data)` — stdout output (JSON-aware)
-
-### Decision 6: Observer Daemon → Include in Port
-
-**Choice:** Port start-observer.sh and observer.md
-**Rationale:** Full pipeline parity. Daemon is already optional/disabled-by-default per PRD. Core loop is simple bash (sleep + claude CLI call). Low risk.
-
-**Adaptation:** Path changes (`~/.claude/homunculus/` → `$CLAUDE_PROJECT_DIR/.claude/learned/`). Pass `$CLAUDE_PROJECT_DIR` for project-aware operation.
+| Decision | Satisfies |
+|----------|-----------|
+| [D1](#^decision-observe-jq) | [FR1](../continuous-learning-port-prd.md#^FR1), [FR3](../continuous-learning-port-prd.md#^FR3), [NFR1](../continuous-learning-port-prd.md#^NFR1) |
+| [D2](#^decision-cli-location) | [FR6](../continuous-learning-port-prd.md#^FR6), [FR8](../continuous-learning-port-prd.md#^FR8), [NFR4](../continuous-learning-port-prd.md#^NFR4) |
+| [D3](#^decision-skills) | [FR4](../continuous-learning-port-prd.md#^FR4), [FR5](../continuous-learning-port-prd.md#^FR5), [FR6](../continuous-learning-port-prd.md#^FR6) |
+| [D4](#^decision-evaluate-session) | [FR7](../continuous-learning-port-prd.md#^FR7), [NFR4](../continuous-learning-port-prd.md#^NFR4) |
+| [D5](#^decision-utils) | Supporting — enables [FR6](../continuous-learning-port-prd.md#^FR6), [FR8](../continuous-learning-port-prd.md#^FR8) |
+| [D6](#^decision-observer-daemon) | [FR7](../continuous-learning-port-prd.md#^FR7) |
 
 ---
 
@@ -264,8 +239,92 @@ Port from source with these changes:
 
 ---
 
+## Draft AC Validation
+
+> Source: [Phase 1 Draft ACs](../1-elicit-discover-sense-make-problem-frame/whiteboard-phase1.md#Draft%20Acceptance%20Criteria)
+> Legend: ✅ Validated | ⚠️ Revised | ❌ Dropped
+
+**Observation Capture (FR1):**
+
+- [AC-draft-1](../1-elicit-discover-sense-make-problem-frame/whiteboard-phase1.md#^AC-draft-1): ✅ Validated
+- [AC-draft-2](../1-elicit-discover-sense-make-problem-frame/whiteboard-phase1.md#^AC-draft-2): ✅ Validated
+- [AC-draft-3](../1-elicit-discover-sense-make-problem-frame/whiteboard-phase1.md#^AC-draft-3): ⚠️ **REVISED** — Capture ALL tools via `*` matcher, not filtered list. Analysis phase decides relevance. Per [Resolved Item #2](#Resolved%20Open%20Items).
+- [AC-draft-4](../1-elicit-discover-sense-make-problem-frame/whiteboard-phase1.md#^AC-draft-4): ✅ Validated
+
+**Storage Management (FR2):**
+
+- [AC-draft-5](../1-elicit-discover-sense-make-problem-frame/whiteboard-phase1.md#^AC-draft-5): ✅ Validated
+- [AC-draft-6](../1-elicit-discover-sense-make-problem-frame/whiteboard-phase1.md#^AC-draft-6): ✅ Validated
+
+**Hook Integration (FR3):**
+
+- [AC-draft-7](../1-elicit-discover-sense-make-problem-frame/whiteboard-phase1.md#^AC-draft-7): ✅ Validated — `*` matcher creates independent hook group
+- [AC-draft-8](../1-elicit-discover-sense-make-problem-frame/whiteboard-phase1.md#^AC-draft-8): ✅ Validated — No conflict with existing matchers
+
+**Pattern Extraction (FR4):**
+
+- [AC-draft-9](../1-elicit-discover-sense-make-problem-frame/whiteboard-phase1.md#^AC-draft-9): ✅ Validated — Implemented as skill per [D3](#^decision-skills)
+- [AC-draft-10](../1-elicit-discover-sense-make-problem-frame/whiteboard-phase1.md#^AC-draft-10): ✅ Validated
+
+**Instinct Persistence (FR5):**
+
+- [AC-draft-11](../1-elicit-discover-sense-make-problem-frame/whiteboard-phase1.md#^AC-draft-11): ✅ Validated
+- [AC-draft-12](../1-elicit-discover-sense-make-problem-frame/whiteboard-phase1.md#^AC-draft-12): ✅ Validated — Source values preserved per [NFR6](../continuous-learning-port-prd.md#^NFR6)
+- [AC-draft-13](../1-elicit-discover-sense-make-problem-frame/whiteboard-phase1.md#^AC-draft-13): ✅ Validated
+
+**Instinct Visibility (FR6):**
+
+- [AC-draft-14](../1-elicit-discover-sense-make-problem-frame/whiteboard-phase1.md#^AC-draft-14): ✅ Validated — Implemented as skill per [D3](#^decision-skills)
+- [AC-draft-15](../1-elicit-discover-sense-make-problem-frame/whiteboard-phase1.md#^AC-draft-15): ✅ Validated
+
+**Background Pattern Detection (FR7):**
+
+- [AC-draft-16](../1-elicit-discover-sense-make-problem-frame/whiteboard-phase1.md#^AC-draft-16): ✅ Validated
+- [AC-draft-17](../1-elicit-discover-sense-make-problem-frame/whiteboard-phase1.md#^AC-draft-17): ✅ Validated
+- [AC-draft-18](../1-elicit-discover-sense-make-problem-frame/whiteboard-phase1.md#^AC-draft-18): ✅ Validated
+- [AC-draft-19](../1-elicit-discover-sense-make-problem-frame/whiteboard-phase1.md#^AC-draft-19): ✅ Validated
+- [AC-draft-20](../1-elicit-discover-sense-make-problem-frame/whiteboard-phase1.md#^AC-draft-20): ⚠️ **REVISED** — Stop hook (not SessionEnd) kills daemon. evaluate-session.sh runs on Stop lifecycle.
+- [AC-draft-21](../1-elicit-discover-sense-make-problem-frame/whiteboard-phase1.md#^AC-draft-21): ✅ Validated
+
+**Instinct Portability (FR8):**
+
+- [AC-draft-22](../1-elicit-discover-sense-make-problem-frame/whiteboard-phase1.md#^AC-draft-22): ✅ Validated — CLI at `.claude/scripts/instinct-cli.js` per [D2](#^decision-cli-location)
+- [AC-draft-23](../1-elicit-discover-sense-make-problem-frame/whiteboard-phase1.md#^AC-draft-23): ✅ Validated
+- [AC-draft-24](../1-elicit-discover-sense-make-problem-frame/whiteboard-phase1.md#^AC-draft-24): ✅ Validated
+
+**Performance (NFR1):**
+
+- [AC-draft-25](../1-elicit-discover-sense-make-problem-frame/whiteboard-phase1.md#^AC-draft-25): ✅ Validated — jq rewrite per [D1](#decision-observe-jq) supports <100ms
+
+**Data Integrity (NFR2):**
+
+- [AC-draft-26](../1-elicit-discover-sense-make-problem-frame/whiteboard-phase1.md#^AC-draft-26): ✅ Validated
+
+**Convention Compliance (NFR4):**
+
+- [AC-draft-27](../1-elicit-discover-sense-make-problem-frame/whiteboard-phase1.md#^AC-draft-27): ✅ Validated — jq, not python per [D1](#decision-observe-jq)
+- [AC-draft-28](../1-elicit-discover-sense-make-problem-frame/whiteboard-phase1.md#^AC-draft-28): ✅ Validated
+- [AC-draft-29](../1-elicit-discover-sense-make-problem-frame/whiteboard-phase1.md#^AC-draft-29): ✅ Validated
+
+**Per-Project Scoping (NFR5):**
+
+- [AC-draft-30](../1-elicit-discover-sense-make-problem-frame/whiteboard-phase1.md#^AC-draft-30): ✅ Validated
+
+**Translation Risk (NFR6):**
+
+- [AC-draft-31](../1-elicit-discover-sense-make-problem-frame/whiteboard-phase1.md#^AC-draft-31): ⚠️ **REVISED** — observe.sh python blocks → jq (not "as-is") per [D1](#decision-observe-jq). Low risk rewrite.
+- [AC-draft-32](../1-elicit-discover-sense-make-problem-frame/whiteboard-phase1.md#^AC-draft-32): ✅ Validated
+
+**Configuration (NFR7):**
+
+- [AC-draft-33](../1-elicit-discover-sense-make-problem-frame/whiteboard-phase1.md#^AC-draft-33): ✅ Validated
+
+**Summary:** 30 validated, 3 revised, 0 dropped.
+
+---
+
 ## References
 
-- **PRD**: [PRD](../continuous-learning-port-prd.md)
+- **PRD**: [PRD](../continuous-learning-port-prd.md)%%force-extract%%
 - **Phase 1 Whiteboard**: [Phase 1 Whiteboard](../1-elicit-discover-sense-make-problem-frame/whiteboard-phase1.md)
 - **Source Research**: [Session c0b6ce1f Research](../../20260202-agent-output-capture/1-elicit-discover-sense-make-problem-frame/research/agent-output-c0b6ce1f.md)

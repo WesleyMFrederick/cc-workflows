@@ -1,33 +1,29 @@
-# Continuous Learning Port - Product Requirements Document
+# Continuous Learning Port — PRD
 
-**Feature**: Port Continuous Learning System from everything-claude-code
+**Feature**: Port Continuous Learning System from [`everything-claude-code`](/Users/wesleyfrederick/Documents/ObsidianVault/0_SoftwareDevelopment/everything-claude-code)
 **Created**: 2026-02-02
 **Status**: Draft
-**Owner**: Application Technical Lead
 
 ---
 
 ## Overview
 
-Port the proven continuous learning system from everything-claude-code to cc-workflows, enabling persistent pattern detection, instinct creation, and behavioral memory across sessions. The system captures tool usage via deterministic hooks, detects patterns through manual and optional automated analysis, and stores learned behaviors as confidence-weighted instinct files.
+Port continuous learning from everything-claude-code to cc-workflows. Enables pattern detection, instinct creation, and behavioral memory across sessions.
 
-### Business Value
-
-- **Pattern Retention**: Corrections, workflows, and error resolutions persist across sessions
-- **Compounding Productivity**: Learned instincts inform future behavior without rediscovery
-- **Shareability**: Export/import instincts between projects and team members
-- **Deterministic Capture**: 100% reliable observation via hooks (not probabilistic skills)
-
+**Value:**
+- Corrections/workflows persist across sessions
+- Learned instincts inform future behavior
+- Export/import instincts between projects
+- 100% reliable capture via hooks (not probabilistic)
 ### Success Criteria
 
-**Port complete when:**
-
-- Observation hooks capture tool events without impacting existing hook performance
-- `/learn` command creates instinct YAML files from session patterns
-- `/instinct-status` displays instincts with confidence bars grouped by domain
-- Instinct CLI handles import/export with deduplication and privacy stripping
-- All learned data stored per-project in `.claude/learned/`
-- Observer daemon starts/stops cleanly when opted in (disabled by default)
+**Done when:**
+- Observation hooks capture tool events without impacting performance
+- `/learn` creates instinct YAML from session patterns
+- `/instinct-status` shows instincts with confidence bars by domain
+- Instinct CLI handles import/export with deduplication and privacy
+- All data stored per-project in `.claude/learned/`
+- Observer daemon starts/stops cleanly (opt-in, disabled by default)
 
 ---
 
@@ -61,13 +57,13 @@ Port the proven continuous learning system from everything-claude-code to cc-wor
 
 ### Out of Scope
 
-- `/evolve` command (clustering instincts into skills/commands/agents) — deferred to Phase A.2
-- Session persistence and feature-based context — deferred to Phase B
-- Cross-project instinct synchronization
+- `/evolve` (instinct → skill clustering) — Phase A.2
+- Session persistence, feature linking — Phase B
+- Cross-project instinct sync
 - Confidence decay timer
-- Instinct auto-application during sessions (reading instincts to influence behavior)
-- Adding new features beyond what exists in everything-claude-code
-- Refactoring source system architecture or patterns
+- Instinct auto-application during sessions
+- New features beyond source system
+- Architecture refactoring
 
 ---
 
@@ -130,7 +126,7 @@ Explicitly **out of scope** for this port:
 
 ### Knowledge Dependencies
 
-- Source system architecture (captured in [[1-elicit-discover-sense-make-problem-frame/whiteboard-phase1|Phase 1 Whiteboard]])
+- Source system architecture (captured in [Phase 1 Whiteboard](1-elicit-discover-sense-make-problem-frame/whiteboard-phase1.md))
 - cc-workflows hook conventions and settings.json structure
 - Instinct YAML schema and confidence scoring model
 - Observation JSONL schema
@@ -153,12 +149,12 @@ Explicitly **out of scope** for this port:
 ### Risk 2: Performance Degradation from Observation Overhead
 
 **Impact**: observe.sh adds latency to every tool call, slowing down interactive work
-**Mitigation**: [[#^NFR1|NFR1]] requires no noticeable performance impact; bash script with JSONL append is inherently fast; profile after integration
+**Mitigation**: [NFR1](#^NFR1) requires no noticeable performance impact; bash script with JSONL append is inherently fast; profile after integration
 
 ### Risk 3: Per-Project Storage Creates Disk Bloat
 
 **Impact**: Large projects with heavy tool usage generate oversized observation files
-**Mitigation**: [[#^FR2|FR2]] manages observation storage to prevent unbounded growth; size thresholds and truncation defined in draft ACs
+**Mitigation**: [FR2](#^FR2) manages observation storage to prevent unbounded growth; size thresholds and truncation defined in draft ACs
 
 ### Risk 4: Python → JS Rewrite Introduces Bugs in Instinct CLI
 
@@ -168,7 +164,7 @@ Explicitly **out of scope** for this port:
 ### Risk 5: Observer Daemon Orphaned Processes
 
 **Impact**: Background daemon keeps running after session ends, consuming resources
-**Mitigation**: PID file management; SessionEnd hook kills daemon; [[#^FR7|FR7]] keeps it disabled by default
+**Mitigation**: PID file management; SessionEnd hook kills daemon; [FR7](#^FR7) keeps it disabled by default
 
 ---
 
@@ -176,15 +172,14 @@ Explicitly **out of scope** for this port:
 
 ### Context Documents
 
-- **Whiteboard**: [[1-elicit-discover-sense-make-problem-frame/whiteboard-phase1|Phase 1 Whiteboard]]%%force-extract%% — Discovery, decisions, source/target analysis
-- **Source System Research**: [[1-elicit-discover-sense-make-problem-frame/research/agent-output-c0b6ce1f|Session c0b6ce1f Agent Output]] — Full architecture analysis
-- **Development Workflow**: [Development Workflow Quick Reference](../../../.claude/skills/enforcing-development-workflow/Development%20Workflow%20Quick%20Reference.md) — Progressive disclosure levels
+- **Whiteboard**: [Phase 1 Whiteboard](1-elicit-discover-sense-make-problem-frame/whiteboard-phase1.md)%%force-extract%% — Discovery, decisions, source/target analysis
+- **Development Workflow**: [Development Workflow Quick Reference](<../../../.claude/skills/enforcing-development-workflow/Development Workflow Quick Reference.md>) — Progressive disclosure levels
 
 ### Architecture Standards
 
-- **Data-First Design**: [ARCHITECTURE-PRINCIPLES.md](../../../ARCHITECTURE-PRINCIPLES.md#Data-First%20Design%20Principles) — Observation schema and instinct data model
-- **Modular Design**: [ARCHITECTURE-PRINCIPLES.md](../../../ARCHITECTURE-PRINCIPLES.md#Modular%20Design%20Principles) — Capture/analysis/storage separation
-- **Safety-First Patterns**: [ARCHITECTURE-PRINCIPLES.md](../../../ARCHITECTURE-PRINCIPLES.md#Safety-First%20Design%20Patterns) — Append-only writes, auto-archive
+- **Data-First Design**: [ARCHITECTURE-PRINCIPLES.md](<../../../ARCHITECTURE-PRINCIPLES.md#Data-First Design Principles>) — Observation schema and instinct data model
+- **Modular Design**: [ARCHITECTURE-PRINCIPLES.md](<../../../ARCHITECTURE-PRINCIPLES.md#Modular Design Principles>) — Capture/analysis/storage separation
+- **Safety-First Patterns**: [ARCHITECTURE-PRINCIPLES.md](<../../../ARCHITECTURE-PRINCIPLES.md#Safety-First Design Patterns>) — Append-only writes, auto-archive
 
 ### Source System
 
@@ -210,4 +205,4 @@ Explicitly **out of scope** for this port:
 
 **Total**: ~7 components identified for port (exact sequence and adaptation approach defined in Design document)
 
-**Note**: Specific file mappings, adaptation details, and migration sequence belong in Design documentation per progressive disclosure principle.
+**Note:** File mappings and sequence in Design doc per progressive disclosure.

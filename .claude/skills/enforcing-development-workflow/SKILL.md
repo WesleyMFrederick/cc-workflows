@@ -229,6 +229,23 @@ Requirements artifacts follow the JTBD → FR → AC layering framework and prog
 - FRs from PRD are **referenced** using `[[#^FR1|FR1]]`, not redefined
 - Whiteboard stays in `2-design-phase/` folder
 
+**Phase 2 links to Phase 1 — doesn't repeat content.**
+- Component inventory already in Phase 1? Link to `whiteboard-phase1.md#Source%20System%20Analysis`
+- Decisions already made? Reference them, don't re-document
+- Only add NEW decisions and adaptations in Phase 2
+
+**Use section-specific links between phases.**
+Links should target specific sections for `citation-manager extract header`:
+
+```markdown
+> **Phase 1 Context:**
+> - [Source System Analysis](../1-elicit-discover-sense-make-problem-frame/whiteboard-phase1.md#Source%20System%20Analysis)
+> - [Decisions Made](../1-elicit-discover-sense-make-problem-frame/whiteboard-phase1.md#Decisions%20Made)
+> - [Draft ACs](../1-elicit-discover-sense-make-problem-frame/whiteboard-phase1.md#Draft%20Acceptance%20Criteria)
+```
+
+NOT just `[Phase 1 Whiteboard](../whiteboard-phase1.md)` — section links enable targeted extraction.
+
 **Final Output:** **Design Document** - system-specific technical design
 - Design doc saved to **feature root** directory (not nested in `2-design-phase/`)
 
