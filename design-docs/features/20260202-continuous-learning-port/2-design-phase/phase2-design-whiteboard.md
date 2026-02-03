@@ -89,28 +89,15 @@ When rewritten to bash (cc-workflows convention), these become trivial: `wc -l`,
 
 - **D1: observe.sh JSON parsing → jq** — Rewrite embedded Python3 blocks to jq. cc-workflows hooks consistently use jq. The 3 python3 blocks are simple JSON parsing (~30 lines of logic). Low translation risk, high convention consistency. Impact: observe.sh drops from 153 to ~80 lines of pure bash+jq. ^decision-observe-jq _([FR1](../continuous-learning-port-prd.md#^FR1), [FR3](../continuous-learning-port-prd.md#^FR3), [NFR1](../continuous-learning-port-prd.md#^NFR1))_
 
-- **D2: Instinct CLI location → `.claude/scripts/instinct-cli.js`** — MVP-first single JS file. Port what works. Source is single Python file — keep the same simplicity. Future: migrate to `tools/instinct-cli/` as TypeScript workspace package when justified. ^decision-cli-location
+- **D2: Instinct CLI location → `.claude/scripts/instinct-cli.js`** — MVP-first single JS file. Port what works. Source is single Python file — keep the same simplicity. Future: migrate to `tools/instinct-cli/` as TypeScript workspace package when justified. ^decision-cli-location _([FR6](../continuous-learning-port-prd.md#^FR6), [FR8](../continuous-learning-port-prd.md#^FR8), [NFR4](../continuous-learning-port-prd.md#^NFR4))_
 
-- **D3: /learn and /instinct-status → Skills** — Create as `.claude/skills/learn/SKILL.md` and `.claude/skills/instinct-status/SKILL.md`. Anthropic merged slash commands into skills system (Jan 2026). Skills are canonical extension mechanism in cc-workflows. Auto-discoverable, can bundle scripts. ^decision-skills
+- **D3: /learn and /instinct-status → Skills** — Create as `.claude/skills/learn/SKILL.md` and `.claude/skills/instinct-status/SKILL.md`. Anthropic merged slash commands into skills system (Jan 2026). Skills are canonical extension mechanism in cc-workflows. Auto-discoverable, can bundle scripts. ^decision-skills _([FR4](../continuous-learning-port-prd.md#^FR4), [FR5](../continuous-learning-port-prd.md#^FR5), [FR6](../continuous-learning-port-prd.md#^FR6))_
 
-- **D4: evaluate-session → Standalone Hook** — New `.claude/hooks/evaluate-session.sh`. stop-sync.sh is 100+ lines with its own concerns. Evaluate-session is simple (~30 lines). Single responsibility. Port approach: Rewrite JS to bash (cc-workflows convention). ^decision-evaluate-session
+- **D4: evaluate-session → Standalone Hook** — New `.claude/hooks/evaluate-session.sh`. stop-sync.sh is 100+ lines with its own concerns. Evaluate-session is simple (~30 lines). Single responsibility. Port approach: Rewrite JS to bash (cc-workflows convention). ^decision-evaluate-session _([FR7](../continuous-learning-port-prd.md#^FR7), [NFR4](../continuous-learning-port-prd.md#^NFR4))_
 
-- **D5: Utils → New `.claude/scripts/lib/learning-utils.js`** — Create new shared JS utility file, add functions as needed during port. instinct-cli.js needs file I/O helpers. Start fresh (don't port 80% unused source utils). Initial functions: ensureDir, readFile, writeFile, appendFile, findFiles, log, output. ^decision-utils
+- **D5: Utils → New `.claude/scripts/lib/learning-utils.js`** — Create new shared JS utility file, add functions as needed during port. instinct-cli.js needs file I/O helpers. Start fresh (don't port 80% unused source utils). Initial functions: ensureDir, readFile, writeFile, appendFile, findFiles, log, output. ^decision-utils  _(Supporting: [FR6](../continuous-learning-port-prd.md#^FR6), [FR8](../continuous-learning-port-prd.md#^FR8))_
 
-- **D6: Observer Daemon → Include in Port** — Port start-observer.sh and observer.md. Full pipeline parity. Daemon already optional/disabled-by-default per PRD. Core loop is simple bash. Low risk. Adaptation: path changes (`~/.claude/homunculus/` → `$CLAUDE_PROJECT_DIR/.claude/learned/`). ^decision-observer-daemon
-
----
-
-## Requirements Traceability
-
-| Decision | Satisfies |
-|----------|-----------|
-| [D1](#^decision-observe-jq) | [FR1](../continuous-learning-port-prd.md#^FR1), [FR3](../continuous-learning-port-prd.md#^FR3), [NFR1](../continuous-learning-port-prd.md#^NFR1) |
-| [D2](#^decision-cli-location) | [FR6](../continuous-learning-port-prd.md#^FR6), [FR8](../continuous-learning-port-prd.md#^FR8), [NFR4](../continuous-learning-port-prd.md#^NFR4) |
-| [D3](#^decision-skills) | [FR4](../continuous-learning-port-prd.md#^FR4), [FR5](../continuous-learning-port-prd.md#^FR5), [FR6](../continuous-learning-port-prd.md#^FR6) |
-| [D4](#^decision-evaluate-session) | [FR7](../continuous-learning-port-prd.md#^FR7), [NFR4](../continuous-learning-port-prd.md#^NFR4) |
-| [D5](#^decision-utils) | Supporting — enables [FR6](../continuous-learning-port-prd.md#^FR6), [FR8](../continuous-learning-port-prd.md#^FR8) |
-| [D6](#^decision-observer-daemon) | [FR7](../continuous-learning-port-prd.md#^FR7) |
+- **D6: Observer Daemon → Include in Port** — Port start-observer.sh and observer.md. Full pipeline parity. Daemon already optional/disabled-by-default per PRD. Core loop is simple bash. Low risk. Adaptation: path changes (`~/.claude/homunculus/` → `$CLAUDE_PROJECT_DIR/.claude/learned/`). ^decision-observer-daemon _([FR7](../continuous-learning-port-prd.md#^FR7))_
 
 ---
 

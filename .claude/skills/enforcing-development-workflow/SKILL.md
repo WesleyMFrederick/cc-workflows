@@ -229,6 +229,17 @@ Requirements artifacts follow the JTBD → FR → AC layering framework and prog
 - FRs from PRD are **referenced** using `[[#^FR1|FR1]]`, not redefined
 - Whiteboard stays in `2-design-phase/` folder
 
+**Design Decision Traceability (DRY — Single Source of Truth):**
+Each design decision includes inline FR/NFR citations. Do NOT create a separate Requirements Traceability table.
+
+Format: `- **D1: [Choice]** — [Rationale]. ^decision-name _([FR1](../prd.md#^FR1), [NFR1](../prd.md#^NFR1))_`
+
+- Block anchor (`^decision-name`) enables linking from other docs
+- Inline citations show which requirements the decision satisfies
+- Supporting decisions use: `_(Supporting: [FR6](../prd.md#^FR6))_`
+
+**Why no separate table?** The table duplicates inline citations. "Different purposes" is a rationalization — inline citations at point-of-decision ARE the verification tool. One source of truth.
+
 **Phase 2 links to Phase 1 — doesn't repeat content.**
 - Component inventory already in Phase 1? Link to `whiteboard-phase1.md#Source%20System%20Analysis`
 - Decisions already made? Reference them, don't re-document
