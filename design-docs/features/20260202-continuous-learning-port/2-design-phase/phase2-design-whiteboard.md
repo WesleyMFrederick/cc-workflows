@@ -266,6 +266,6 @@ Port from source with these changes:
 
 ## References
 
-- **PRD**: [[../continuous-learning-port-prd|PRD]]%%force-extract%%
-- **Phase 1 Whiteboard**: [[../1-elicit-discover-sense-make-problem-frame/whiteboard-phase1|Phase 1 Whiteboard]]
-- **Source Research**: [[../../20260202-agent-output-capture/1-elicit-discover-sense-make-problem-frame/research/agent-output-c0b6ce1f|Session c0b6ce1f Research]]
+- **PRD**: [PRD](../continuous-learning-port-prd.md)
+- **Phase 1 Whiteboard**: [Phase 1 Whiteboard](../1-elicit-discover-sense-make-problem-frame/whiteboard-phase1.md)
+- **Source Research**: [Session c0b6ce1f Research](../../20260202-agent-output-capture/1-elicit-discover-sense-make-problem-frame/research/agent-output-c0b6ce1f.md)
