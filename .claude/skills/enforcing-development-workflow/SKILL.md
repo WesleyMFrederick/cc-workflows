@@ -217,15 +217,23 @@ Requirements artifacts follow the JTBD → FR → AC layering framework and prog
    - Research best practices externally (Perplexity, web search)
    - Feed findings back to hypothesis
 
-**Intermediate Output:** **Whiteboard (Phase 2)** - captures research findings
+**Intermediate Output:** **Whiteboard (Phase 2)** - captures research findings interactively
+- The whiteboard IS the gap analysis AND solutions hypothesis — do NOT create separate files
 - Draft ACs may emerge here as design reveals testable conditions
 - Format: `^AC-draft-N` in Phase 2 whiteboard
 - FRs from PRD are **referenced** using `[[#^FR1|FR1]]`, not redefined
+- Whiteboard stays in `2-design-phase/` folder
 
 **Final Output:** **Design Document** - system-specific technical design
+- Design doc saved to **feature root** directory (not nested in `2-design-phase/`)
 
-**Skills used:**
-- `evaluate-against-architecture-principles` - validate design choices
+**REQUIRED SKILL:** `writing-design-documents`
+- Interactive whiteboard workflow (research baseline → present options → user decides → capture)
+- Structured design doc with component design, integration points, file inventory
+- Architecture evaluation filtered through MVP lens
+
+**Also used:**
+- `evaluate-against-architecture-principles` - validate design choices, then filter findings through MVP lens and design risk assessment
 - May use web_search, code search
 
 **Progressive disclosure level:** Medium detail - adapted to system context
@@ -384,7 +392,8 @@ See [Development Flow Diagram](#Development%20Flow%20Diagram)  for complete flow
 
 **Required in this workflow:**
 - `writing-requirements-documents` - Phase 1 (Requirements)
-- `evaluate-against-architecture-principles` - Phase 2 (Design validation)
+- `writing-design-documents` - Phase 2 (Design — interactive whiteboard + formal design doc)
+- `evaluate-against-architecture-principles` - Phase 2 (Design validation, MVP-filtered)
 - `writing-plans` - Phase 4 (Implementation Plan)
 - `subagent-driven-development` OR `executing-plans` - Execution
 

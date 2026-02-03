@@ -155,6 +155,48 @@ Provide evaluation in this format:
 - [X] Requires revision
 ```
 
+### Phase 4: Findings Prioritization (MVP Lens)
+
+**MANDATORY when evaluating design documents.** Optional but recommended for other document types.
+
+After producing the structured evaluation output, filter findings before presenting to user:
+
+1. **Cross-reference findings against the document's own risk assessment**
+   - If the document has a Risk Assessment section, check whether each finding is already mitigated
+   - Already-mitigated findings get lower priority
+
+2. **Apply MVP lens to each finding**
+   - Ask: "Is this blocking the system from working, or is it hardening?"
+   - **Fix now:** Violates core functionality, blocks MVP, creates data loss risk, or makes illegal states representable
+   - **Fix post-MVP:** Improves robustness, adds polish, prevents theoretical issues, or optimizes performance
+
+3. **Categorize findings**
+
+   ```markdown
+   ### Prioritized Findings
+
+   #### Fix Now (Blocking MVP)
+   1. [Finding with principle citation] — [Why it blocks MVP]
+
+   #### Fix Post-MVP (Hardening)
+   1. [Finding with principle citation] — [Why it can wait]
+
+   #### Already Mitigated
+   1. [Finding] — Addressed by [risk mitigation from document]
+   ```
+
+4. **Present filtered list to user** — not the raw evaluation table
+   - Lead with "Fix Now" items (actionable)
+   - Mention "Fix Post-MVP" count without detail unless asked
+   - Note "Already Mitigated" as confirmation, not action items
+
+**Why this matters:** Raw architecture evaluations produce 9+ findings. Presenting all of them equally overwhelms and delays delivery. MVP filtering ensures the user acts on what matters now and defers what doesn't.
+
+**Do NOT skip this because:**
+- "All findings are important" — True, but not all are urgent. Prioritize.
+- "User should see everything" — They will, categorized. Not as a flat list.
+- "This adds overhead" — 2 minutes of categorization saves 30 minutes of discussion about non-blocking items.
+
 ## Architecture Principles Reference
 
 The principles are defined in: [ARCHITECTURE-PRINCIPLES.md](../../../ARCHITECTURE-PRINCIPLES.md) %% force-extract %%

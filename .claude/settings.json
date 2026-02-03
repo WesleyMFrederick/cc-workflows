@@ -43,10 +43,7 @@
       "Bash(gh:*)",
       "Bash(mgrep:*)"
     ],
-    "deny": [
-      "Grep",
-      "Glob"
-    ],
+    "deny": [],
     "ask": [],
     "additionalDirectories": [
       "/Users/wesleyfrederick/Documents/ObsidianVaultNew/0_SoftwareDevelopment/cc-workflows/design-docs",

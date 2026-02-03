@@ -1,12 +1,31 @@
 # Project Reference
 
 ## Search Tools
-ALWAYS use `mgrep` skill for local file/code searching. NEVER use built-in Grep or Glob (for content search) tools.
 
-- **Local file/code search**: `mgrep "query"` or `mgrep "query" path/to/dir`
-- **Limit results**: `mgrep -m 10 "query"`
+### Search Strategy
+Choose the right tool for your search task:
 
-Reason: Semantic search produces more relevant results than regex-based tools.
+**For concept/content searches:**
+- **Use `mgrep` skill** - Semantic search for concepts, functionality, comments, documentation
+- **Examples:** "error handling", "authentication flow", "user validation"
+- **Commands:** `mgrep "query"` or `mgrep "query" path/to/dir`
+- **Limit results:** `mgrep -m 10 "query"`
+
+**For symbol/definition searches:**
+- **Use LSP tool** - Navigate code structure (functions, classes, types, interfaces)
+- **Operations:** `goToDefinition`, `findReferences`, `hover`, `workspaceSymbol`
+- **Examples:** Finding where a function is defined, all usages of a class, type information
+
+**Fallback strategy:**
+If `mgrep` returns no results, assume mgrep is broken. Immediately fallback to:
+1. **Grep tool** - Regex-based content search
+2. **LSP tool** - For code symbols/definitions
+3. **Glob tool** - For filename patterns
+4. **Task tool with Explore agent** - For broader codebase exploration
+
+Note: mgrep should always return something if the content exists. Empty results indicate tool failure, not absence of matches.
+
+**Why:** Semantic search (mgrep) finds conceptual matches; LSP finds structural code elements. Combining both provides comprehensive search coverage.
 
 ---
 
