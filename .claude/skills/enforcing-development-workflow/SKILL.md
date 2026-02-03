@@ -176,6 +176,11 @@ Requirements artifacts follow the JTBD → FR → AC layering framework and prog
 - May capture draft ACs as `^AC-draft-N` if they emerge during discovery
 - These are exploratory, not formalized yet
 
+**Whiteboard quality patterns:**
+- **Decision rationale:** Use inline `> [!decision]` callouts where decisions appear, NOT separate "Decisions Made" sections
+- **Linkable items:** Use bullet lists with bold headings + anchors when Obsidian links needed (`- **Item name:** details ^anchor`). Tables can't support `^anchor` on rows.
+- **Redundancy check:** Before finalizing, check if sections add new information or just restate context. Merge unique content (rationale) into relevant sections, delete redundant sections.
+
 **Second Output:** **Requirements Document** (formal, high-level, generic)
 - **JTBD** in Overview/Business Value section (why we're building this)
 - **FRs** anchored as `^FR1`, `^FR2` (what the system must do)
