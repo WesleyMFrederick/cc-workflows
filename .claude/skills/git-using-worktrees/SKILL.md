@@ -13,6 +13,31 @@ Git worktrees create isolated workspaces sharing the same repository, allowing w
 
 **Announce at start:** "I'm using the using-git-worktrees skill to set up an isolated workspace."
 
+## Quick Start (Preferred)
+
+Use the setup script for single-command worktree creation:
+
+```bash
+.claude/scripts/setup-worktree.sh <scope> <feature>
+```
+
+**Examples:**
+
+```bash
+.claude/scripts/setup-worktree.sh continuous-learning phase3-visibility
+.claude/scripts/setup-worktree.sh ptsf-tools event-qr-codes
+.claude/scripts/setup-worktree.sh citation-manager ast-refactor
+```
+
+The script handles all phases automatically:
+- Pre-flight checks (clean git, passing tests)
+- Cleanup of existing worktree (if any)
+- Worktree + branch creation
+- Dependency installation
+- Test validation
+
+**Output:** Worktree path and branch name for use in subsequent commands.
+
 ## When to Use
 
 **Use this skill:**
