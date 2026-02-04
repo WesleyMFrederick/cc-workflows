@@ -40,7 +40,8 @@
       "Bash(npm run mirror-workflows:*)",
       "Bash(./scripts/calculate-event-date.sh:*)",
       "Bash(gh:*)",
-      "Bash(mgrep:*)"
+      "Bash(mgrep:*)",
+      "Bash(.claude/scripts/setup-worktree.sh:*)"
     ],
     "deny": [],
     "ask": [],
