@@ -51,11 +51,15 @@ consecutive_errors = 0
 5. Dispatch implementation subagent (Step 2)
 6. Dispatch code-reviewer subagent (Step 3)
 7. Cleanup processes (Step 3a)
-8. Handle review feedback (Step 4)
+8. Check verdict:
+   - APPROVED → continue to step 9
+   - FIX REQUIRED → dispatch fix subagent (Step 4) → GOTO step 6 (re-review)
 9. MANDATORY: Close GitHub issue (Step 5) [if task has issue number - DO NOT skip this]
-10. Mark task completed via TaskUpdate
+10. Mark task completed via TaskUpdate ← ONLY after APPROVED
 11. GOTO 1
 ```
+
+**CRITICAL: Task stays in_progress until code-reviewer returns APPROVED. Never mark complete on FIX REQUIRED.**
 
 **Pre-flight check (once, before first loop):**
 - Verify TaskList exists for plan
