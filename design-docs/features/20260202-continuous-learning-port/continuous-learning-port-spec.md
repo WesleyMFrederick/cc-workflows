@@ -60,7 +60,7 @@
       <lines>494</lines>
       <language>Python3 → Node.js</language>
       <changes>
-        - Translate argparse → process.argv parsing (or minimist)
+        - Translate argparse → process.argv (status has no args; minimist for Phase 4 if needed)
         - Translate pathlib → path module
         - Translate json module → JSON.parse/stringify
         - Port subcommands:
@@ -68,7 +68,9 @@
           - import: Fetch from file/URL, deduplicate, merge higher-confidence
           - export: Strip sensitive data (code, paths, session IDs, old timestamps)
         - Use learning-utils.js for file I/O
+        - Export functions for testability (ES modules)
       </changes>
+      <testing>Vitest unit tests (*.test.js) + bash E2E test for CLI</testing>
       <satisfies>FR6, FR8, NFR4</satisfies>
     </component>
 
@@ -87,7 +89,9 @@
           - findFiles(dir, pattern) — readdirSync + filter
           - log(message) — stderr output
           - output(data) — stdout output (JSON-aware)
+        - Export functions for testability (ES modules)
       </changes>
+      <testing>Vitest unit tests (*.test.js)</testing>
       <satisfies>Supporting for FR6, FR8</satisfies>
     </component>
 
