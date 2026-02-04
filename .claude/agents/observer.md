@@ -15,12 +15,40 @@ A background agent that analyzes observations from Claude Code sessions to detec
 - On a scheduled interval (configurable, default 5 minutes)
 - When triggered by observation hook (SIGUSR1)
 
+## Configuration
+
+### YAML Frontmatter Fields
+
+The agent configuration uses the following frontmatter fields:
+
+| Field | Type | Valid Values | Description |
+|-------|------|--------------|-------------|
+| `name` | string | observer | Agent identifier (required) |
+| `description` | string | Any text | Human-readable description (required) |
+| `model` | string | `haiku`, `sonnet`, `opus` | LLM model to use; haiku recommended for cost-efficiency |
+| `run_mode` | string | `background`, `foreground`, `on-demand` | Execution mode; background = async, foreground = blocks session, on-demand = triggered manually |
+
+### Field Behavior
+
+- **model:** Determines which Claude model executes the observer analysis. `haiku` is recommended for cost-efficiency; `sonnet` for higher accuracy; `opus` for complex pattern analysis.
+- **run_mode:** Controls when the observer executes:
+  - `background` — runs asynchronously without blocking active sessions
+  - `foreground` — blocks the session until analysis completes
+  - `on-demand` — only runs when explicitly triggered
+
+### Invalid Configuration
+
+If invalid values are provided, Task 2 (start-observer.sh) will:
+1. Validate against the specification above
+2. Reject the configuration with an error message
+3. Fail startup until valid values are supplied
+
 ## Input
 
-Reads observations from `$CLAUDE_PROJECT_DIR/.claude/learned/observations.jsonl`:
+Reads observations from `$CLAUDE_PROJECT_DIR/.claude/learned/observations.jsonl` (example format):
 
-    {"timestamp":"2025-01-22T10:30:00Z","event":"tool_start","session":"abc123","tool":"Edit","input":"..."}
-    {"timestamp":"2025-01-22T10:30:01Z","event":"tool_complete","session":"abc123","tool":"Edit","output":"..."}
+    {"timestamp":"2025-02-10T10:30:00Z","event":"tool_start","session":"abc123","tool":"Edit","input":"..."}
+    {"timestamp":"2025-02-10T10:30:01Z","event":"tool_complete","session":"abc123","tool":"Edit","output":"..."}
 
 ## Pattern Detection
 
@@ -78,7 +106,7 @@ Creates/updates instincts in `$CLAUDE_PROJECT_DIR/.claude/learned/instincts/pers
     ## Evidence
     - Observed 8 times in session abc123
     - Pattern: Grep → Read → Edit sequence
-    - Last observed: 2025-01-22
+    - Last observed: 2025-02-10 (example)
 
 ## Confidence Calculation
 
