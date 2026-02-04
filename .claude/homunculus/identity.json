@@ -1,0 +1,28 @@
+{
+  "version": "2.0.0",
+  "project": {
+    "name": "cc-workflows",
+    "description": "Claude Code workflow development, skills, and tooling setup",
+    "born": "2026-02-04T19:29:00Z"
+  },
+  "creator": {
+    "level": "semi-technical"
+  },
+  "journey": {
+    "milestones": [],
+    "sessionCount": 4,
+    "lastSession": "2026-02-04T20:08:13Z"
+  },
+  "homunculus": {
+    "evolved": [],
+    "awakened": "2026-02-04T19:29:00Z"
+  },
+  "instincts": {
+    "personal": 0,
+    "inherited": 0
+  },
+  "evolution": {
+    "ready": []
+  },
+  "lastAnalysis": null
+}
