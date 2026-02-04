@@ -101,9 +101,9 @@ Requirements artifacts follow the JTBD → FR → AC layering framework and prog
 
 **Key insight:** ACs do NOT belong in PRDs. PRDs have Success Criteria (outcome-level). Detailed testable ACs emerge during Design/Sequencing when system context exists.
 
-## The Four Phases (Progressive Disclosure)
+## The Four Modes (Progressive Disclosure)
 
-### Phase 1: Discovery & Ideation → Requirements
+### Mode 1: Discovery & Ideation → Requirements
 
 **Goal:** Frame the problem at a high level
 
@@ -136,7 +136,7 @@ Requirements artifacts follow the JTBD → FR → AC layering framework and prog
 
 ---
 
-### Phase 2: Research & Design (The Bridge)
+### Mode 2: Research & Design (The Bridge)
 
 **Goal:** Adapt generic requirements to your specific system context
 
@@ -168,7 +168,7 @@ Requirements artifacts follow the JTBD → FR → AC layering framework and prog
 - Draft ACs may emerge here as design reveals testable conditions
 - Format: `^AC-draft-N` in Phase 2 whiteboard
 - FRs from PRD are **referenced** using `[[#^FR1|FR1]]`, not redefined
-- Whiteboard stays in `2-design-phase/` folder
+- Whiteboard stays in `2-design-mode/` folder
 
 **Design Decision Traceability (DRY — Single Source of Truth):**
 Each design decision includes inline FR/NFR citations. Do NOT create a separate Requirements Traceability table.
@@ -207,7 +207,7 @@ NOT just `[Phase 1 Whiteboard](../whiteboard-phase1.md)` — section links enabl
 
 **Design Document** (Heavy/Medium bridge only):
 - System-specific technical design
-- Saved to **feature root** directory (not nested in `2-design-phase/`)
+- Saved to **feature root** directory (not nested in `2-design-mode/`)
 - Use `writing-design-documents` skill
 
 **Spec Document** (ALWAYS required):
@@ -225,7 +225,7 @@ NOT just `[Phase 1 Whiteboard](../whiteboard-phase1.md)` — section links enabl
 
 ---
 
-### Phase 3: Sequencing
+### Mode 3: Sequencing
 
 **Goal:** Decompose design into ordered work units
 
@@ -253,7 +253,7 @@ NOT just `[Phase 1 Whiteboard](../whiteboard-phase1.md)` — section links enabl
 
 ---
 
-### Phase 4: Implementation Plan
+### Mode 4: Implementation Plan
 
 **Goal:** Maximum detail - every action specified
 
@@ -264,7 +264,7 @@ NOT just `[Phase 1 Whiteboard](../whiteboard-phase1.md)` — section links enabl
 - ACs referenced from Sequencing doc drive test creation
 - Implementation tasks prove ACs are satisfied
 
-#### Phase 4 Discussion Protocol
+#### Mode 4 Discussion Protocol
 
 **BEFORE invoking `writing-plans` skill:**
 
