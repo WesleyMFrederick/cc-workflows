@@ -71,8 +71,21 @@ consecutive_errors = 0
 For each task:
 
 **Dispatch fresh subagent:**
-- Use `haiku` model for implementation subagents (lightweight, cost-effective)
+- Select model based on task complexity (see Model Selection below)
 - Do NOT specify model for agent-type subagents (code-reviewer, app-tech-lead) — they define their own model in `.claude/agents/`
+
+**Model Selection:**
+
+| Task Type | Model | When to Use |
+|-----------|-------|-------------|
+| Simple | `haiku` | Config updates, documentation, single-file changes, scaffolding |
+| Standard | `sonnet` | Multi-file implementation, business logic, TDD, integration work |
+| Complex | `sonnet` | Architectural changes, new components, debugging, performance work |
+
+**Heuristics for orchestrator:**
+- **Use haiku if:** Task description contains "update", "add field", "config", "documentation", "rename", OR touches ≤2 files with no logic changes
+- **Use sonnet if:** Task involves TDD, multi-file coordination, new functionality, bug fixes, or "implement" in description
+- **When unsure:** Default to sonnet (fix cycles cost more than slightly higher implementation cost)
 
 ```plaintext
 Task tool (
@@ -168,7 +181,7 @@ Task tool (
     - Commit SHA
 
     Report: Summary + confirm results file written
-  model: haiku
+  model: {{haiku|sonnet}}  # See Model Selection heuristics above
 ```
 
 **Subagent reports back** with summary and results file location.
@@ -518,7 +531,7 @@ Task tool (general-purpose):
     - Commit SHA
 
     Report: Summary + confirm results file written
-  model: haiku
+  model: sonnet  # Fix agents always use sonnet — haiku fixes triggered this cycle
 ```
 
 ### 5. Close GitHub Issue and Mark Complete
