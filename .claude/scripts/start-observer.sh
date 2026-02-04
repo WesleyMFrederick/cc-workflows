@@ -111,8 +111,8 @@ analyze_observations() {
 
   # Use Claude Code with Haiku to analyze observations
   if [ -x "$CLAUDE_BIN" ]; then
-    "$CLAUDE_BIN" --model haiku --max-turns 3 --print \
-      "Read $OBSERVATIONS_FILE and identify patterns. If you find 3+ occurrences of the same pattern, create an instinct file in $INSTINCTS_DIR following the YAML format in .claude/agents/observer.md. Be conservative - only create instincts for clear patterns." \
+    "$CLAUDE_BIN" --model haiku --max-turns 3 --print --allowedTools Write \
+      -p "Read $OBSERVATIONS_FILE and identify patterns. If you find 3+ occurrences of the same pattern, create an instinct file in $INSTINCTS_DIR following the YAML format in .claude/agents/observer.md. Be conservative - only create instincts for clear patterns." \
       >> "$LOG_FILE" 2>&1 || true
   fi
 
