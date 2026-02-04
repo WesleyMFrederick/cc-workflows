@@ -100,6 +100,41 @@ fi
 
 cleanup
 
+# Test 4: Claude invocation via SIGUSR1
+echo "Test 4: Claude invocation (SIGUSR1 trigger)"
+
+# Clear log for clean test
+rm -f "$CONFIG_DIR/observer.log"
+
+"$OBSERVER_SCRIPT" start
+sleep 1
+pid=$(cat "$CONFIG_DIR/.observer.pid")
+
+# Create 25 fake observations to exceed threshold
+obs_file="$CONFIG_DIR/observations.jsonl"
+rm -f "$obs_file"
+for i in $(seq 1 25); do
+  echo "{\"type\":\"test\",\"data\":\"observation $i\"}" >> "$obs_file"
+done
+
+# Trigger immediate analysis via SIGUSR1
+kill -USR1 "$pid" 2>/dev/null || true
+sleep 3
+
+# Check log for errors
+if grep -q "No such file or directory" "$CONFIG_DIR/observer.log" 2>/dev/null; then
+  fail "Claude binary path resolution failed (see observer.log)"
+fi
+
+# Verify analysis was attempted (log shows "Analyzing")
+if grep -q "Analyzing" "$CONFIG_DIR/observer.log" 2>/dev/null; then
+  pass "Claude invocation triggered successfully"
+else
+  fail "Analysis not triggered (SIGUSR1 may have failed)"
+fi
+
+cleanup
+
 echo ""
 echo "=========================================="
 echo -e "${GREEN}All E2E tests passed${NC}"

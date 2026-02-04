@@ -77,6 +77,13 @@ case "${1:-start}" in
 
     echo "Starting observer agent..."
 
+    # Capture claude binary path before nohup (nohup has minimal PATH)
+    CLAUDE_BIN=$(command -v claude 2>/dev/null || echo "")
+    if [ -z "$CLAUDE_BIN" ]; then
+      echo "Error: claude not found in PATH"
+      exit 1
+    fi
+
     # Create a temporary script for the observer loop
     observer_loop_script=$(mktemp)
     cat > "$observer_loop_script" << 'OBSERVER_SCRIPT'
@@ -86,6 +93,7 @@ PID_FILE="$2"
 LOG_FILE="$3"
 OBSERVATIONS_FILE="$4"
 INSTINCTS_DIR="$5"
+CLAUDE_BIN="$6"
 
 trap 'rm -f "$PID_FILE"; exit 0' TERM INT
 
@@ -102,8 +110,8 @@ analyze_observations() {
   echo "[$(date)] Analyzing $obs_count observations..." >> "$LOG_FILE"
 
   # Use Claude Code with Haiku to analyze observations
-  if command -v claude &> /dev/null; then
-    claude --model haiku --max-turns 3 --print \
+  if [ -x "$CLAUDE_BIN" ]; then
+    "$CLAUDE_BIN" --model haiku --max-turns 3 --print \
       "Read $OBSERVATIONS_FILE and identify patterns. If you find 3+ occurrences of the same pattern, create an instinct file in $INSTINCTS_DIR following the YAML format in .claude/agents/observer.md. Be conservative - only create instincts for clear patterns." \
       >> "$LOG_FILE" 2>&1 || true
   fi
@@ -125,8 +133,9 @@ echo "$$" > "$PID_FILE"
 echo "[$(date)] Observer started (PID: $$)" >> "$LOG_FILE"
 
 while true; do
-  # Check every 5 minutes
-  sleep 300
+  # Check every 5 minutes (interruptible sleep for signal handling)
+  sleep 300 &
+  wait $!
 
   analyze_observations
 done
@@ -135,7 +144,7 @@ OBSERVER_SCRIPT
     chmod +x "$observer_loop_script"
 
     # Start the observer loop in the background using nohup to ensure it persists
-    nohup "$observer_loop_script" "$CONFIG_DIR" "$PID_FILE" "$LOG_FILE" "$OBSERVATIONS_FILE" "$INSTINCTS_DIR" > /dev/null 2>&1 &
+    nohup "$observer_loop_script" "$CONFIG_DIR" "$PID_FILE" "$LOG_FILE" "$OBSERVATIONS_FILE" "$INSTINCTS_DIR" "$CLAUDE_BIN" > /dev/null 2>&1 &
 
     # Wait for PID file to be created
     wait_count=0
