@@ -80,15 +80,11 @@ fi
 # Test 4: Confidence bar renders correctly
 echo "Test 4: Confidence bar renders"
 
+# Confidence bar: Math.floor(0.85 * 10) = 8 blocks (documented rounding behavior)
 if echo "$output" | grep -q "████████░░"; then
-  pass "Confidence bar renders (85% = 8 blocks)"
+  pass "Confidence bar renders correctly (85% = 8 blocks via floor rounding)"
 else
-  # May be 9 blocks due to rounding
-  if echo "$output" | grep -q "█████████░"; then
-    pass "Confidence bar renders (85% rounded to 9 blocks)"
-  else
-    fail "Confidence bar not found or incorrect"
-  fi
+  fail "Confidence bar not found or incorrect (expected 8 blocks for 85%)"
 fi
 
 # Test 5: Domain grouping works
@@ -98,6 +94,55 @@ if echo "$output" | grep -q "TESTING"; then
   pass "Domain grouping works"
 else
   fail "Domain header not found"
+fi
+
+# Test 6: Auto-apply threshold indicator (92% confidence)
+echo "Test 6: Auto-apply threshold display"
+
+cat > "$LEARNED_DIR/instincts/personal/test-instinct-autoapply.yaml" << 'YAML'
+---
+id: high-confidence-instinct
+trigger: "when auto-apply should be indicated"
+confidence: 0.92
+domain: testing
+source: session-observation
+---
+
+# High Confidence Instinct
+
+## Action
+This instinct exceeds auto-apply threshold.
+
+## Evidence
+- Multiple confirming observations
+YAML
+
+output=$(node "$CLI_SCRIPT" status)
+
+if echo "$output" | grep -q "high-confidence-instinct"; then
+  # Note: Current CLI doesn't have explicit auto-apply indicator, but it displays confidence
+  # This test validates that 92% confidence instinct appears in output
+  if echo "$output" | grep "high-confidence-instinct" | grep -q " 92%"; then
+    pass "Auto-apply threshold instinct displayed with correct confidence"
+  else
+    fail "Auto-apply threshold instinct not displayed correctly"
+  fi
+else
+  fail "High-confidence instinct not found in status output"
+fi
+
+# Test 7: Empty state validation
+echo "Test 7: Empty state behavior"
+
+# Clear all test instincts
+rm -f "$LEARNED_DIR/instincts/personal/test-instinct.yaml" "$LEARNED_DIR/instincts/personal/test-instinct-autoapply.yaml"
+
+output=$(node "$CLI_SCRIPT" status)
+
+if echo "$output" | grep -q "No instincts found"; then
+  pass "Empty state message displayed"
+else
+  fail "Empty state message not found"
 fi
 
 # Cleanup
