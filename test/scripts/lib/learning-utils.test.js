@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { ensureDir, readFile, writeFile, findFiles, log } from '../../../.claude/scripts/lib/learning-utils.js';
+import { ensureDir, readFile, writeFile, findFiles } from '../../../.claude/scripts/lib/learning-utils.js';
 import fs from 'node:fs';
 import path from 'node:path';
 import os from 'node:os';
