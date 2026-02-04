@@ -9,19 +9,19 @@
  * evolve   - Cluster instincts into skills (Phase 4)
  */
 
-import path from 'node:path';
-import { readFile, findFiles, log } from './lib/learning-utils.js';
+import path from "node:path";
+import { findFiles, log, readFile } from "./lib/learning-utils.js";
 
 // ─────────────────────────────────────────
 // Configuration
 // ─────────────────────────────────────────
 
 const PROJECT_DIR = process.env.CLAUDE_PROJECT_DIR || process.cwd();
-const LEARNED_DIR = path.join(PROJECT_DIR, '.claude', 'learned');
-const INSTINCTS_DIR = path.join(LEARNED_DIR, 'instincts');
-const PERSONAL_DIR = path.join(INSTINCTS_DIR, 'personal');
-const INHERITED_DIR = path.join(INSTINCTS_DIR, 'inherited');
-const OBSERVATIONS_FILE = path.join(LEARNED_DIR, 'observations.jsonl');
+const LEARNED_DIR = path.join(PROJECT_DIR, ".claude", "learned");
+const INSTINCTS_DIR = path.join(LEARNED_DIR, "instincts");
+const PERSONAL_DIR = path.join(INSTINCTS_DIR, "personal");
+const INHERITED_DIR = path.join(INSTINCTS_DIR, "inherited");
+const OBSERVATIONS_FILE = path.join(LEARNED_DIR, "observations.jsonl");
 
 // ─────────────────────────────────────────
 // Instinct Parser
@@ -33,64 +33,64 @@ const OBSERVATIONS_FILE = path.join(LEARNED_DIR, 'observations.jsonl');
  * @returns {Array<Object>} Parsed instincts
  */
 export function parseInstinctFile(content) {
-  const instincts = [];
-  let current = {};
-  let inFrontmatter = false;
-  let contentLines = [];
-  let startedFrontmatter = false;
+	const instincts = [];
+	let current = {};
+	let inFrontmatter = false;
+	let contentLines = [];
+	let startedFrontmatter = false;
 
-  for (const line of content.split('\n')) {
-    if (line.trim() === '---') {
-      if (startedFrontmatter && inFrontmatter) {
-        // End of frontmatter
-        inFrontmatter = false;
-      } else if (!startedFrontmatter) {
-        // Start of frontmatter
-        startedFrontmatter = true;
-        inFrontmatter = true;
-        if (Object.keys(current).length > 0) {
-          current.content = contentLines.join('\n').trim();
-          instincts.push(current);
-        }
-        current = {};
-        contentLines = [];
-      } else {
-        // Start of new instinct
-        if (Object.keys(current).length > 0) {
-          current.content = contentLines.join('\n').trim();
-          instincts.push(current);
-        }
-        current = {};
-        contentLines = [];
-        inFrontmatter = true;
-      }
-    } else if (inFrontmatter) {
-      // Parse YAML-like frontmatter
-      const colonIdx = line.indexOf(':');
-      if (colonIdx !== -1) {
-        const key = line.slice(0, colonIdx).trim();
-        let value = line.slice(colonIdx + 1).trim();
-        // Remove quotes
-        value = value.replace(/^["']|["']$/g, '');
-        if (key === 'confidence') {
-          current[key] = parseFloat(value);
-        } else {
-          current[key] = value;
-        }
-      }
-    } else {
-      contentLines.push(line);
-    }
-  }
+	for (const line of content.split("\n")) {
+		if (line.trim() === "---") {
+			if (startedFrontmatter && inFrontmatter) {
+				// End of frontmatter
+				inFrontmatter = false;
+			} else if (!startedFrontmatter) {
+				// Start of frontmatter
+				startedFrontmatter = true;
+				inFrontmatter = true;
+				if (Object.keys(current).length > 0) {
+					current.content = contentLines.join("\n").trim();
+					instincts.push(current);
+				}
+				current = {};
+				contentLines = [];
+			} else {
+				// Start of new instinct
+				if (Object.keys(current).length > 0) {
+					current.content = contentLines.join("\n").trim();
+					instincts.push(current);
+				}
+				current = {};
+				contentLines = [];
+				inFrontmatter = true;
+			}
+		} else if (inFrontmatter) {
+			// Parse YAML-like frontmatter
+			const colonIdx = line.indexOf(":");
+			if (colonIdx !== -1) {
+				const key = line.slice(0, colonIdx).trim();
+				let value = line.slice(colonIdx + 1).trim();
+				// Remove quotes
+				value = value.replace(/^["']|["']$/g, "");
+				if (key === "confidence") {
+					current[key] = Number.parseFloat(value);
+				} else {
+					current[key] = value;
+				}
+			}
+		} else {
+			contentLines.push(line);
+		}
+	}
 
-  // Don't forget the last instinct
-  if (Object.keys(current).length > 0) {
-    current.content = contentLines.join('\n').trim();
-    instincts.push(current);
-  }
+	// Don't forget the last instinct
+	if (Object.keys(current).length > 0) {
+		current.content = contentLines.join("\n").trim();
+		instincts.push(current);
+	}
 
-  // Filter out instincts without id
-  return instincts.filter(i => i.id);
+	// Filter out instincts without id
+	return instincts.filter((i) => i.id);
 }
 
 /**
@@ -99,30 +99,33 @@ export function parseInstinctFile(content) {
  * @returns {Array<Object>} All loaded instincts
  */
 export function loadAllInstincts(baseDir = LEARNED_DIR) {
-  const instincts = [];
-  const personalDir = path.join(baseDir, 'instincts', 'personal');
-  const inheritedDir = path.join(baseDir, 'instincts', 'inherited');
+	const instincts = [];
+	const personalDir = path.join(baseDir, "instincts", "personal");
+	const inheritedDir = path.join(baseDir, "instincts", "inherited");
 
-  for (const [directory, sourceType] of [[personalDir, 'personal'], [inheritedDir, 'inherited']]) {
-    const files = findFiles(directory, '.yaml');
-    for (const file of files) {
-      const content = readFile(file);
-      if (content) {
-        try {
-          const parsed = parseInstinctFile(content);
-          for (const inst of parsed) {
-            inst._sourceFile = file;
-            inst._sourceType = sourceType;
-          }
-          instincts.push(...parsed);
-        } catch (e) {
-          log(`Warning: Failed to parse ${file}: ${e.message}`);
-        }
-      }
-    }
-  }
+	for (const [directory, sourceType] of [
+		[personalDir, "personal"],
+		[inheritedDir, "inherited"],
+	]) {
+		const files = findFiles(directory, ".yaml");
+		for (const file of files) {
+			const content = readFile(file);
+			if (content) {
+				try {
+					const parsed = parseInstinctFile(content);
+					for (const inst of parsed) {
+						inst._sourceFile = file;
+						inst._sourceType = sourceType;
+					}
+					instincts.push(...parsed);
+				} catch (e) {
+					log(`Warning: Failed to parse ${file}: ${e.message}`);
+				}
+			}
+		}
+	}
 
-  return instincts;
+	return instincts;
 }
 
 // ─────────────────────────────────────────
@@ -135,8 +138,8 @@ export function loadAllInstincts(baseDir = LEARNED_DIR) {
  * @returns {string} Visual bar
  */
 export function formatConfidenceBar(confidence) {
-  const filled = Math.floor(confidence * 10);
-  return '█'.repeat(filled) + '░'.repeat(10 - filled);
+	const filled = Math.floor(confidence * 10);
+	return "█".repeat(filled) + "░".repeat(10 - filled);
 }
 
 /**
@@ -145,78 +148,86 @@ export function formatConfidenceBar(confidence) {
  * @returns {string} Formatted output
  */
 export function formatStatus(instincts) {
-  if (instincts.length === 0) {
-    return `No instincts found.\n\nInstinct directories:\n  Personal:  ${PERSONAL_DIR}\n  Inherited: ${INHERITED_DIR}\n`;
-  }
+	if (instincts.length === 0) {
+		return `No instincts found.\n\nInstinct directories:\n  Personal:  ${PERSONAL_DIR}\n  Inherited: ${INHERITED_DIR}\n`;
+	}
 
-  // Group by domain
-  const byDomain = {};
-  for (const inst of instincts) {
-    const domain = inst.domain || 'general';
-    if (!byDomain[domain]) byDomain[domain] = [];
-    byDomain[domain].push(inst);
-  }
+	// Group by domain
+	const byDomain = {};
+	for (const inst of instincts) {
+		const domain = inst.domain || "general";
+		if (!byDomain[domain]) byDomain[domain] = [];
+		byDomain[domain].push(inst);
+	}
 
-  const lines = [];
+	const lines = [];
 
-  // Header
-  lines.push('');
-  lines.push('='.repeat(60));
-  lines.push(`  INSTINCT STATUS - ${instincts.length} total`);
-  lines.push('='.repeat(60));
-  lines.push('');
+	// Header
+	lines.push("");
+	lines.push("=".repeat(60));
+	lines.push(`  INSTINCT STATUS - ${instincts.length} total`);
+	lines.push("=".repeat(60));
+	lines.push("");
 
-  // Summary by source
-  const personal = instincts.filter(i => i._sourceType === 'personal');
-  const inherited = instincts.filter(i => i._sourceType === 'inherited');
-  lines.push(`  Personal:  ${personal.length}`);
-  lines.push(`  Inherited: ${inherited.length}`);
-  lines.push('');
+	// Summary by source
+	const personal = instincts.filter((i) => i._sourceType === "personal");
+	const inherited = instincts.filter((i) => i._sourceType === "inherited");
+	lines.push(`  Personal:  ${personal.length}`);
+	lines.push(`  Inherited: ${inherited.length}`);
+	lines.push("");
 
-  // Print by domain
-  for (const domain of Object.keys(byDomain).sort()) {
-    const domainInstincts = byDomain[domain];
-    lines.push(`## ${domain.toUpperCase()} (${domainInstincts.length})`);
-    lines.push('');
+	// Print by domain
+	for (const domain of Object.keys(byDomain).sort()) {
+		const domainInstincts = byDomain[domain];
+		lines.push(`## ${domain.toUpperCase()} (${domainInstincts.length})`);
+		lines.push("");
 
-    // Sort by confidence descending
-    domainInstincts.sort((a, b) => (b.confidence || 0.5) - (a.confidence || 0.5));
+		// Sort by confidence descending
+		domainInstincts.sort(
+			(a, b) => (b.confidence || 0.5) - (a.confidence || 0.5),
+		);
 
-    for (const inst of domainInstincts) {
-      const conf = inst.confidence || 0.5;
-      const confBar = formatConfidenceBar(conf);
-      const trigger = inst.trigger || 'unknown trigger';
+		for (const inst of domainInstincts) {
+			const conf = inst.confidence || 0.5;
+			const confBar = formatConfidenceBar(conf);
+			const trigger = inst.trigger || "unknown trigger";
 
-      lines.push(`  ${confBar} ${Math.round(conf * 100).toString().padStart(3)}%  ${inst.id}`);
-      lines.push(`            trigger: ${trigger}`);
+			lines.push(
+				`  ${confBar} ${Math.round(conf * 100)
+					.toString()
+					.padStart(3)}%  ${inst.id}`,
+			);
+			lines.push(`            trigger: ${trigger}`);
 
-      // Extract action from content
-      const content = inst.content || '';
-      const actionMatch = content.match(/## Action\s*\n\s*(.+?)(?:\n\n|\n##|$)/s);
-      if (actionMatch) {
-        let action = actionMatch[1].trim().split('\n')[0];
-        if (action.length > 60) action = action.slice(0, 60) + '...';
-        lines.push(`            action: ${action}`);
-      }
+			// Extract action from content
+			const content = inst.content || "";
+			const actionMatch = content.match(
+				/## Action\s*\n\s*(.+?)(?:\n\n|\n##|$)/s,
+			);
+			if (actionMatch) {
+				let action = actionMatch[1].trim().split("\n")[0];
+				if (action.length > 60) action = `${action.slice(0, 60)}...`;
+				lines.push(`            action: ${action}`);
+			}
 
-      lines.push('');
-    }
-  }
+			lines.push("");
+		}
+	}
 
-  // Observations stats
-  const obsContent = readFile(OBSERVATIONS_FILE);
-  if (obsContent) {
-    const obsCount = obsContent.split('\n').filter(l => l.trim()).length;
-    lines.push('─'.repeat(57));
-    lines.push(`  Observations: ${obsCount} events logged`);
-    lines.push(`  File: ${OBSERVATIONS_FILE}`);
-  }
+	// Observations stats
+	const obsContent = readFile(OBSERVATIONS_FILE);
+	if (obsContent) {
+		const obsCount = obsContent.split("\n").filter((l) => l.trim()).length;
+		lines.push("─".repeat(57));
+		lines.push(`  Observations: ${obsCount} events logged`);
+		lines.push(`  File: ${OBSERVATIONS_FILE}`);
+	}
 
-  lines.push('');
-  lines.push('='.repeat(60));
-  lines.push('');
+	lines.push("");
+	lines.push("=".repeat(60));
+	lines.push("");
 
-  return lines.join('\n');
+	return lines.join("\n");
 }
 
 // ─────────────────────────────────────────
@@ -227,8 +238,8 @@ export function formatStatus(instincts) {
  * Run status command.
  */
 function cmdStatus() {
-  const instincts = loadAllInstincts();
-  console.log(formatStatus(instincts));
+	const instincts = loadAllInstincts();
+	console.log(formatStatus(instincts));
 }
 
 // ─────────────────────────────────────────
@@ -236,27 +247,29 @@ function cmdStatus() {
 // ─────────────────────────────────────────
 
 function main() {
-  const args = process.argv.slice(2);
-  const command = args[0];
+	const args = process.argv.slice(2);
+	const command = args[0];
 
-  switch (command) {
-    case 'status':
-      cmdStatus();
-      break;
-    case 'import':
-    case 'export':
-    case 'evolve':
-      log(`Command '${command}' not yet implemented (Phase 4).`);
-      process.exit(1);
-      break;
-    default:
-      console.log(`Instinct CLI - Continuous Learning v2\n\nCommands:\n  status   Show all instincts and their status\n  import   Import instincts from file or URL (Phase 4)\n  export   Export instincts to file (Phase 4)\n  evolve   Cluster instincts into skills (Phase 4)\n\nUsage:\n  node instinct-cli.js status\n`);
-      process.exit(command ? 1 : 0);
-  }
+	switch (command) {
+		case "status":
+			cmdStatus();
+			break;
+		case "import":
+		case "export":
+		case "evolve":
+			log(`Command '${command}' not yet implemented (Phase 4).`);
+			process.exit(1);
+			break;
+		default:
+			console.log(
+				"Instinct CLI - Continuous Learning v2\n\nCommands:\n  status   Show all instincts and their status\n  import   Import instincts from file or URL (Phase 4)\n  export   Export instincts to file (Phase 4)\n  evolve   Cluster instincts into skills (Phase 4)\n\nUsage:\n  node instinct-cli.js status\n",
+			);
+			process.exit(command ? 1 : 0);
+	}
 }
 
 // Run if executed directly
-const isMain = process.argv[1]?.endsWith('instinct-cli.js');
+const isMain = process.argv[1]?.endsWith("instinct-cli.js");
 if (isMain) {
-  main();
+	main();
 }
