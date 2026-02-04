@@ -26,10 +26,11 @@ case "${1:-start}" in
       pid=$(cat "$PID_FILE")
       if kill -0 "$pid" 2>/dev/null; then
         echo "Stopping observer (PID: $pid)..."
-        # First try SIGTERM, then SIGKILL if needed
-        kill "$pid" 2>/dev/null || true
-        sleep 0.5
+        # First try SIGTERM to allow graceful trap-based cleanup
+        kill -TERM "$pid" 2>/dev/null || true
+        sleep 1
         if kill -0 "$pid" 2>/dev/null; then
+          echo "Warning: Process did not respond to SIGTERM, using SIGKILL"
           kill -9 "$pid" 2>/dev/null || true
         fi
         rm -f "$PID_FILE"
@@ -90,8 +91,11 @@ trap 'rm -f "$PID_FILE"; exit 0' TERM INT
 
 analyze_observations() {
   # Only analyze if we have enough observations
+  # Minimum threshold prevents pattern detection on insufficient data
+  # Configurable via MIN_OBSERVATIONS env var (default: 20)
+  local min_observations="${MIN_OBSERVATIONS:-20}"
   obs_count=$(wc -l < "$OBSERVATIONS_FILE" 2>/dev/null | tr -d ' ' || echo 0)
-  if [ "$obs_count" -lt 20 ]; then
+  if [ "$obs_count" -lt "$min_observations" ]; then
     return
   fi
 
@@ -158,8 +162,8 @@ OBSERVER_SCRIPT
       exit 1
     fi
 
-    # Clean up temporary script
-    rm -f "$observer_loop_script"
+    # Note: Do not remove observer_loop_script here. Child process may still be reading it.
+    # The OS will clean /tmp on reboot. Script is harmless to leave in place.
     ;;
 
   *)

@@ -113,6 +113,35 @@ test_status_not_running() {
   fi
 }
 
+# Test 6: Start when already running is idempotent
+test_start_already_running() {
+  echo "Test 6: start command when already running is idempotent"
+
+  "$OBSERVER_SCRIPT" start
+  sleep 1
+
+  PID_FILE="$CLAUDE_PROJECT_DIR/.claude/learned/.observer.pid"
+  pid1=$(cat "$PID_FILE")
+
+  # Second start should report already running and return same PID
+  if ! "$OBSERVER_SCRIPT" start 2>&1 | grep -q "already running"; then
+    "$OBSERVER_SCRIPT" stop > /dev/null 2>&1 || true
+    fail "Should report 'already running'"
+  fi
+
+  pid2=$(cat "$PID_FILE")
+
+  if [ "$pid1" != "$pid2" ]; then
+    "$OBSERVER_SCRIPT" stop > /dev/null 2>&1 || true
+    fail "Double start should return same PID"
+  fi
+
+  pass "Start when already running is idempotent"
+
+  # Cleanup
+  "$OBSERVER_SCRIPT" stop > /dev/null 2>&1 || true
+}
+
 # Run all tests
 echo "=========================================="
 echo "start-observer.sh Test Suite"
@@ -125,6 +154,7 @@ test_start_creates_pid
 test_stop_kills_daemon
 test_status_not_running
 test_status_running
+test_start_already_running
 
 echo ""
 echo "=========================================="
