@@ -7,7 +7,7 @@ description: Use when planning feature development from ideation to implementati
 
 ## Overview
 
-A structured approach to feature development using **progressive disclosure** - starting high-level and adding detail at each stage. Four phases transform ideas into executable tasks: Discovery → Requirements → Research & Design (the bridge) → Sequencing → Implementation.
+A structured approach to feature development using **progressive disclosure** - starting high-level and adding detail at each stage. Four modes transform ideas into executable tasks: Discovery → Requirements → Research & Design (the bridge) → Sequencing → Implementation.
 
 **Core principle:** Progressive disclosure from generic understanding to system-specific adaptation to execution detail. Each artifact layer reveals more specificity than the last.
 
@@ -36,7 +36,7 @@ Like Anthropic's Agent Skills architecture, this workflow uses progressive discl
 
 ## Bridge Weight Model
 
-The "design bridge" varies by scenario type. This determines which Phase 2 artifacts are required:
+The "design bridge" varies by scenario type. This determines which Mode 2 artifacts are required:
 
 | Weight | Scenario Examples | Design Doc | Spec Doc |
 |--------|-------------------|------------|----------|
@@ -90,20 +90,20 @@ Use this workflow when:
 
 ### Requirements Artifacts Flow Across Phases
 
-Requirements artifacts follow the JTBD → FR → AC layering framework and progressively disclose detail at each phase:
+Requirements artifacts follow the JTBD → FR → AC layering framework and progressively disclose detail at each mode:
 
-| Phase | JTBD (Why) | FR (What) | AC (How you'll know) |
+| Mode | JTBD (Why) | FR (What) | AC (How you'll know) |
 |-------|------------|-----------|----------------------|
-| **Phase 1: Requirements/PRD** | Formalized in Overview/Business Value section | Anchored as `^FR1`, `^FR2` in Requirements section | NOT in PRD — Success Criteria (outcome-level) only |
-| **Phase 2: Design** | Referenced from PRD (informs design decisions) | Referenced from PRD using `[[#^FR1\|FR1]]` | Draft ACs may emerge as `^AC-draft-1` in whiteboard |
-| **Phase 3: Sequencing** | Context for prioritization | Drive task ordering and dependencies | Formalized with `^AC1` + FR traceability `([[#^FR1\|FR1]])` |
-| **Phase 4: Implementation** | Informs "why we're doing this" | Validates task coverage | Become literal test cases in implementation plan |
+| **Mode 1: Requirements/PRD** | Formalized in Overview/Business Value section | Anchored as `^FR1`, `^FR2` in Requirements section | NOT in PRD — Success Criteria (outcome-level) only |
+| **Mode 2: Design** | Referenced from PRD (informs design decisions) | Referenced from PRD using `[[#^FR1\|FR1]]` | Draft ACs may emerge as `^AC-draft-1` in whiteboard |
+| **Mode 3: Sequencing** | Context for prioritization | Drive task ordering and dependencies | Formalized with `^AC1` + FR traceability `([[#^FR1\|FR1]])` |
+| **Mode 4: Implementation** | Informs "why we're doing this" | Validates task coverage | Become literal test cases in implementation plan |
 
 **Key insight:** ACs do NOT belong in PRDs. PRDs have Success Criteria (outcome-level). Detailed testable ACs emerge during Design/Sequencing when system context exists.
 
-## The Four Phases (Progressive Disclosure)
+## The Four Modes (Progressive Disclosure)
 
-### Phase 1: Discovery & Ideation → Requirements
+### Mode 1: Discovery & Ideation → Requirements
 
 **Goal:** Frame the problem at a high level
 
@@ -136,7 +136,7 @@ Requirements artifacts follow the JTBD → FR → AC layering framework and prog
 
 ---
 
-### Phase 2: Research & Design (The Bridge)
+### Mode 2: Research & Design (The Bridge)
 
 **Goal:** Adapt generic requirements to your specific system context
 
@@ -163,12 +163,12 @@ Requirements artifacts follow the JTBD → FR → AC layering framework and prog
    - Research best practices externally (Perplexity, web search)
    - Feed findings back to hypothesis
 
-**Intermediate Output:** **Whiteboard (Phase 2)** - captures research findings interactively
+**Intermediate Output:** **Whiteboard (Mode 2)** - captures research findings interactively
 - The whiteboard IS the gap analysis AND solutions hypothesis — do NOT create separate files
 - Draft ACs may emerge here as design reveals testable conditions
-- Format: `^AC-draft-N` in Phase 2 whiteboard
+- Format: `^AC-draft-N` in Mode 2 whiteboard
 - FRs from PRD are **referenced** using `[[#^FR1|FR1]]`, not redefined
-- Whiteboard stays in `2-design-phase/` folder
+- Whiteboard stays in `2-design-mode/` folder
 
 **Design Decision Traceability (DRY — Single Source of Truth):**
 Each design decision includes inline FR/NFR citations. Do NOT create a separate Requirements Traceability table.
@@ -181,22 +181,22 @@ Format: `- **D1: [Choice]** — [Rationale]. ^decision-name _([FR1](../prd.md#^F
 
 **Why no separate table?** The table duplicates inline citations. "Different purposes" is a rationalization — inline citations at point-of-decision ARE the verification tool. One source of truth.
 
-**Phase 2 links to Phase 1 — doesn't repeat content.**
-- Component inventory already in Phase 1? Link to `whiteboard-phase1.md#Source%20System%20Analysis`
+**Mode 2 links to Mode 1 — doesn't repeat content.**
+- Component inventory already in Mode 1? Link to `whiteboard-mode1.md#Source%20System%20Analysis`
 - Decisions already made? Reference them, don't re-document
-- Only add NEW decisions and adaptations in Phase 2
+- Only add NEW decisions and adaptations in Mode 2
 
-**Use section-specific links between phases.**
+**Use section-specific links between modes.**
 Links should target specific sections for `citation-manager extract header`:
 
 ```markdown
-> **Phase 1 Context:**
-> - [Source System Analysis](../1-elicit-discover-sense-make-problem-frame/whiteboard-phase1.md#Source%20System%20Analysis)
-> - [Decisions Made](../1-elicit-discover-sense-make-problem-frame/whiteboard-phase1.md#Decisions%20Made)
-> - [Draft ACs](../1-elicit-discover-sense-make-problem-frame/whiteboard-phase1.md#Draft%20Acceptance%20Criteria)
+> **Mode 1 Context:**
+> - [Source System Analysis](../1-elicit-discover-sense-make-problem-frame/whiteboard-mode1.md#Source%20System%20Analysis)
+> - [Decisions Made](../1-elicit-discover-sense-make-problem-frame/whiteboard-mode1.md#Decisions%20Made)
+> - [Draft ACs](../1-elicit-discover-sense-make-problem-frame/whiteboard-mode1.md#Draft%20Acceptance%20Criteria)
 ```
 
-NOT just `[Phase 1 Whiteboard](../whiteboard-phase1.md)` — section links enable targeted extraction.
+NOT just `[Phase 1 Whiteboard](../whiteboard-mode1.md)` — section links enable targeted extraction.
 
 **Final Outputs (conditional on bridge weight):**
 
@@ -207,7 +207,7 @@ NOT just `[Phase 1 Whiteboard](../whiteboard-phase1.md)` — section links enabl
 
 **Design Document** (Heavy/Medium bridge only):
 - System-specific technical design
-- Saved to **feature root** directory (not nested in `2-design-phase/`)
+- Saved to **feature root** directory (not nested in `2-design-mode/`)
 - Use `writing-design-documents` skill
 
 **Spec Document** (ALWAYS required):
@@ -225,7 +225,7 @@ NOT just `[Phase 1 Whiteboard](../whiteboard-phase1.md)` — section links enabl
 
 ---
 
-### Phase 3: Sequencing
+### Mode 3: Sequencing
 
 **Goal:** Decompose design into ordered work units
 
@@ -235,7 +235,7 @@ NOT just `[Phase 1 Whiteboard](../whiteboard-phase1.md)` — section links enabl
 - Whiteboards (weak input - may or may not be referenced)
 
 **Activities:**
-- Break design into logical phases
+- Break design into logical modes
 - Identify dependencies
 - Order tasks for incremental delivery
 - Consider risk, resources, proof-of-concept needs
@@ -253,7 +253,7 @@ NOT just `[Phase 1 Whiteboard](../whiteboard-phase1.md)` — section links enabl
 
 ---
 
-### Phase 4: Implementation Plan
+### Mode 4: Implementation Plan
 
 **Goal:** Maximum detail - every action specified
 
@@ -264,7 +264,7 @@ NOT just `[Phase 1 Whiteboard](../whiteboard-phase1.md)` — section links enabl
 - ACs referenced from Sequencing doc drive test creation
 - Implementation tasks prove ACs are satisfied
 
-#### Phase 4 Discussion Protocol
+#### Mode 4 Discussion Protocol
 
 **BEFORE invoking `writing-plans` skill:**
 
@@ -348,7 +348,7 @@ Once Task Implementation Plan exists, choose execution approach:
 - Multiple independent subsystems
 - Parallel development needed
 
-### When to skip phases?
+### When to skip modes?
 - **Skip Discovery:** Problem already well-understood, requirements exist
 - **Never skip:** Requirements → Research & Design → Sequencing → Implementation
 - **The Bridge is mandatory:** Can't go straight from generic requirements to implementation
@@ -358,7 +358,7 @@ Once Task Implementation Plan exists, choose execution approach:
 ```plaintext
 User: "We need better validation for our citation links"
 
-Phase 1: Discovery & Ideation
+Mode 1: Discovery & Ideation
 - Brainstorm: What could go wrong with links?
 - Elicit: What validation already exists?
 - Sense Making: Links break = docs become unreliable
@@ -367,7 +367,7 @@ Output: Whiteboard with problem understanding
 Output: Requirements Doc (FR1-FR5 with block anchors, Success Criteria)
 Level: HIGH-LEVEL, GENERIC
 
-Phase 2: Research & Design (The Bridge)
+Mode 2: Research & Design (The Bridge)
 - Requirements exist, now adapt to our system
 - Gather: Read citation-manager code, git hooks, existing validation
 - Identify Gaps: No pre-commit validation, no link checker
@@ -377,17 +377,17 @@ Phase 2: Research & Design (The Bridge)
 Output: Design Document (hook architecture, validation script design)
 Level: MEDIUM DETAIL, SYSTEM-SPECIFIC
 
-Phase 3: Sequencing
+Mode 3: Sequencing
 - Input: Requirements + Design (+ optional whiteboard context)
-- Break into phases: Phase 1 (validation script), Phase 2 (git hook), Phase 3 (tests)
+- Break into modes: Mode 1 (validation script), Mode 2 (git hook), Mode 3 (tests)
 - Sequence by risk: Prove validation logic first, then integrate
 - Formalize ACs with FR traceability
 Output: Sequencing Document with formalized ACs tracing to FRs
 Level: HIGHER DETAIL, WORK DECOMPOSITION
 
-Phase 4: Implementation Plan
+Mode 4: Implementation Plan
 - Input: Sequencing Document
-- Break each phase into 2-5 min tasks
+- Break each mode into 2-5 min tasks
 - Task 1: Write failing test for validation
 - Task 2: Implement minimal validator
 - ... (12 tasks total with exact code)
@@ -404,7 +404,7 @@ Execution:
 
 🚩 Starting Design without Requirements (skipping high-level understanding)
 🚩 Starting Implementation without Sequencing (no work decomposition)
-🚩 Skipping Research & Design phase (no bridge to system context)
+🚩 Skipping Research & Design mode (no bridge to system context)
 🚩 Treating Requirements as system-specific (they should be generic)
 🚩 Treating Design as generic (it should be adapted to your system)
 🚩 Going straight from Requirements to Implementation (missing 2 layers of disclosure)
@@ -425,7 +425,7 @@ Execution:
 - `writing-design-documents` - Skip for Light/Thin bridge (spec absorbs design content)
 
 **May be used:**
-- Web search tools - During Research & Design phase
+- Web search tools - During Research & Design mode
 
 **Leads to:**
 - `finishing-a-development-branch` - After execution completes
