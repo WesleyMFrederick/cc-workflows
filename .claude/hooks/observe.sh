@@ -18,6 +18,18 @@ OBSERVATIONS_FILE="${CONFIG_DIR}/observations.jsonl"
 # Ensure directory exists
 mkdir -p "$CONFIG_DIR"
 
+# Archive if file exceeds 10MB (check BEFORE writing)
+MAX_FILE_SIZE_MB=10
+if [ -f "$OBSERVATIONS_FILE" ]; then
+  file_size_mb=$(du -m "$OBSERVATIONS_FILE" 2>/dev/null | cut -f1)
+  if [ "${file_size_mb:-0}" -ge "$MAX_FILE_SIZE_MB" ]; then
+    archive_dir="${CONFIG_DIR}/observations.archive"
+    mkdir -p "$archive_dir"
+    archive_filename="observations-$(date +%Y%m%d-%H%M%S).jsonl"
+    mv "$OBSERVATIONS_FILE" "$archive_dir/$archive_filename"
+  fi
+fi
+
 # Skip if disabled via marker file
 if [ -f "$CONFIG_DIR/disabled" ]; then
   exit 0

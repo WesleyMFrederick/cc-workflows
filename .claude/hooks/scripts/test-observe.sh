@@ -136,6 +136,32 @@ test_truncation() {
   fi
 }
 
+# Test 5: Auto-archive at 10MB
+test_archive() {
+  echo "Test 5: Auto-archives observations.jsonl at 10MB"
+
+  OBSERVATIONS_FILE="$CLAUDE_PROJECT_DIR/.claude/learned/observations.jsonl"
+  ARCHIVE_DIR="$CLAUDE_PROJECT_DIR/.claude/learned/observations.archive"
+
+  # Create a fake 11MB file to trigger archive
+  dd if=/dev/zero of="$OBSERVATIONS_FILE" bs=1m count=11 2>/dev/null
+
+  # Trigger observe.sh (archive check happens before write)
+  echo '{"hook_type":"PreToolUse","tool_name":"Test","session_id":"archive-test"}' | "$HOOK_SCRIPT" pre
+
+  # Check if archive was created
+  archive_count=$(ls -1 "$ARCHIVE_DIR" 2>/dev/null | wc -l | tr -d ' ')
+
+  if [ "$archive_count" -gt 0 ]; then
+    pass "Archive created ($archive_count files in observations.archive/)"
+  else
+    fail "Archive not created when file exceeded 10MB"
+  fi
+
+  # Cleanup
+  rm -rf "$ARCHIVE_DIR"
+}
+
 # Run all tests
 echo "==========================================="
 echo "observe.sh Test Suite"
@@ -147,6 +173,7 @@ test_script_exists
 test_pre_tool_use
 test_post_tool_use
 test_truncation
+test_archive
 
 echo ""
 echo "==========================================="
