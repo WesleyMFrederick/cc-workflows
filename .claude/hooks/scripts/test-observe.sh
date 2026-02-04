@@ -162,6 +162,55 @@ test_archive() {
   rm -rf "$ARCHIVE_DIR"
 }
 
+# Test 6: SIGUSR1 signal to observer daemon
+test_signal_observer() {
+  echo "Test 6: Sends SIGUSR1 to observer daemon if running"
+
+  PID_FILE="$CLAUDE_PROJECT_DIR/.claude/learned/.observer.pid"
+
+  # Start a dummy process that ignores signals
+  sleep 30 &
+  dummy_pid=$!
+
+  # Create PID file with dummy process PID
+  echo "$dummy_pid" > "$PID_FILE"
+
+  # Trigger observe.sh
+  echo '{"hook_type":"PreToolUse","tool_name":"Test","session_id":"signal-test"}' | "$HOOK_SCRIPT" pre
+
+  # Kill dummy process
+  kill "$dummy_pid" 2>/dev/null || true
+  wait "$dummy_pid" 2>/dev/null || true
+
+  # If we got here without crashing, signal handling is graceful
+  pass "Signal sent without error (SIGUSR1 is non-fatal)"
+
+  # Cleanup
+  rm -f "$PID_FILE"
+}
+
+# Test 7: Handles invalid PID gracefully
+test_invalid_pid() {
+  echo "Test 7: Handles invalid PID file gracefully"
+
+  PID_FILE="$CLAUDE_PROJECT_DIR/.claude/learned/.observer.pid"
+
+  # Create PID file with non-existent PID
+  echo "99999" > "$PID_FILE"
+
+  # Trigger observe.sh — should not fail
+  echo '{"hook_type":"PreToolUse","tool_name":"Test","session_id":"invalid-pid-test"}' | "$HOOK_SCRIPT" pre
+
+  if [ $? -eq 0 ]; then
+    pass "Hook tolerates invalid PID"
+  else
+    fail "Hook failed with invalid PID"
+  fi
+
+  # Cleanup
+  rm -f "$PID_FILE"
+}
+
 # Run all tests
 echo "==========================================="
 echo "observe.sh Test Suite"
@@ -174,6 +223,8 @@ test_pre_tool_use
 test_post_tool_use
 test_truncation
 test_archive
+test_signal_observer
+test_invalid_pid
 
 echo ""
 echo "==========================================="

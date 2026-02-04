@@ -81,4 +81,13 @@ fi
 # Append to observations file (atomic append)
 echo "$OBSERVATION" >> "$OBSERVATIONS_FILE"
 
+# Signal observer daemon if running (SIGUSR1 = "new observations available")
+OBSERVER_PID_FILE="${CONFIG_DIR}/.observer.pid"
+if [ -f "$OBSERVER_PID_FILE" ]; then
+  observer_pid=$(cat "$OBSERVER_PID_FILE" 2>/dev/null)
+  if [ -n "$observer_pid" ] && kill -0 "$observer_pid" 2>/dev/null; then
+    kill -USR1 "$observer_pid" 2>/dev/null || true
+  fi
+fi
+
 exit 0
