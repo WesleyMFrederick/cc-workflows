@@ -70,7 +70,7 @@ OBSERVATION=$(echo "$INPUT_JSON" | jq -c --arg event "$EVENT" '
     { output: (.tool_output | tostring | .[0:5000]) }
   else {} end
 )
-' 2>/dev/null)
+' 2>/dev/null) || true
 
 # Fallback if jq parsing fails
 if [ -z "$OBSERVATION" ] || [ "$OBSERVATION" = "null" ]; then

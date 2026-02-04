@@ -107,21 +107,29 @@ analyze_observations() {
     return
   fi
 
+  # COPY observations to temp file for analysis (preserves incoming writes)
+  local temp_analysis_file="${OBSERVATIONS_FILE}.analyzing"
+  cp "$OBSERVATIONS_FILE" "$temp_analysis_file"
+  local analyzed_count=$obs_count
+
   echo "[$(date)] Analyzing $obs_count observations..." >> "$LOG_FILE"
 
   # Use Claude Code with Haiku to analyze observations
   if [ -x "$CLAUDE_BIN" ]; then
-    "$CLAUDE_BIN" --model haiku --max-turns 3 --print --allowedTools Write \
-      -p "Read $OBSERVATIONS_FILE and identify patterns. If you find 3+ occurrences of the same pattern, create an instinct file in $INSTINCTS_DIR following the YAML format in .claude/agents/observer.md. Be conservative - only create instincts for clear patterns." \
+    "$CLAUDE_BIN" --model haiku --max-turns 3 --print --allowedTools Read,Write \
+      -p "Read $temp_analysis_file and identify patterns. If you find 3+ occurrences of the same pattern, create an instinct file in $INSTINCTS_DIR following the YAML format in .claude/agents/observer.md. Be conservative - only create instincts for clear patterns." \
       >> "$LOG_FILE" 2>&1 || true
   fi
 
-  # Archive processed observations
-  if [ -f "$OBSERVATIONS_FILE" ]; then
-    archive_dir="${CONFIG_DIR}/observations.archive"
-    mkdir -p "$archive_dir"
-    mv "$OBSERVATIONS_FILE" "$archive_dir/processed-$(date +%Y%m%d-%H%M%S).jsonl"
-    touch "$OBSERVATIONS_FILE"
+  # Archive the analyzed snapshot (not current observations)
+  archive_dir="${CONFIG_DIR}/observations.archive"
+  mkdir -p "$archive_dir"
+  mv "$temp_analysis_file" "$archive_dir/processed-$(date +%Y%m%d-%H%M%S).jsonl"
+
+  # Remove already-analyzed lines from main file (preserves new observations)
+  if [ "$analyzed_count" -gt 0 ] && [ -f "$OBSERVATIONS_FILE" ]; then
+    tail -n +$((analyzed_count + 1)) "$OBSERVATIONS_FILE" > "${OBSERVATIONS_FILE}.tmp" 2>/dev/null || true
+    mv "${OBSERVATIONS_FILE}.tmp" "$OBSERVATIONS_FILE"
   fi
 }
 
@@ -148,7 +156,7 @@ OBSERVER_SCRIPT
 
     # Wait for PID file to be created
     wait_count=0
-    while [ ! -f "$PID_FILE" ] && [ $wait_count -lt 10 ]; do
+    while [ ! -f "$PID_FILE" ] && [ $wait_count -lt 30 ]; do
       sleep 0.1
       wait_count=$((wait_count + 1))
     done
