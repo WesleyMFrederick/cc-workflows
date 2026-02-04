@@ -34,6 +34,35 @@ Like Anthropic's Agent Skills architecture, this workflow uses progressive discl
 
 **Why this matters:** You can't jump from generic requirements directly to code. You need the intermediate layers to bridge understanding to execution.
 
+## Bridge Weight Model
+
+The "design bridge" varies by scenario type. This determines which Phase 2 artifacts are required:
+
+| Weight | Scenario Examples | Design Doc | Spec Doc |
+|--------|-------------------|------------|----------|
+| **Heavy** | Greenfield feature, system integration, API design | Required | Required |
+| **Medium** | Brownfield enhancement, platform migration | Optional | Required |
+| **Light** | Port/transfer, refactor | Absorbed into Spec | Required |
+| **Thin** | Systematic bug fix, deprecation/removal | Skip | Required |
+
+**Key insight:** Spec document is ALWAYS required. Design doc is conditional based on how much architectural exploration is needed.
+
+- **Heavy bridge:** Unknown patterns, many architectural decisions → explore in whiteboard, formalize in design doc, prescribe in spec
+- **Light bridge:** Known patterns, prescribed source → whiteboard captures decisions, spec prescribes implementation directly
+
+### Traceability Model
+
+Decisions live in whiteboard (stable anchor). Spec references them (living doc).
+
+```text
+Whiteboard (append-only)        Spec (living)
+├── ^decision-D1 ──────────►   <satisfies>D1</satisfies>
+├── ^decision-D2 ──────────►   <component references="D2">
+└── ^decision-D3 ──────────►   Updated when design evolves
+```
+
+When spec changes: Add new whiteboard decision FIRST, then update spec with reference.
+
 ## When to Use
 
 Use this workflow when:
@@ -49,103 +78,15 @@ Use this workflow when:
 
 ## The Flow (Progressive Disclosure)
 
-### Development Flow Diagram
-
-```mermaid
-graph TD
-    %% Phase 1: Discovery & Ideation
-    brainstorm@{ shape: rounded, label: "Brainstorm" }
-    elicit@{ shape: rounded, label: "Elicit" }
-    sensemaking@{ shape: rounded, label: "Sense Making" }
-    framing@{ shape: rounded, label: "Problem Framing" }
-    whiteboard@{ shape: doc, label: "Whiteboard\n(Phase 1)" }
-    
-    %% Phase 2: Research & Design - The Bridge
-    requirements@{ shape: doc, label: "Requirements\nDocument" }
-    gather@{ shape: rect, label: "Gather Software &\nSystem Context" }
-    gaps@{ shape: rect, label: "Identify Gaps" }
-    hypothesis@{ shape: rect, label: "Solutions\nHypothesis" }
-    patterns@{ shape: rect, label: "Identify Existing Patterns\nAND/OR\nResearch Working Patterns" }
-    whiteboard2@{ shape: doc, label: "Whiteboard\n(Phase 2)" }
-    design@{ shape: doc, label: "Design\nDocument" }
-    
-    %% Phase 3 & 4: Progressive Disclosure
-    sequencing@{ shape: doc, label: "Sequencing\nDocument" }
-    implementation@{ shape: doc, label: "Task\nImplementation Plan" }
-    
-    %% Phase 1 Flow
-    brainstorm --> whiteboard
-    elicit --> whiteboard
-    sensemaking --> whiteboard
-    framing --> whiteboard
-    
-    %% Phase 1 to Phase 2 transition
-    whiteboard --> requirements
-    
-    %% Phase 2 Flow - The Bridge
-    requirements --> gather
-    gather --> gaps
-    gaps --> hypothesis
-    hypothesis --> patterns
-    patterns --> hypothesis
-    
-    %% Phase 2 outputs
-    hypothesis --> whiteboard2
-    patterns --> whiteboard2
-    whiteboard2 --> design
-    
-    %% Phase 3 Flow
-    requirements --> sequencing
-    design --> sequencing
-    whiteboard -.-> sequencing
-    whiteboard2 -.-> sequencing
-    
-    %% Phase 4 Flow
-    sequencing --> implementation
-    
-    %% Styling
-    classDef ideation fill:#fff4cc,stroke:#f4c430,stroke-width:2px
-    classDef research fill:#ffe4cc,stroke:#ff9933,stroke-width:2px
-    classDef doc1 fill:#e6f3ff,stroke:#4a90e2,stroke-width:2px
-    classDef doc2 fill:#d1e7dd,stroke:#0f5132,stroke-width:2px
-    classDef doc3 fill:#cfe2ff,stroke:#084298,stroke-width:3px
-    classDef doc4 fill:#d4edda,stroke:#28a745,stroke-width:3px
-    
-    brainstorm:::ideation
-    elicit:::ideation
-    sensemaking:::ideation
-    framing:::ideation
-    
-    gather:::research
-    gaps:::research
-    hypothesis:::research
-    patterns:::research
-    
-    whiteboard:::doc1
-    whiteboard2:::doc1
-    requirements:::doc2
-    design:::doc2
-    sequencing:::doc3
-    implementation:::doc4
-```
-
-### Legend
-
-- **Yellow** - Discovery & Ideation activities (Phase 1)
-- **Orange** - Research & Design activities (Phase 2 - THE BRIDGE)
-- **Light blue** - Whiteboards (informal)
-- **Green** - Requirements & Design (Level 1 & 2)
-- **Blue** - Sequencing (Level 3)
-- **Dark green** - Implementation Plan (Level 4 - maximum detail)
-- **Solid arrows** - Primary flow
-- **Dotted arrows** - Optional/weak inputs
+**Visual diagram:** See [Development Workflow Quick Reference](Development%20Workflow%20Quick%20Reference.md)
 
 ### Progressive Disclosure Levels
 
 1. **Requirements** (Light green) - Generic, high-level
-2. **Design** (Green) - System-specific, medium detail ← THE BRIDGE
-3. **Sequencing** (Blue) - Work decomposition, higher detail
-4. **Implementation** (Dark green) - Maximum detail, executable
+2. **Design Doc** (Green) - System-specific exploration ← THE BRIDGE (Heavy/Medium only)
+3. **Spec Doc** (Blue) - Implementation prescription ← ALWAYS REQUIRED
+4. **Sequencing** (Blue) - Work decomposition, higher detail
+5. **Implementation** (Dark green) - Maximum detail, executable
 
 ### Requirements Artifacts Flow Across Phases
 
@@ -229,17 +170,56 @@ Requirements artifacts follow the JTBD → FR → AC layering framework and prog
 - FRs from PRD are **referenced** using `[[#^FR1|FR1]]`, not redefined
 - Whiteboard stays in `2-design-phase/` folder
 
-**Final Output:** **Design Document** - system-specific technical design
-- Design doc saved to **feature root** directory (not nested in `2-design-phase/`)
+**Design Decision Traceability (DRY — Single Source of Truth):**
+Each design decision includes inline FR/NFR citations. Do NOT create a separate Requirements Traceability table.
 
-**REQUIRED SKILL:** `writing-design-documents`
-- Interactive whiteboard workflow (research baseline → present options → user decides → capture)
-- Structured design doc with component design, integration points, file inventory
-- Architecture evaluation filtered through MVP lens
+Format: `- **D1: [Choice]** — [Rationale]. ^decision-name _([FR1](../prd.md#^FR1), [NFR1](../prd.md#^NFR1))_`
 
-**Also used:**
-- `evaluate-against-architecture-principles` - validate design choices, then filter findings through MVP lens and design risk assessment
-- May use web_search, code search
+- Block anchor (`^decision-name`) enables linking from other docs
+- Inline citations show which requirements the decision satisfies
+- Supporting decisions use: `_(Supporting: [FR6](../prd.md#^FR6))_`
+
+**Why no separate table?** The table duplicates inline citations. "Different purposes" is a rationalization — inline citations at point-of-decision ARE the verification tool. One source of truth.
+
+**Phase 2 links to Phase 1 — doesn't repeat content.**
+- Component inventory already in Phase 1? Link to `whiteboard-phase1.md#Source%20System%20Analysis`
+- Decisions already made? Reference them, don't re-document
+- Only add NEW decisions and adaptations in Phase 2
+
+**Use section-specific links between phases.**
+Links should target specific sections for `citation-manager extract header`:
+
+```markdown
+> **Phase 1 Context:**
+> - [Source System Analysis](../1-elicit-discover-sense-make-problem-frame/whiteboard-phase1.md#Source%20System%20Analysis)
+> - [Decisions Made](../1-elicit-discover-sense-make-problem-frame/whiteboard-phase1.md#Decisions%20Made)
+> - [Draft ACs](../1-elicit-discover-sense-make-problem-frame/whiteboard-phase1.md#Draft%20Acceptance%20Criteria)
+```
+
+NOT just `[Phase 1 Whiteboard](../whiteboard-phase1.md)` — section links enable targeted extraction.
+
+**Final Outputs (conditional on bridge weight):**
+
+| Bridge Weight | Whiteboard | Design Doc | Spec Doc |
+|---------------|------------|------------|----------|
+| Heavy/Medium | Required | Required/Optional | Required |
+| Light/Thin | Required | Skip (absorbed) | Required |
+
+**Design Document** (Heavy/Medium bridge only):
+- System-specific technical design
+- Saved to **feature root** directory (not nested in `2-design-phase/`)
+- Use `writing-design-documents` skill
+
+**Spec Document** (ALWAYS required):
+- Implementation prescription — exactly what to build
+- Living document that evolves during sequencing/implementation
+- References whiteboard decisions for traceability
+- Use `writing-spec-documents` skill
+
+**Skills used:**
+- `writing-design-documents` - Heavy/Medium bridge (interactive whiteboard + formal design doc)
+- `writing-spec-documents` - Always (implementation prescription with traceability)
+- `evaluate-against-architecture-principles` - validate design choices, filter through MVP lens
 
 **Progressive disclosure level:** Medium detail - adapted to system context
 
@@ -284,8 +264,55 @@ Requirements artifacts follow the JTBD → FR → AC layering framework and prog
 - ACs referenced from Sequencing doc drive test creation
 - Implementation tasks prove ACs are satisfied
 
+#### Phase 4 Discussion Protocol
+
+**BEFORE invoking `writing-plans` skill:**
+
+1. **Read inputs:** Spec document + Sequencing document (ACs with FR traceability)
+2. **Read example:** Reference existing implementation plans in codebase for format
+   - Example: `tools/citation-manager/design-docs/features/.../epic7-cli-integration-implementation-plan.md`
+3. **Propose task list:** Present numbered tasks with 1-sentence descriptions
+4. **Get approval:** User approves task breakdown BEFORE detailed plan writing
+
+**Task granularity rule:** Each task = one TDD cycle + one commit
+
+**Task structure (7 steps per task):**
+
+```markdown
+## Task N — [Name]
+
+### Files
+- `path/to/file.ts` (CREATE/MODIFY)
+- `tests/path/to/test.ts` (CREATE & TEST)
+
+### Step 1: Write the failing test
+[Test code]
+
+### Step 2: Run test to verify it fails
+Run: [command]
+Expected: FAIL — [reason]
+
+### Step 3: Write minimal implementation
+[Implementation code]
+
+### Step 4: Run test to verify it passes
+Run: [command]
+Expected: PASS
+
+### Step 5: Run full test suite
+Run: [command]
+Expected: [count] tests pass
+
+### Step 6: Type check / Lint
+Run: [command]
+Expected: Zero errors
+
+### Step 7: Commit
+Use `create-git-commit` skill to commit.
+```
+
 **REQUIRED SKILL:** `writing-plans`
-- Each task is one action (TDD cycle)
+- Each task is one TDD cycle (RED-GREEN-REFACTOR) + commit
 - Exact file paths, complete code examples
 - Test commands with expected output
 - Commit after each task
@@ -373,15 +400,6 @@ Execution:
 - Complete with finishing-a-development-branch
 ```
 
-## Visual Reference
-
-See [Development Flow Diagram](#Development%20Flow%20Diagram)  for complete flowchart showing:
-- Discovery activities → Whiteboard → Requirements (yellow → light blue)
-- Research & Design loop creating system-specific design (orange → green)
-- Sequencing with strong inputs from Requirements/Design (blue)
-- Implementation Plan with maximum detail (dark green)
-- Progressive disclosure: each layer more specific than the last
-
 ## Red Flags
 
 🚩 Starting Design without Requirements (skipping high-level understanding)
@@ -397,10 +415,14 @@ See [Development Flow Diagram](#Development%20Flow%20Diagram)  for complete flow
 
 **Required in this workflow:**
 - `writing-requirements-documents` - Phase 1 (Requirements)
-- `writing-design-documents` - Phase 2 (Design — interactive whiteboard + formal design doc)
+- `writing-design-documents` - Phase 2 (Heavy/Medium bridge — interactive whiteboard + formal design doc)
+- `writing-spec-documents` - Phase 2 (ALWAYS — implementation prescription)
 - `evaluate-against-architecture-principles` - Phase 2 (Design validation, MVP-filtered)
 - `writing-plans` - Phase 4 (Implementation Plan)
 - `subagent-driven-development` OR `executing-plans` - Execution
+
+**Conditional:**
+- `writing-design-documents` - Skip for Light/Thin bridge (spec absorbs design content)
 
 **May be used:**
 - Web search tools - During Research & Design phase

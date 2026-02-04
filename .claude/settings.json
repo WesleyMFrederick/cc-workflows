@@ -27,10 +27,9 @@
       "WebFetch(domain:docs.anthropic.com)",
       "WebFetch(domain:www.linkedin.com)",
       "Bash(sed:*)",
-      "Bash(sed:*)",
-      "Bash(sed:*)",
-      "Bash(node:*)",
       "Bash(npm install:*)",
+      "Bash(npm test:*)",
+      "Bash(npm run:*)",
       "mcp__deepwiki__read_wiki_structure",
       "mcp__deepwiki__read_wiki_contents",
       "mcp__deepwiki__ask_question",
@@ -70,6 +69,15 @@
     ],
     "PreToolUse": [
       {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/observe.sh pre"
+          }
+        ]
+      },
+      {
         "matcher": "Task",
         "hooks": [
           {
@@ -80,6 +88,15 @@
       }
     ],
     "PostToolUse": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/observe.sh post"
+          }
+        ]
+      },
       {
         "matcher": "Task",
         "hooks": [
@@ -137,6 +154,10 @@
           {
             "type": "command",
             "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/stop-sync.sh"
+          },
+          {
+            "type": "command",
+            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/evaluate-session.sh"
           }
         ]
       }
@@ -154,7 +175,7 @@
     ]
   },
   "enabledPlugins": {
-    "code-review@claude-plugins-official": true,
-    "code-simplifier@claude-plugins-official": true
+    "code-review@claude-plugins-official": false,
+    "code-simplifier@claude-plugins-official": false
   }
 }

@@ -12,15 +12,23 @@ Adapt generic requirements to your specific system through interactive research,
 ## When to Use
 
 Use this skill when:
-- Phase 1 requirements (PRD) exist and you're starting Phase 2
-- Need to bridge generic requirements to system-specific implementation
-- Adapting an existing system's patterns to a new codebase
-- Making architectural decisions that need documented rationale
+- **Heavy bridge:** Greenfield features, system integration, API design — many architectural decisions needed
+- **Medium bridge:** Brownfield enhancement, platform migration — some decisions needed
 
 **Do NOT use** for:
+- **Light bridge:** Ports, refactors — use `writing-spec-documents` directly (design absorbed into spec)
+- **Thin bridge:** Bug fixes, deprecation — use `writing-spec-documents` only
 - Phase 1 discovery/requirements (use `writing-requirements-documents`)
 - Phase 4 implementation planning (use `writing-plans`)
-- Simple changes that don't need design decisions
+
+### Bridge Weight Quick Reference
+
+| Weight | Scenarios | This Skill |
+|--------|-----------|------------|
+| Heavy | Greenfield, integration, API design | **Required** |
+| Medium | Brownfield, migration | Recommended |
+| Light | Port, refactor | Skip (use spec) |
+| Thin | Bug fix, deprecation | Skip (use spec) |
 
 ## Inputs
 
@@ -142,6 +150,64 @@ Save to: `{{feature-dir}}/2-design-phase/phase2-design-whiteboard.md`
 - **Phase 1 Whiteboard**: [Phase 1 Whiteboard](../1-elicit-discover-sense-make-problem-frame/whiteboard-phase1.md)
 ```
 
+## Phase 2 Artifacts (Bridge-Dependent)
+
+What you produce depends on bridge weight:
+
+| Bridge | Whiteboard | Design Doc | Spec Doc |
+|--------|------------|------------|----------|
+| Heavy/Medium | Required | Required | Required |
+| Light/Thin | Required | Skip | Required |
+
+### Whiteboard (Always)
+- **Purpose:** Decision anchor — immutable history of choices made
+- **Stability:** Append-only — never modify past decisions
+- **Contains:** Research findings, decisions with rationale, draft ACs
+
+### Design Doc (Heavy/Medium only)
+- **Purpose:** WHY rationale — documents decision history formally
+- **Stability:** Stable — survives spec changes
+- **When to create:** Greenfield, integration, API design — many architectural decisions
+- **When to skip:** Ports, refactors — whiteboard + spec sufficient
+
+### Spec Doc (Always — use `writing-spec-documents` skill)
+- **Purpose:** Current HOW — concrete implementation instructions
+- **Stability:** Living — evolves during sequencing/implementation
+- **Contains:** Component specs, interfaces, data schemas, port instructions
+- **Traceability:** References whiteboard decisions via anchors
+
+**Relationship:** Whiteboard anchors decisions. Design doc formalizes rationale (when needed). Spec doc prescribes implementation.
+
+## Draft AC Validation
+
+Phase 1 whiteboards may contain draft ACs (`^AC-draft-N`). Phase 2 must validate ALL of them.
+
+### Process
+
+1. List every draft AC from Phase 1 whiteboard
+2. Review each against design decisions made in Phase 2
+3. Mark status: ✅ Validated | ⚠️ Revised | ❌ Dropped
+4. Document revision rationale inline
+
+### Format in Whiteboard
+
+```markdown
+## Draft AC Validation
+
+**Observation Capture (FR1):**
+
+- AC-draft-1: ✅ Validated
+- AC-draft-2: ✅ Validated
+- AC-draft-3: ⚠️ REVISED — capture ALL tools (not filtered list) per Decision 2
+- AC-draft-4: ✅ Validated
+
+**Performance (NFR1):**
+
+- AC-draft-25: ✅ Validated — jq rewrite supports <100ms target
+```
+
+**Why:** Draft ACs inform sequencing. Unvalidated ACs create downstream confusion.
+
 ## Design Document Structure
 
 Save to: `{{feature-dir}}/{{feature-name}}-design.md` (feature root, NOT nested in `2-design-phase/`)
@@ -252,9 +318,11 @@ After writing design documentation, create TodoWrite todos for:
 | Presenting raw evaluation output | Overwhelms with non-actionable items | Filter through MVP lens first |
 | Nesting design doc in 2-design-phase/ | Design doc is a feature-level artifact | Save to feature root |
 | Design decisions without rationale | Can't understand "why" later | Always document Choice + Rationale |
+| Using tables for linkable items | Obsidian `^anchor` doesn't work on table rows | Use bullet lists with anchors for items needing traceability |
 
 ## Red Flags
 
+- Tables containing items that need to be linked (use bullet lists with `^anchor` instead)
 - Creating more than 2 artifacts (whiteboard + design doc)
 - Design decisions without documented rationale
 - Component designs without file locations
@@ -273,10 +341,14 @@ After writing design documentation, create TodoWrite todos for:
 - `evaluate-against-architecture-principles` — validate design, then filter through MVP lens
 
 **Outputs to:**
-- `writing-plans` — design doc feeds Phase 4 implementation planning
+- `writing-spec-documents` — whiteboard decisions feed spec traceability
+- `writing-plans` — design doc + spec feed Phase 4 implementation planning
 
 **Referenced by:**
-- `enforcing-development-workflow` — Phase 2 REQUIRED skill
+- `enforcing-development-workflow` — Phase 2 skill (Heavy/Medium bridge)
+
+**Alternative for Light/Thin bridge:**
+- Skip this skill, use `writing-spec-documents` directly with whiteboard
 
 ---
 

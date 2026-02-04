@@ -1,20 +1,31 @@
 # Development Workflow - Quick Reference
 
+## Bridge Weight Model (POLICY: When to use what)
+
+| Weight | Scenarios | Design Doc | Spec Doc |
+|--------|-----------|------------|----------|
+| **Heavy** | Greenfield, integration, API design | Required | Required |
+| **Medium** | Brownfield enhancement, migration | Optional | Required |
+| **Light** | Port, refactor | Skip | Required |
+| **Thin** | Bug fix, deprecation | Skip | Required |
+
+**Key:** Spec is ALWAYS required. Design Doc depends on bridge weight.
+
 ## Progressive Disclosure: Four Levels
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────┐
 │ LEVEL 1: HIGH-LEVEL, GENERIC                                    │
 ├─────────────────────────────────────────────────────────────────┤
 │ Phase 1: DISCOVERY & IDEATION                                   │
 │ Brainstorm → Elicit → Sense Making → Problem Framing           │
-│                         ↓                                        │
+│                         ↓                                       │
 │                   [Whiteboard]                                  │
-│                         ↓                                        │
+│                         ↓                                       │
 │              [Requirements Document]                            │
 │                                                                 │
 │ Output: Generic, high-level understanding                       │
-│ Question: WHAT needs to be solved?                             │
+│ Question: WHAT needs to be solved?                              │
 └─────────────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────────┐
@@ -25,13 +36,17 @@
 │ Gather Context → Identify Gaps → Solutions Hypothesis          │
 │                         ↓              ↑                        │
 │              Research Patterns ────────┘                        │
-│                         ↓                                        │
+│                         ↓                                       │
 │              [Phase 2 Whiteboard]                               │
-│                         ↓                                        │
-│                [Design Document]                                │
+│                         ↓                                       │
+│                  ◇ Bridge Weight?                               │
+│                 ╱              ╲                                │
+│         Heavy/Medium        Light/Thin                          │
+│              ↓                  ↓                                │
+│        [Design Doc] ────→ [Spec Doc]                            │
 │                                                                 │
-│ Output: System-adapted design                                   │
-│ Question: HOW does this fit OUR system context?                │
+│ Output: System-adapted design + implementation prescription     │
+│ Question: HOW does this fit OUR system context?                 │
 └─────────────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────────┐
@@ -93,25 +108,37 @@ Within Phase 2 Research & Design:
 
 ## Required Skills by Phase
 
-|Phase|Required Skill|Purpose|
-|---|---|---|
-|Phase 1|`writing-requirements-documents`|Transform whiteboard to formal requirements|
-|Phase 2|`evaluate-against-architecture-principles`|Validate design choices|
-|Phase 3|None|Work sequencing and decomposition|
-|Phase 4|`writing-plans`|Bite-sized implementation tasks|
-|Execution|`subagent-driven-development` OR `executing-plans`|Task execution|
+| Phase | Required Skill | Purpose |
+|-------|----------------|---------|
+| Phase 1 | `writing-requirements-documents` | Transform whiteboard to formal requirements |
+| Phase 2 | `writing-design-documents` | Heavy/Medium bridge only |
+| Phase 2 | `writing-spec-documents` | ALWAYS — implementation prescription |
+| Phase 2 | `evaluate-against-architecture-principles` | Validate design choices |
+| Phase 3 | None | Work sequencing and decomposition |
+| Phase 4 | `writing-plans` | Bite-sized implementation tasks |
+| Execution | `subagent-driven-development` OR `executing-plans` | Task execution |
 
 ## Artifacts at Each Stage (Progressive Disclosure)
 
-1. **Whiteboard** - Informal exploration (Phase 1)
+1. **Whiteboard** - Informal exploration, decision anchor (Phase 1 & 2)
 2. **Requirements Document** - High-level, generic (Level 1)
-3. **Design Document** - Medium detail, system-specific (Level 2) ← THE BRIDGE
-4. **Sequencing Document** - Higher detail, work decomposition (Level 3)
-5. **Task Implementation Plan** - Maximum detail, 2-5 min tasks (Level 4)
+3. **Design Document** - System-specific exploration (Level 2) ← Heavy/Medium only
+4. **Spec Document** - Implementation prescription (Level 2) ← ALWAYS REQUIRED
+5. **Sequencing Document** - Higher detail, work decomposition (Level 3)
+6. **Task Implementation Plan** - Maximum detail, 2-5 min tasks (Level 4)
 
 ## Common Mistakes
 
-❌ Jump from Requirements directly to code (missing 2 disclosure levels) ❌ Write system-specific Requirements (they should be generic) ❌ Write generic Design (it should be system-adapted) ❌ Skip the bridge (Research & Design phase) ❌ Create Implementation Plan without Sequencing
+❌ Jump from Requirements directly to code (missing disclosure levels)
+❌ Write system-specific Requirements (they should be generic)
+❌ Skip Spec Doc (it's ALWAYS required)
+❌ Create Design Doc for Light/Thin bridge (use Spec directly)
+❌ Skip Design Doc for Heavy bridge (greenfield needs exploration)
+❌ Create Implementation Plan without Sequencing
 
-✅ Follow progressive disclosure levels sequentially ✅ Keep Requirements generic, Design system-specific ✅ Use Research & Design to create the bridge ✅ Sequence before detailed planning ✅ Use required skills at each phase
+✅ Follow progressive disclosure levels sequentially
+✅ Check bridge weight FIRST to determine artifacts
+✅ Keep Requirements generic, Design system-specific
+✅ Always create Spec Doc (living implementation prescription)
+✅ Use required skills at each phase
   

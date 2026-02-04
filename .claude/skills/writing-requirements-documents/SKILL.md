@@ -166,11 +166,17 @@ A PRD follows this section structure:
 
 ### Success Criteria
 
-**[Feature/Migration] complete when:**
+**Done when:**
 - [Measurable criterion 1]
 - [Measurable criterion 2]
 - [Measurable criterion 3]
 ```
+
+**Token-efficient Overview guidance:**
+- Overview = WHAT + WHY (outcomes), never HOW (implementation)
+- Keep capability descriptions ("enables pattern detection")
+- Remove mechanism details ("via deterministic hooks") → belongs in Design
+- "Done when" not "Port complete when" — simpler language
 
 ### Scope Section
 
@@ -185,9 +191,14 @@ A PRD follows this section structure:
 
 ### Out of Scope
 
-- [Explicitly excluded item]
+- [Explicitly excluded item] — [Phase if deferred]
 - [Explicitly excluded item]
 ```
+
+**Out of Scope format:**
+- Pattern: `<item> — <phase>` (terse)
+- Write `/evolve — Phase A.2` not "deferred to Phase A.2"
+- Don't repeat terms already evident from item name
 
 ### Requirements Section
 
@@ -281,6 +292,13 @@ Explicitly **out of scope** for this effort:
 - **[Baseline Name]**: [Commit hash or version] - [What it represents]
 ```
 
+**References guidance:**
+- Link synthesized artifacts only (whiteboards, design docs)
+- Don't link raw research (agent outputs, session transcripts)
+- Raw research is working material; PRD references curated artifacts
+- "Traceability" means tracing to synthesis, not raw dumps — whiteboard already traces decisions
+- If reviewer asks for "sources", point to whiteboard (which cites raw research internally)
+
 ## Mandatory Validation Checklist
 
 After writing requirements documentation, create TodoWrite todos for:
@@ -307,6 +325,9 @@ After writing requirements documentation, create TodoWrite todos for:
 | Requirements without categories | Hard to navigate large PRDs | Group NFRs by Quality, Maintainability, Process |
 | ACs in PRD instead of Sequencing | Violates progressive disclosure | PRD gets Success Criteria; ACs formalize in Sequencing |
 | ACs without FR traceability | Can't verify which requirement is satisfied | Add `([[#^FR1\|FR1]])` to each AC |
+| Implementation details in Overview | Overview = WHAT/WHY, not HOW | Move mechanisms to Design doc |
+| Verbose Out of Scope ("deferred to Phase A.2") | Wastes tokens, harder to scan | Use `— Phase A.2` format |
+| Linking raw research (agent outputs) | Working material, not curated | Link synthesized artifacts only |
 
 ## Red Flags
 
@@ -320,6 +341,9 @@ After writing requirements documentation, create TodoWrite todos for:
 🚩 Missing Non-Goals or Scope sections
 🚩 Detailed acceptance criteria in PRD (use Success Criteria instead)
 🚩 Acceptance criteria without FR traceability links
+🚩 Implementation mechanisms in Overview (hooks, APIs, technologies)
+🚩 Verbose Out of Scope items ("deferred to", redundant descriptions)
+🚩 Raw research artifacts in References (agent outputs, session transcripts)
 
 ## Common Rationalizations (And Why They're Wrong)
 
@@ -332,6 +356,9 @@ After writing requirements documentation, create TodoWrite todos for:
 | "Block anchors aren't necessary for simple docs" | Only complex docs need anchors | Every requirement needs traceability from day one. "Simple" docs become complex. |
 | "I'll add the anchors and links later" | Focus on content first | Never happens. Add them now or they'll be missing forever. |
 | "Non-Goals aren't needed for small PRDs" | Seems like overhead | Non-Goals prevent scope creep. Even small PRDs benefit from explicit boundaries. |
+| "Implementation details help understanding" | Context feels helpful | Overview = WHAT/WHY only. HOW belongs in Design doc. Readers scan for outcomes, not mechanisms. |
+| "Verbose Out of Scope is clearer" | More words = more clarity | Terse is scannable. `— Phase A.2` conveys same info as "deferred to Phase A.2". |
+| "Raw research links show my work" | Transparency is good | PRDs reference curated artifacts. Working materials (agent outputs) clutter the doc. |
 
 ## Example: Before vs After
 
