@@ -21,7 +21,13 @@ if [ -f "$PID_FILE" ]; then
   pid=$(cat "$PID_FILE" 2>/dev/null)
   if [ -n "$pid" ] && kill -0 "$pid" 2>/dev/null; then
     echo "[ContinuousLearning] Stopping observer daemon (PID: $pid)" >&2
-    kill "$pid" 2>/dev/null || true
+    # First try SIGTERM to allow graceful trap-based cleanup
+    kill -TERM "$pid" 2>/dev/null || true
+    sleep 1
+    # If still running, use SIGKILL
+    if kill -0 "$pid" 2>/dev/null; then
+      kill -9 "$pid" 2>/dev/null || true
+    fi
   fi
   rm -f "$PID_FILE"
 fi
