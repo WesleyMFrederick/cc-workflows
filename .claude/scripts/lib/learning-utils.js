@@ -22,7 +22,7 @@ export function ensureDir(dirPath) {
 export function readFile(filePath) {
   try {
     return fs.readFileSync(filePath, 'utf-8');
-  } catch {
+  } catch (_err) {
     return null;
   }
 }
@@ -59,7 +59,7 @@ export function findFiles(dir, ext) {
     return files
       .filter(f => f.endsWith(ext))
       .map(f => path.join(dir, f));
-  } catch {
+  } catch (_err) {
     return [];
   }
 }
@@ -74,6 +74,7 @@ export function log(message) {
 
 /**
  * Output data to stdout (JSON-aware).
+ * Used by instinct-cli commands for structured output (e.g., --json flag).
  * @param {*} data - Data to output
  */
 export function output(data) {
