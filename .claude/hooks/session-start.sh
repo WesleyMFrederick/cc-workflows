@@ -7,6 +7,19 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" && pwd)"
 PROJECT_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 
+# Auto-install gh CLI in remote environments
+GH_SETUP="${SCRIPT_DIR}/gh/setup.sh"
+[[ -x "$GH_SETUP" ]] && "$GH_SETUP" >/dev/null 2>&1 || true
+
+# Auto-start observer daemon if enabled in config
+CONFIG_FILE="${PROJECT_ROOT}/.claude/learned/config.json"
+OBSERVER_SCRIPT="${PROJECT_ROOT}/.claude/scripts/start-observer.sh"
+if [[ -f "$CONFIG_FILE" ]] && [[ -x "$OBSERVER_SCRIPT" ]]; then
+  if jq -e '.observer.enabled == true' "$CONFIG_FILE" >/dev/null 2>&1; then
+    CLAUDE_PROJECT_DIR="$PROJECT_ROOT" "$OBSERVER_SCRIPT" >/dev/null 2>&1 &
+  fi
+fi
+
 # Read using-superpowers content
 using_superpowers_content=$(cat "${PROJECT_ROOT}/.claude/skills/using-superpowers/SKILL.md" 2>&1 || echo "Error reading using-superpowers skill")
 

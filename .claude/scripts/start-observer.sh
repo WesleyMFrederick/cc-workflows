@@ -94,42 +94,41 @@ LOG_FILE="$3"
 OBSERVATIONS_FILE="$4"
 INSTINCTS_DIR="$5"
 CLAUDE_BIN="$6"
+CONFIG_FILE="${CONFIG_DIR}/config.json"
 
 trap 'rm -f "$PID_FILE"; exit 0' TERM INT
 
 analyze_observations() {
-  # Only analyze if we have enough observations
-  # Minimum threshold prevents pattern detection on insufficient data
-  # Configurable via MIN_OBSERVATIONS env var (default: 20)
-  local min_observations="${MIN_OBSERVATIONS:-20}"
+  # Read settings from config (with defaults)
+  local min_observations=20
+  local max_turns=30
+  local model="haiku"
+  if [ -f "$CONFIG_FILE" ]; then
+    min_observations=$(jq -r '.observer.min_observations_to_analyze // 20' "$CONFIG_FILE")
+    max_turns=$(jq -r '.observer.max_turns // 30' "$CONFIG_FILE")
+    model=$(jq -r '.observer.model // "haiku"' "$CONFIG_FILE")
+  fi
+
   obs_count=$(wc -l < "$OBSERVATIONS_FILE" 2>/dev/null | tr -d ' ' || echo 0)
   if [ "$obs_count" -lt "$min_observations" ]; then
     return
   fi
 
-  # COPY observations to temp file for analysis (preserves incoming writes)
-  local temp_analysis_file="${OBSERVATIONS_FILE}.analyzing"
-  cp "$OBSERVATIONS_FILE" "$temp_analysis_file"
-  local analyzed_count=$obs_count
-
   echo "[$(date)] Analyzing $obs_count observations..." >> "$LOG_FILE"
 
-  # Use Claude Code with Haiku to analyze observations
+  # Use Claude Code to analyze observations
   if [ -x "$CLAUDE_BIN" ]; then
-    "$CLAUDE_BIN" --model haiku --max-turns 3 --print --allowedTools Read,Write \
-      -p "Read $temp_analysis_file and identify patterns. If you find 3+ occurrences of the same pattern, create an instinct file in $INSTINCTS_DIR following the YAML format in .claude/agents/observer.md. Be conservative - only create instincts for clear patterns." \
+    "$CLAUDE_BIN" --model "$model" --max-turns "$max_turns" --print --allowedTools Read,Write \
+      -p "Read $OBSERVATIONS_FILE and identify patterns. If you find 3+ occurrences of the same pattern, create an instinct file in $INSTINCTS_DIR following the YAML format in .claude/agents/observer.md. Be conservative - only create instincts for clear patterns." \
       >> "$LOG_FILE" 2>&1 || true
   fi
 
-  # Archive the analyzed snapshot (not current observations)
-  archive_dir="${CONFIG_DIR}/observations.archive"
-  mkdir -p "$archive_dir"
-  mv "$temp_analysis_file" "$archive_dir/processed-$(date +%Y%m%d-%H%M%S).jsonl"
-
-  # Remove already-analyzed lines from main file (preserves new observations)
-  if [ "$analyzed_count" -gt 0 ] && [ -f "$OBSERVATIONS_FILE" ]; then
-    tail -n +$((analyzed_count + 1)) "$OBSERVATIONS_FILE" > "${OBSERVATIONS_FILE}.tmp" 2>/dev/null || true
-    mv "${OBSERVATIONS_FILE}.tmp" "$OBSERVATIONS_FILE"
+  # Archive observations after analysis
+  if [ -f "$OBSERVATIONS_FILE" ]; then
+    archive_dir="${CONFIG_DIR}/observations.archive"
+    mkdir -p "$archive_dir"
+    mv "$OBSERVATIONS_FILE" "$archive_dir/processed-$(date +%Y%m%d-%H%M%S).jsonl"
+    touch "$OBSERVATIONS_FILE"
   fi
 }
 
