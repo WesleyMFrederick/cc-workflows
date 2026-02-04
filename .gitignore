@@ -135,3 +135,6 @@ config/mcporter.json
 
 # Session status tracking
 current-status.json
+
+# Continuous learning personal data
+.claude/learned/
