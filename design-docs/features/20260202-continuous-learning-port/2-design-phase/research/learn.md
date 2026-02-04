@@ -1,14 +1,46 @@
 # /learn - Extract Reusable Patterns
 
-Analyze the current session and extract any patterns worth using to update skills, save as insticts, or create new skills.
+Analyze the current session and extract any patterns worth using to create or update skills.
 
 ## Trigger
 
 Run `/learn` at any point during a session when you've solved a non-trivial problem.
 
-## What to Extract
+## Pattern Detection
 
-Look for:
+Look for these patterns in observations:
+
+### 1. User Corrections
+When a user's follow-up message corrects Claude's previous action:
+- "No, use X instead of Y"
+- "Actually, I meant..."
+- Immediate undo/redo patterns
+
+→ Create instinct: "When doing X, prefer Y"
+
+### 2. Error Resolutions
+When an error is followed by a fix:
+- Tool output contains error
+- Next few tool calls fix it
+- Same error type resolved similarly multiple times
+
+→ Create instinct: "When encountering error X, try Y"
+
+### 3. Repeated Workflows
+When the same sequence of tools is used multiple times:
+- Same tool sequence with similar inputs
+- File patterns that change together
+- Time-clustered operations
+
+→ Create workflow instinct: "When doing X, follow steps Y, Z, W"
+
+### 4. Tool Preferences
+When certain tools are consistently preferred:
+- Always uses Grep before Edit
+- Prefers Read over Bash cat
+- Uses specific Bash commands for certain tasks
+
+→ Create instinct: "When needing X, use tool Y"
 
 1. **Error Resolution Patterns**
    - What error occurred?
@@ -34,7 +66,8 @@ Look for:
 ## Process
 
 1. Review the session for extractable patterns
-2. Identify the most valuable/reusable insight
+   1. Take note of what skills and commands are used, since they are prime to be improved.
+1. Identify the most valuable/reusable insight
 
 ## Notes
 

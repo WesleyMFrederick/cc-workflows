@@ -264,8 +264,55 @@ NOT just `[Phase 1 Whiteboard](../whiteboard-phase1.md)` — section links enabl
 - ACs referenced from Sequencing doc drive test creation
 - Implementation tasks prove ACs are satisfied
 
+#### Phase 4 Discussion Protocol
+
+**BEFORE invoking `writing-plans` skill:**
+
+1. **Read inputs:** Spec document + Sequencing document (ACs with FR traceability)
+2. **Read example:** Reference existing implementation plans in codebase for format
+   - Example: `tools/citation-manager/design-docs/features/.../epic7-cli-integration-implementation-plan.md`
+3. **Propose task list:** Present numbered tasks with 1-sentence descriptions
+4. **Get approval:** User approves task breakdown BEFORE detailed plan writing
+
+**Task granularity rule:** Each task = one TDD cycle + one commit
+
+**Task structure (7 steps per task):**
+
+```markdown
+## Task N — [Name]
+
+### Files
+- `path/to/file.ts` (CREATE/MODIFY)
+- `tests/path/to/test.ts` (CREATE & TEST)
+
+### Step 1: Write the failing test
+[Test code]
+
+### Step 2: Run test to verify it fails
+Run: [command]
+Expected: FAIL — [reason]
+
+### Step 3: Write minimal implementation
+[Implementation code]
+
+### Step 4: Run test to verify it passes
+Run: [command]
+Expected: PASS
+
+### Step 5: Run full test suite
+Run: [command]
+Expected: [count] tests pass
+
+### Step 6: Type check / Lint
+Run: [command]
+Expected: Zero errors
+
+### Step 7: Commit
+Use `create-git-commit` skill to commit.
+```
+
 **REQUIRED SKILL:** `writing-plans`
-- Each task is one action (TDD cycle)
+- Each task is one TDD cycle (RED-GREEN-REFACTOR) + commit
 - Exact file paths, complete code examples
 - Test commands with expected output
 - Commit after each task

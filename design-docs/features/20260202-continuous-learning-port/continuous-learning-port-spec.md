@@ -6,8 +6,9 @@
 
 > **Context:**
 > - [PRD](continuous-learning-port-prd.md)%%force-extract%%
-> - [Phase 1 Whiteboard](1-elicit-discover-sense-make-problem-frame/whiteboard-phase1.md)%%force-extract%%
-> - [Phase 2 Design Whiteboard](2-design-phase/phase2-design-whiteboard.md)%%force-extract%%does
+> - [Phase 1 Whiteboard](1-elicit-discover-sense-make-problem-frame/whiteboard-phase1.md)
+> - [Phase 2 Design Whiteboard](2-design-phase/phase2-design-whiteboard.md)%%force-extract%%
+> - [Phase 3 Sequencing Whiteboard](3-sequencing-phase/phase3-sequencing-whiteboard.md)%%force-extract%%
 
 ---
 
@@ -138,22 +139,6 @@
       </hook_registration>
     </component>
 
-    <!-- DEFERRED: learn-skill - v1 behavior, not in v2 architecture
-    <component name="learn-skill" port_type="new">
-      <source>skills/continuous-learning-v2/slash-commands/learn.md (reference only)</source>
-      <target>.claude/skills/learn/SKILL.md</target>
-      <lines>~60</lines>
-      <language>Markdown</language>
-      <changes>
-        - Create new skill following cc-workflows SKILL.md pattern
-        - Trigger: "/learn" invocation
-        - Behavior: Analyze session transcript, propose instincts, save with approval
-        - Output path: .claude/learned/instincts/personal/
-      </changes>
-      <satisfies>FR4, FR5</satisfies>
-      <note>DEFERRED: Source /learn is v1 behavior (creates skills directly). In v2, instincts are created automatically by observer daemon. See D7 in Phase 2 whiteboard.</note>
-    </component>
-    -->
 
     <component name="instinct-status-skill" port_type="new">
       <source>skills/continuous-learning-v2/slash-commands/instinct-status.md (reference only)</source>
@@ -329,104 +314,184 @@
     </type>
   </port_type_summary>
 
+  <implementation_sequence>
+    <phase number="1" name="Foundation + Observation Capture">
+      <goal>Prove tool capture works without breaking existing hooks or impacting performance</goal>
+      <components>
+        - config.json (COPY+MODIFY) — foundation for all components
+        - observe.sh (REWRITE) — Python→jq, core capture mechanism
+        - settings.json updates — hook registration for PreToolUse/PostToolUse
+        - .gitignore update — exclude .claude/learned/
+      </components>
+      <validates>
+        - observations.jsonl populates with tool events
+        - No performance degradation (&lt;100ms per hook)
+        - Existing hooks still fire correctly
+      </validates>
+      <risk>Medium — observe.sh jq rewrite is highest technical risk. Validate early.</risk>
+      <acceptance_criteria>AC1-AC13</acceptance_criteria>
+    </phase>
+
+    <phase number="2" name="Observer Daemon">
+      <goal>Prove automatic pattern detection creates instincts from observations</goal>
+      <components>
+        - start-observer.sh (COPY+MODIFY) — daemon lifecycle management
+        - observer.md (COPY+MODIFY) — Haiku agent prompt
+        - evaluate-session.sh (REWRITE) — JS→Bash, Stop hook cleanup
+      </components>
+      <validates>
+        - Instinct YAML files appear in .claude/learned/instincts/personal/
+        - Daemon starts/stops cleanly with PID management
+        - Stop hook kills daemon on session end
+      </validates>
+      <risk>Low — mostly path changes, daemon already proven in source</risk>
+      <dependency>Phase 1 (needs observations.jsonl to analyze)</dependency>
+      <acceptance_criteria>AC14-AC22</acceptance_criteria>
+    </phase>
+
+    <phase number="3" name="Visibility">
+      <goal>Users can see learned instincts with confidence bars</goal>
+      <components>
+        - learning-utils.js (NEW) — JS file I/O utilities
+        - instinct-cli.js (TRANSLATE) — Python→JS, status subcommand
+        - instinct-status skill (NEW) — /instinct-status entry point
+      </components>
+      <validates>
+        - /instinct-status displays instincts grouped by domain
+        - Confidence bars render correctly
+        - CLI runs without errors
+      </validates>
+      <risk>Medium — 494-line Python→JS translation</risk>
+      <dependency>Phase 2 (needs instincts to display)</dependency>
+      <acceptance_criteria>AC23-AC27</acceptance_criteria>
+    </phase>
+
+    <phase number="4" name="Evolution + Portability">
+      <goal>Full pipeline — instincts become skills, import/export works</goal>
+      <components>
+        - instinct-cli.js evolve subcommand
+        - instinct-cli.js import/export subcommands
+        - evolve skill (ADAPT) — /evolve entry point
+      </components>
+      <validates>
+        - /evolve clusters 3+ related instincts into skills
+        - Export strips sensitive data
+        - Import deduplicates, merges higher-confidence
+      </validates>
+      <risk>Low — building on proven CLI from Phase 3</risk>
+      <dependency>Phase 3 (extends instinct-cli.js)</dependency>
+      <acceptance_criteria>AC28-AC33</acceptance_criteria>
+    </phase>
+
+    <dependency_graph>
+      config.json
+          ↓
+      observe.sh ←── settings.json hooks
+          ↓
+      observations.jsonl
+          ↓
+      ┌───────────────────────────────┐
+      │ start-observer.sh + observer.md │
+      │ evaluate-session.sh            │
+      └───────────────────────────────┘
+          ↓
+      instincts/*.yaml
+          ↓
+      learning-utils.js → instinct-cli.js
+                              ↓
+                    ┌─────────┴─────────┐
+                    ↓                   ↓
+          instinct-status skill    evolve skill
+    </dependency_graph>
+  </implementation_sequence>
+
   <acceptance_criteria>
-    <section name="Observation Capture" fr="FR1">
-      - AC1: PreToolUse hook captures tool name, input, session ID as JSONL
-      - AC2: PostToolUse hook captures tool name, output, timestamp as JSONL
-      - AC3: ALL tools captured via * matcher (analysis phase decides relevance)
-      - AC4: Inputs/outputs truncated to 5KB max per entry
-    </section>
+    <note>Formalized ACs with block anchors for traceability. Each AC links to FR from PRD.</note>
 
-    <section name="Storage Management" fr="FR2">
-      - AC5: Auto-archive observations.jsonl at 10MB threshold
-      - AC6: No data loss during archive operation
-    </section>
+    <phase number="1" name="Foundation + Observation Capture">
+      - AC1: PreToolUse hook captures tool name, input, session ID as JSONL entries appended to .claude/learned/observations.jsonl (FR1) ^AC1
+      - AC2: PostToolUse hook captures tool name, output, timestamp as JSONL entries appended to .claude/learned/observations.jsonl (FR1) ^AC2
+      - AC3: ALL tools captured via * matcher — analysis phase decides relevance (FR1) ^AC3
+      - AC4: Observation inputs/outputs truncated to 5KB max per entry (FR2) ^AC4
+      - AC5: Auto-archive observations.jsonl to .claude/learned/observations.archive/ when file exceeds 10MB (FR2) ^AC5
+      - AC6: No data loss during archive operation (NFR2) ^AC6
+      - AC7: observe.sh registered in .claude/settings.json PreToolUse and PostToolUse arrays (FR3) ^AC7
+      - AC8: Existing hooks (citation-validator, plan-path-sync, etc.) continue to fire correctly (FR3) ^AC8
+      - AC9: Observation hooks complete in under 100ms (NFR1) ^AC9
+      - AC10: Append-only writes for observations — no in-place modification (NFR2) ^AC10
+      - AC11: Observation hook written in bash with jq (no python3) (NFR4) ^AC11
+      - AC12: All learned data stored in .claude/learned/ (not global ~/.claude/) (NFR5) ^AC12
+      - AC13: config.json in .claude/learned/ for all configurable parameters (NFR7) ^AC13
+    </phase>
 
-    <section name="Hook Integration" fr="FR3">
-      - AC7: observe.sh registered in settings.json PreToolUse/PostToolUse
-      - AC8: Existing hooks continue to fire correctly
-    </section>
+    <phase number="2" name="Observer Daemon">
+      - AC14: Observer daemon analyzes observations at configurable interval using Haiku model (FR7) ^AC14
+      - AC15: Detects four pattern types: user corrections, error resolutions, repeated workflows (3+), tool preferences (FR7) ^AC15
+      - AC16: System signals daemon via SIGUSR1 when new observations written (FR7) ^AC16
+      - AC17: Daemon starts/stops cleanly with PID file management (FR7) ^AC17
+      - AC18: Stop hook kills daemon (FR7) ^AC18
+      - AC19: Disabled by default, opt-in via config (FR7) ^AC19
+      - AC20: Instincts stored in YAML format with required fields: id, trigger, confidence, domain, source, action, evidence (FR5) ^AC20
+      - AC21: Confidence scoring: +0.05 per confirming observation, -0.10 per contradiction, -0.02 per week decay (FR5) ^AC21
+      - AC22: Confidence ≥ 0.7 = auto-applied; below = suggested only (FR5) ^AC22
+    </phase>
 
-    <section name="Pattern Extraction" fr="FR4">
-      - AC9: DEFERRED — /learn is v1 behavior; v2 uses observer daemon for automatic instinct creation
-      - AC10: REVISED — Instincts created automatically by observer daemon, not manual /learn
-    </section>
+    <phase number="3" name="Visibility">
+      - AC23: /instinct-status skill displays all instincts grouped by domain (FR6) ^AC23
+      - AC24: Visual confidence bars shown for each instinct (FR6) ^AC24
+      - AC25: Instinct CLI (JS) supports status subcommand (FR6) ^AC25
+      - AC26: Instinct CLI written in JavaScript (avoid Python dependency) (NFR4) ^AC26
+      - AC27: All hook scripts located in .claude/hooks/ (NFR4) ^AC27
+    </phase>
 
-    <section name="Instinct Persistence" fr="FR5">
-      - AC11: YAML format with required fields
-      - AC12: Confidence scoring per source system values
-      - AC13: 0.7+ auto-applied, below suggested only
-    </section>
-
-    <section name="Instinct Visibility" fr="FR6">
-      - AC14: /instinct-status displays instincts by domain
-      - AC15: Visual confidence bars shown
-    </section>
-
-    <section name="Background Pattern Detection" fr="FR7">
-      - AC16: Observer daemon analyzes at configurable interval
-      - AC17: Detects 4 pattern types
-      - AC18: SIGUSR1 signaling for new observations
-      - AC19: Clean start/stop with PID management
-      - AC20: Stop hook kills daemon
-      - AC21: Disabled by default
-    </section>
-
-    <section name="Instinct Portability" fr="FR8">
-      - AC22: CLI supports status, import, export
-      - AC23: Import deduplicates, merges higher-confidence
-      - AC24: Export strips sensitive data
-    </section>
-
-    <section name="Performance" nfr="NFR1">
-      - AC25: Observation hooks complete in under 100ms
-    </section>
-
-    <section name="Data Integrity" nfr="NFR2">
-      - AC26: Append-only writes for observations
-    </section>
-
-    <section name="Convention Compliance" nfr="NFR4">
-      - AC27: Observation hook in bash with jq
-      - AC28: Instinct CLI in JavaScript
-      - AC29: All hooks in .claude/hooks/
-    </section>
-
-    <section name="Per-Project Scoping" nfr="NFR5">
-      - AC30: All data in .claude/learned/ (not global)
-    </section>
-
-    <section name="Translation Risk" nfr="NFR6">
-      - AC31: observe.sh python→jq rewrite (low risk)
-      - AC32: Python CLI→JS is only language translation
-    </section>
-
-    <section name="Configuration" nfr="NFR7">
-      - AC33: config.json in .claude/learned/
-    </section>
+    <phase number="4" name="Evolution + Portability">
+      - AC28: Instinct CLI supports import and export subcommands (FR8) ^AC28
+      - AC29: Import detects duplicates, updates only if higher-confidence version found (FR8) ^AC29
+      - AC30: Export strips sensitive data: code, file paths, session IDs, timestamps older than 1 week (FR8) ^AC30
+      - AC31: /evolve skill clusters 3+ related instincts into discoverable skills (FR9) ^AC31
+      - AC32: Generated skills placed in .claude/learned/evolved/skills/ (FR9) ^AC32
+      - AC33: Evolved skills auto-discoverable by Claude via standard skill discovery (FR9) ^AC33
+    </phase>
   </acceptance_criteria>
 
   <risks>
-    <risk severity="Medium">
-      <description>observe.sh jq rewrite introduces parsing bugs</description>
-      <mitigation>Simple JSON ops; test with real Claude hook JSON format</mitigation>
-    </risk>
-    <risk severity="Medium">
-      <description>Hook performance with * matcher on every tool</description>
-      <mitigation>jq is fast; append-only write; profile after integration</mitigation>
-    </risk>
-    <risk severity="Medium">
-      <description>instinct-cli.py → JS translation bugs</description>
-      <mitigation>Port function-by-function; 494 lines manageable</mitigation>
-    </risk>
-    <risk severity="Low">
-      <description>Observer daemon orphaned processes</description>
-      <mitigation>PID file management; evaluate-session.sh cleanup on Stop</mitigation>
-    </risk>
-    <risk severity="Low">
-      <description>.claude/learned/ not in .gitignore</description>
-      <mitigation>Add to .gitignore during implementation</mitigation>
-    </risk>
+    <note>Risks organized by implementation phase for targeted mitigation</note>
+
+    <phase number="1" severity="Medium">
+      <risk>
+        <description>observe.sh jq rewrite introduces parsing bugs</description>
+        <mitigation>Simple JSON ops; test with real Claude hook JSON format</mitigation>
+      </risk>
+      <risk>
+        <description>Hook performance with * matcher on every tool call</description>
+        <mitigation>jq is fast; append-only write; profile after integration</mitigation>
+      </risk>
+      <risk severity="Low">
+        <description>.claude/learned/ not in .gitignore</description>
+        <mitigation>Add to .gitignore during implementation</mitigation>
+      </risk>
+    </phase>
+
+    <phase number="2" severity="Low">
+      <risk>
+        <description>Observer daemon orphaned processes</description>
+        <mitigation>PID file management; evaluate-session.sh cleanup on Stop hook</mitigation>
+      </risk>
+    </phase>
+
+    <phase number="3" severity="Medium">
+      <risk>
+        <description>instinct-cli.py → JS translation bugs (494 lines)</description>
+        <mitigation>Port function-by-function with test validation; manageable scope</mitigation>
+      </risk>
+    </phase>
+
+    <phase number="4" severity="Low">
+      <risk>
+        <description>Evolution features building on Phase 3 CLI</description>
+        <mitigation>Incremental extension of proven Phase 3 implementation</mitigation>
+      </risk>
+    </phase>
   </risks>
 </project_specification>
 ```
