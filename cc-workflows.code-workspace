@@ -20,9 +20,6 @@
 		},
 		{
 			"path": "../cc-workflows.worktree.ptsf-tools"
-		},
-		{
-			"path": "../cc-workflows.worktree.continuous-learning.phase1-foundation"
 		}
 	],
 	"settings": {}
