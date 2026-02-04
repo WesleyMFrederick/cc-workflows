@@ -106,6 +106,36 @@ EOF
   pass "PostToolUse captures correctly"
 }
 
+# Test 4: Input/output truncated to 5KB
+test_truncation() {
+  echo "Test 4: Truncates input/output to 5KB max"
+
+  # Generate 10KB of data
+  LARGE_DATA=$(printf 'x%.0s' {1..10240})
+
+  # Create JSON with large input
+  echo "{
+    \"hook_type\": \"PreToolUse\",
+    \"tool_name\": \"Write\",
+    \"tool_input\": {
+      \"content\": \"$LARGE_DATA\"
+    },
+    \"session_id\": \"truncation-test\"
+  }" | "$HOOK_SCRIPT" pre
+
+  OBSERVATIONS_FILE="$CLAUDE_PROJECT_DIR/.claude/learned/observations.jsonl"
+  last_line=$(tail -1 "$OBSERVATIONS_FILE")
+
+  # Get length of input field
+  input_length=$(echo "$last_line" | jq -r '.input | length')
+
+  if [ "$input_length" -le 5100 ]; then
+    pass "Input truncated to $input_length chars (≤5KB + JSON overhead)"
+  else
+    fail "Input not truncated: $input_length chars (should be ≤5100)"
+  fi
+}
+
 # Run all tests
 echo "==========================================="
 echo "observe.sh Test Suite"
@@ -116,6 +146,7 @@ setup
 test_script_exists
 test_pre_tool_use
 test_post_tool_use
+test_truncation
 
 echo ""
 echo "==========================================="
