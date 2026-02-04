@@ -28,6 +28,120 @@ Assume they are a skilled developer, but know almost nothing about our toolset o
 - "Run the tests and make sure they pass" - step
 - "Commit" - step
 
+## Task Types
+
+Label each task with its type. Different types need different structures.
+
+| Type | When to Use | TDD? | Typical Steps |
+|------|-------------|------|---------------|
+| Infrastructure | Directory setup, config files, .gitignore | No | 3-5 |
+| TDD | Code/scripts that can be tested | Yes | 4-6 with RED/GREEN |
+| Validation | Benchmarks, performance checks | No | 2-4 |
+| Integration | settings.json, end-to-end tests | Partial | 3-5 |
+
+### Infrastructure Tasks
+
+**When:** Directory setup, config files, .gitignore changes
+**Structure:**
+
+~~~markdown
+## Task N — [Name]
+
+**Type:** Infrastructure
+
+### Files
+- `.path/to/dir/` (CREATE directory)
+- `.path/to/config.json` (CREATE)
+
+### Step 1: Create structure
+[commands]
+
+### Step 2: Verify
+[verification command with expected output]
+
+### Step 3: Commit
+~~~
+
+### TDD Tasks
+
+**When:** Any code that can be tested
+**Key rule:** Explicit "expect FAIL" and "expect PASS" markers
+
+~~~markdown
+## Task N — [Name]
+
+**Type:** TDD
+
+### Files
+- `path/to/code.sh` (CREATE)
+- `path/to/test.sh` (CREATE & TEST)
+
+### Step 1: Write the failing test
+[complete test code]
+
+### Step 2: Run test — expect FAIL
+Run: `[command]`
+**Expected:** FAIL — [specific reason why it fails]
+
+### Step 3: Write minimal implementation
+[complete implementation code]
+
+### Step 4: Run test — expect PASS
+Run: `[command]`
+**Expected:** PASS
+
+### Step 5: Commit
+~~~
+
+**For bash scripts:** Consider splitting into 2 tasks:
+- Task N (RED): Test harness that expects script to exist → fails
+- Task N+1 (GREEN): Implementation that makes test pass
+
+### Validation Tasks
+
+**When:** Performance benchmarks, profiling
+**Structure:**
+
+~~~markdown
+## Task N — [Name]
+
+**Type:** Validation
+
+### Step 1: Create benchmark script
+[script code]
+
+### Step 2: Run and document results
+Run: `[command]`
+**Expected:** [target metrics]
+
+### Step 3: Commit
+~~~
+
+### Integration Tasks
+
+**When:** settings.json changes, end-to-end verification
+**Structure:**
+
+~~~markdown
+## Task N — [Name]
+
+**Type:** Integration
+
+### Step 1: Create integration test
+[test code]
+
+### Step 2: Run — expect FAIL
+**Expected:** FAIL — [config not yet updated]
+
+### Step 3: Update config/settings
+[changes to make]
+
+### Step 4: Run — expect PASS
+**Expected:** PASS
+
+### Step 5: Commit
+~~~
+
 <critical-instruction>
 ## CRITICAL: Present Tasks To User
 1. Present the list of tasks to user, along with a 1 sentence description of the task
@@ -53,7 +167,7 @@ Assume they are a skilled developer, but know almost nothing about our toolset o
 ---
 ```
 
-## Task Structure
+## Task Structure (TDD Example)
 
 ~~~markdown
 ## Task {{task-number}} - {{task-name}}
