@@ -138,7 +138,9 @@ export function loadAllInstincts(baseDir = LEARNED_DIR) {
  * @returns {string} Visual bar
  */
 export function formatConfidenceBar(confidence) {
-	const filled = Math.floor(confidence * 10);
+	// Clamp to valid range [0, 1] to prevent RangeError
+	const clamped = Math.max(0, Math.min(1, confidence || 0));
+	const filled = Math.floor(clamped * 10);
 	return "█".repeat(filled) + "░".repeat(10 - filled);
 }
 

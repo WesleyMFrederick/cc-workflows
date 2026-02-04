@@ -26,7 +26,7 @@ Run this skill via `/instinct-status` or when asked "show my instincts" or "what
 node "$CLAUDE_PROJECT_DIR/.claude/scripts/instinct-cli.js" status
 ```
 
-1. Display the output to the user, which includes:
+2. Display the output to the user, which includes:
    - Total instinct count
    - Personal vs inherited breakdown
    - Instincts grouped by domain (git, workflow, testing, etc.)
