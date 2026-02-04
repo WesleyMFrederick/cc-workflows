@@ -22,7 +22,19 @@
 
 Source separates **deterministic capture** (hooks, 100% reliable) from **probabilistic analysis** (observer agent). This is the core strength.
 
-Pipeline: `Tool Call → observe.sh → observations.jsonl → Observer/Learn → instincts/*.yaml`
+**v2 Pipeline (what we're porting):**
+
+```text
+Tool Call → observe.sh → observations.jsonl → Observer Daemon (Haiku) → instincts/*.yaml → /evolve → skills/commands/agents
+```
+
+**v1 Pipeline (NOT porting):**
+
+```text
+Session End → evaluate-session.sh → /learn prompt → skill files directly
+```
+
+**Critical distinction:** In v2, instincts are created AUTOMATICALLY by the observer daemon analyzing observations.jsonl. There is no manual "transcript → instinct" in v2. The `/learn` command in source is v1 behavior that creates skills directly.
 
 ### What instinct-cli.py Actually Does (No utils.js Dependency)
 
@@ -87,17 +99,94 @@ When rewritten to bash (cc-workflows convention), these become trivial: `wc -l`,
 
 ## Design Decisions
 
-- **D1: observe.sh JSON parsing → jq** — Rewrite embedded Python3 blocks to jq. cc-workflows hooks consistently use jq. The 3 python3 blocks are simple JSON parsing (~30 lines of logic). Low translation risk, high convention consistency. Impact: observe.sh drops from 153 to ~80 lines of pure bash+jq. ^decision-observe-jq _([FR1](../continuous-learning-port-prd.md#^FR1), [FR3](../continuous-learning-port-prd.md#^FR3), [NFR1](../continuous-learning-port-prd.md#^NFR1))_
+- **D1: observe.sh JSON parsing → jq** — Rewrite embedded Python3 blocks to jq. cc-workflows hooks consistently use jq. The 3 python3 blocks are simple JSON parsing (~30 lines of logic). Low translation risk, high convention consistency. Impact: observe.sh drops from 153 to ~80 lines of pure bash+jq.  _([FR1](../continuous-learning-port-prd.md#^FR1), [FR3](../continuous-learning-port-prd.md#^FR3), [NFR1](../continuous-learning-port-prd.md#^NFR1))_ ^decision-observe-jq
 
-- **D2: Instinct CLI location → `.claude/scripts/instinct-cli.js`** — MVP-first single JS file. Port what works. Source is single Python file — keep the same simplicity. Future: migrate to `tools/instinct-cli/` as TypeScript workspace package when justified. ^decision-cli-location _([FR6](../continuous-learning-port-prd.md#^FR6), [FR8](../continuous-learning-port-prd.md#^FR8), [NFR4](../continuous-learning-port-prd.md#^NFR4))_
+- **D2: Instinct CLI location → `.claude/scripts/instinct-cli.js`** — MVP-first single JS file. Port what works. Source is single Python file — keep the same simplicity. Future: migrate to `tools/instinct-cli/` as TypeScript workspace package when justified. _([FR6](../continuous-learning-port-prd.md#^FR6), [FR8](../continuous-learning-port-prd.md#^FR8), [NFR4](../continuous-learning-port-prd.md#^NFR4))_ ^decision-cli-location
 
-- **D3: /learn and /instinct-status → Skills** — Create as `.claude/skills/learn/SKILL.md` and `.claude/skills/instinct-status/SKILL.md`. Anthropic merged slash commands into skills system (Jan 2026). Skills are canonical extension mechanism in cc-workflows. Auto-discoverable, can bundle scripts. ^decision-skills _([FR4](../continuous-learning-port-prd.md#^FR4), [FR5](../continuous-learning-port-prd.md#^FR5), [FR6](../continuous-learning-port-prd.md#^FR6))_
+- **D3: /instinct-status and /evolve → Skills** — Create as `.claude/skills/instinct-status/SKILL.md` and `.claude/skills/evolve/SKILL.md`. Anthropic merged slash commands into skills system (Jan 2026). Skills are canonical extension mechanism in cc-workflows. Auto-discoverable, can bundle scripts. _([FR6](../continuous-learning-port-prd.md#^FR6), [FR9](../continuous-learning-port-prd.md#^FR9))_ ^decision-skills
 
-- **D4: evaluate-session → Standalone Hook** — New `.claude/hooks/evaluate-session.sh`. stop-sync.sh is 100+ lines with its own concerns. Evaluate-session is simple (~30 lines). Single responsibility. Port approach: Rewrite JS to bash (cc-workflows convention). ^decision-evaluate-session _([FR7](../continuous-learning-port-prd.md#^FR7), [NFR4](../continuous-learning-port-prd.md#^NFR4))_
+- **D4: evaluate-session → Standalone Hook** — New `.claude/hooks/evaluate-session.sh`. stop-sync.sh is 100+ lines with its own concerns. Evaluate-session is simple (~30 lines). Single responsibility. Port approach: Rewrite JS to bash (cc-workflows convention). _([FR7](../continuous-learning-port-prd.md#^FR7), [NFR4](../continuous-learning-port-prd.md#^NFR4))_ ^decision-evaluate-session
 
-- **D5: Utils → New `.claude/scripts/lib/learning-utils.js`** — Create new shared JS utility file, add functions as needed during port. instinct-cli.js needs file I/O helpers. Start fresh (don't port 80% unused source utils). Initial functions: ensureDir, readFile, writeFile, appendFile, findFiles, log, output. ^decision-utils  _(Supporting: [FR6](../continuous-learning-port-prd.md#^FR6), [FR8](../continuous-learning-port-prd.md#^FR8))_
+- **D5: Utils → New `.claude/scripts/lib/learning-utils.js`** — Create new shared JS utility file, add functions as needed during port. instinct-cli.js needs file I/O helpers. Start fresh (don't port 80% unused source utils). Initial functions: ensureDir, readFile, writeFile, appendFile, findFiles, log, output. _(Supporting: [FR6](../continuous-learning-port-prd.md#^FR6), [FR8](../continuous-learning-port-prd.md#^FR8))_ ^decision-utils
 
-- **D6: Observer Daemon → Include in Port** — Port start-observer.sh and observer.md. Full pipeline parity. Daemon already optional/disabled-by-default per PRD. Core loop is simple bash. Low risk. Adaptation: path changes (`~/.claude/homunculus/` → `$CLAUDE_PROJECT_DIR/.claude/learned/`). ^decision-observer-daemon _([FR7](../continuous-learning-port-prd.md#^FR7))_
+- **D6: Observer Daemon → Include in Port** — Port start-observer.sh and observer.md. Full pipeline parity. Daemon already optional/disabled-by-default per PRD. Core loop is simple bash. Low risk. Adaptation: path changes (`~/.claude/homunculus/` → `$CLAUDE_PROJECT_DIR/.claude/learned/`). _([FR7](../continuous-learning-port-prd.md#^FR7))_ ^decision-observer-daemon
+
+- **D7: /learn DEFERRED — v1 behavior** — Source `/learn` command is v1 architecture that creates skill files directly. In v2, instincts are created AUTOMATICALLY by the observer daemon analyzing observations.jsonl. There is no manual "transcript → instinct" workflow in v2 source. Manual instinct creation is deferred to future enhancement. _(Defers [FR4](../continuous-learning-port-prd.md#^FR4) to future phase)_ ^decision-learn-deferred
+
+- **D8: v2 instinct creation is AUTOMATIC** — Instincts come from observer daemon (background Haiku) analyzing observations.jsonl. No manual trigger needed. User can view instincts via `/instinct-status` and cluster them via `/evolve`. _([FR5](../continuous-learning-port-prd.md#^FR5), [FR7](../continuous-learning-port-prd.md#^FR7))_ ^decision-automatic-instincts
+
+---
+
+## Source File Tracing (v2 Only)
+
+Every component traced to exact source file with port type.
+
+| Target Component | Source File | Port Type | Changes |
+|------------------|-------------|-----------|---------|
+| `.claude/hooks/observe.sh` | `skills/continuous-learning-v2/hooks/observe.sh` | **REWRITE** | Python3 blocks → jq; paths `~/.claude/homunculus/` → `$PROJECT/.claude/learned/` |
+| `.claude/scripts/start-observer.sh` | `skills/continuous-learning-v2/agents/start-observer.sh` | **COPY+MODIFY** | Path changes only |
+| `.claude/agents/observer.md` | `skills/continuous-learning-v2/agents/observer.md` | **COPY+MODIFY** | Path references only |
+| `.claude/scripts/instinct-cli.js` | `skills/continuous-learning-v2/scripts/instinct-cli.py` | **TRANSLATE** | Python → JS; same logic |
+| `.claude/hooks/evaluate-session.sh` | `scripts/hooks/evaluate-session.js` | **REWRITE** | JS → Bash; cc-workflows convention |
+| `.claude/learned/config.json` | `skills/continuous-learning-v2/config.json` | **COPY+MODIFY** | Remove unused keys, path changes |
+| `.claude/skills/instinct-status/SKILL.md` | `commands/instinct-status.md` | **ADAPT** | Slash command → Skill format |
+| `.claude/skills/evolve/SKILL.md` | `commands/evolve.md` | **ADAPT** | Slash command → Skill format |
+| `.claude/scripts/lib/learning-utils.js` | N/A | **NEW** | Fresh file for JS utilities |
+
+**NOT PORTING (v1 behavior):**
+
+| Source File | Reason |
+|-------------|--------|
+| `commands/learn.md` | v1 — creates skills directly, not instincts |
+| `skills/continuous-learning/SKILL.md` | v1 — Stop hook skill extraction |
+| `skills/continuous-learning/evaluate-session.sh` | v1 — different from v2 evaluate-session.js |
+
+---
+
+## v2 Flow: Observation → Instinct → Skill
+
+### Step 1: Observation Capture (Deterministic)
+
+- Source: `skills/continuous-learning-v2/hooks/observe.sh`
+- Triggers: PreToolUse, PostToolUse (matcher: `*`)
+- Output: Appends JSONL to `observations.jsonl`
+- Fields: timestamp, event, tool, input/output (truncated 5KB), session
+
+### Step 2: Pattern Detection (Probabilistic — Observer Daemon)
+
+- Source: `skills/continuous-learning-v2/agents/observer.md` + `start-observer.sh`
+- Triggers: SIGUSR1 from observe.sh, or 5-min interval
+- Input: Reads `observations.jsonl`
+- Detects:
+  - User corrections ("No, use X instead")
+  - Error resolutions (error → fix pattern)
+  - Repeated workflows (3+ same tool sequence)
+  - Tool preferences (consistent tool choices)
+- Output: Creates/updates instinct YAML in `instincts/personal/`
+
+### Step 3: Instinct Storage
+
+- Source: Format defined in `observer.md`
+- Location: `.claude/learned/instincts/personal/*.yaml`
+- Fields: id, trigger, confidence (0.3-0.9), domain, source, action, evidence
+- Confidence rules:
+  - Initial: 1-2 obs → 0.3, 3-5 → 0.5, 6-10 → 0.7, 11+ → 0.85
+  - +0.05 per confirming observation
+  - -0.10 per contradiction
+  - -0.02 per week decay
+
+### Step 4: Instinct Visibility
+
+- Source: `commands/instinct-status.md` + `instinct-cli.py status`
+- Trigger: User runs `/instinct-status`
+- Output: Grouped by domain, confidence bars, evidence summary
+
+### Step 5: Evolution (Optional)
+
+- Source: `commands/evolve.md` + `instinct-cli.py evolve`
+- Trigger: User runs `/evolve`
+- Input: Clusters 3+ related instincts
+- Output: Creates skills/commands/agents in `.claude/learned/evolved/`
 
 ---
 
@@ -106,37 +195,41 @@ When rewritten to bash (cc-workflows convention), these become trivial: `wc -l`,
 ```text
 .claude/
 ├── hooks/
-│   ├── observe.sh                    # NEW — PreToolUse/PostToolUse (matcher: *)
-│   ├── evaluate-session.sh           # NEW — Stop hook
+│   ├── observe.sh                    # REWRITE — PreToolUse/PostToolUse (matcher: *)
+│   ├── evaluate-session.sh           # REWRITE — Stop hook
 │   └── lib/
 │       └── status-helpers.sh         # EXISTING (unchanged)
 ├── scripts/
 │   ├── lib/
 │   │   └── learning-utils.js         # NEW — Shared JS utils for CLI
-│   ├── instinct-cli.js               # NEW — Instinct management CLI
-│   └── start-observer.sh             # NEW — Observer daemon lifecycle
+│   ├── instinct-cli.js               # TRANSLATE — Instinct management CLI
+│   └── start-observer.sh             # COPY+MODIFY — Observer daemon lifecycle
 ├── skills/
-│   ├── learn/
-│   │   └── SKILL.md                  # NEW — Manual pattern extraction
 │   ├── instinct-status/
-│   │   └── SKILL.md                  # NEW — Instinct dashboard
+│   │   └── SKILL.md                  # ADAPT — View instincts dashboard
+│   ├── evolve/
+│   │   └── SKILL.md                  # ADAPT — Cluster instincts into skills
 │   └── continuous-learning/
 │       └── SKILL.md                  # NEW — Main skill entry point
 ├── agents/
-│   └── observer.md                   # NEW — Observer agent prompt
+│   └── observer.md                   # COPY+MODIFY — Observer agent prompt
 ├── learned/
-│   ├── observations.jsonl            # NEW — Tool event captures
-│   ├── observations.archive/         # NEW — Archived observations
+│   ├── observations.jsonl            # RUNTIME — Tool event captures
+│   ├── observations.archive/         # RUNTIME — Archived observations
 │   ├── instincts/
-│   │   ├── personal/                 # NEW — Auto-learned instincts
-│   │   └── inherited/                # NEW — Imported instincts
-│   ├── evolved/                      # NEW — Future: clustered instincts
+│   │   ├── personal/                 # RUNTIME — Auto-learned instincts
+│   │   └── inherited/                # RUNTIME — Imported instincts
+│   ├── evolved/                      # RUNTIME — Clustered instincts
 │   │   ├── commands/
 │   │   ├── skills/
 │   │   └── agents/
-│   └── config.json                   # NEW — Learning pipeline settings
+│   └── config.json                   # COPY+MODIFY — Learning pipeline settings
 └── settings.json                     # MODIFIED — Add 3 new hook entries
 ```
+
+**Legend:** REWRITE = language/tool change | TRANSLATE = language change, same logic | COPY+MODIFY = path changes only | ADAPT = format change | NEW = no source | RUNTIME = created at runtime
+
+**DEFERRED (v1 behavior):** `/learn` skill — manual instinct creation not in v2 source
 
 ## Settings.json Integration
 
@@ -250,8 +343,8 @@ Port from source with these changes:
 
 **Pattern Extraction (FR4):**
 
-- [AC-draft-9](../1-elicit-discover-sense-make-problem-frame/whiteboard-phase1.md#^AC-draft-9): ✅ Validated — Implemented as skill per [D3](#^decision-skills)
-- [AC-draft-10](../1-elicit-discover-sense-make-problem-frame/whiteboard-phase1.md#^AC-draft-10): ✅ Validated
+- [AC-draft-9](../1-elicit-discover-sense-make-problem-frame/whiteboard-phase1.md#^AC-draft-9): ⚠️ **DEFERRED** — `/learn` is v1 behavior (creates skills directly). v2 uses observer daemon for automatic instinct creation. Manual trigger deferred per [D7](#^decision-learn-deferred).
+- [AC-draft-10](../1-elicit-discover-sense-make-problem-frame/whiteboard-phase1.md#^AC-draft-10): ⚠️ **REVISED** — Instincts created automatically by observer daemon, not manual `/learn`. User approval not needed for low-confidence instincts; high-confidence auto-applied per [D8](#^decision-automatic-instincts).
 
 **Instinct Persistence (FR5):**
 
@@ -306,7 +399,7 @@ Port from source with these changes:
 
 - [AC-draft-33](../1-elicit-discover-sense-make-problem-frame/whiteboard-phase1.md#^AC-draft-33): ✅ Validated
 
-**Summary:** 30 validated, 3 revised, 0 dropped.
+**Summary:** 28 validated, 4 revised, 1 deferred (AC-draft-9 for manual /learn).
 
 ---
 

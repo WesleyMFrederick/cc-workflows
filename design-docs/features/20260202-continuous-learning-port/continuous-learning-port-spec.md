@@ -5,9 +5,9 @@
 **Status**: Draft
 
 > **Context:**
-> - [PRD](continuous-learning-port-prd.md)
-> - [Phase 1 Whiteboard](1-elicit-discover-sense-make-problem-frame/whiteboard-phase1.md)
-> - [Phase 2 Design Whiteboard](2-design-phase/phase2-design-whiteboard.md)
+> - [PRD](continuous-learning-port-prd.md)%%force-extract%%
+> - [Phase 1 Whiteboard](1-elicit-discover-sense-make-problem-frame/whiteboard-phase1.md)%%force-extract%%
+> - [Phase 2 Design Whiteboard](2-design-phase/phase2-design-whiteboard.md)%%force-extract%%does
 
 ---
 
@@ -138,6 +138,7 @@
       </hook_registration>
     </component>
 
+    <!-- DEFERRED: learn-skill - v1 behavior, not in v2 architecture
     <component name="learn-skill" port_type="new">
       <source>skills/continuous-learning-v2/slash-commands/learn.md (reference only)</source>
       <target>.claude/skills/learn/SKILL.md</target>
@@ -150,7 +151,9 @@
         - Output path: .claude/learned/instincts/personal/
       </changes>
       <satisfies>FR4, FR5</satisfies>
+      <note>DEFERRED: Source /learn is v1 behavior (creates skills directly). In v2, instincts are created automatically by observer daemon. See D7 in Phase 2 whiteboard.</note>
     </component>
+    -->
 
     <component name="instinct-status-skill" port_type="new">
       <source>skills/continuous-learning-v2/slash-commands/instinct-status.md (reference only)</source>
@@ -163,6 +166,20 @@
         - Behavior: Call instinct-cli.js status, format output
       </changes>
       <satisfies>FR6</satisfies>
+    </component>
+
+    <component name="evolve-skill" port_type="adapt">
+      <source>commands/evolve.md</source>
+      <target>.claude/skills/evolve/SKILL.md</target>
+      <lines>~80</lines>
+      <language>Markdown</language>
+      <changes>
+        - Adapt slash command to cc-workflows SKILL.md pattern
+        - Trigger: "/evolve" invocation
+        - Behavior: Call instinct-cli.js evolve, cluster 3+ related instincts
+        - Output: Creates skills/commands/agents in .claude/learned/evolved/
+      </changes>
+      <satisfies>FR9</satisfies>
     </component>
 
     <component name="config.json" port_type="copy_modify">
@@ -301,9 +318,14 @@
       Components: instinct-cli.js
       Changes: Language translation (Python→JS), same logic
     </type>
-    <type name="new" count="3">
-      Components: learning-utils.js, learn-skill, instinct-status-skill
+    <type name="adapt" count="1">
+      Components: evolve-skill
+      Changes: Format change (slash command → skill), same functionality
+    </type>
+    <type name="new" count="2">
+      Components: learning-utils.js, instinct-status-skill
       Changes: New files not in source (or significantly different)
+      Note: learn-skill DEFERRED (v1 behavior)
     </type>
   </port_type_summary>
 
@@ -326,8 +348,8 @@
     </section>
 
     <section name="Pattern Extraction" fr="FR4">
-      - AC9: /learn skill analyzes session transcript
-      - AC10: Creates instinct YAML with user approval
+      - AC9: DEFERRED — /learn is v1 behavior; v2 uses observer daemon for automatic instinct creation
+      - AC10: REVISED — Instincts created automatically by observer daemon, not manual /learn
     </section>
 
     <section name="Instinct Persistence" fr="FR5">

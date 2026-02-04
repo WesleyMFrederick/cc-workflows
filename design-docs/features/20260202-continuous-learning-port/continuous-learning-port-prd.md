@@ -19,8 +19,9 @@ Port continuous learning from everything-claude-code to cc-workflows. Enables pa
 
 **Done when:**
 - Observation hooks capture tool events without impacting performance
-- `/learn` creates instinct YAML from session patterns
+- Observer daemon creates instincts automatically from observations (opt-in)
 - `/instinct-status` shows instincts with confidence bars by domain
+- `/evolve` clusters instincts into discoverable SKILL.md files
 - Instinct CLI handles import/export with deduplication and privacy
 - All data stored per-project in `.claude/learned/`
 - Observer daemon starts/stops cleanly (opt-in, disabled by default)
@@ -39,7 +40,7 @@ Port continuous learning from everything-claude-code to cc-workflows. Enables pa
 
 **Pattern extraction:**
 
-- `/learn` slash command for manual mid-session pattern extraction
+- ~~`/learn` slash command for manual mid-session pattern extraction~~ **DEFERRED**
 - `/instinct-status` slash command for viewing learned instincts
 - Instinct YAML format with confidence scoring
 
@@ -55,9 +56,13 @@ Port continuous learning from everything-claude-code to cc-workflows. Enables pa
 - Pattern detection: corrections, error resolutions, repeated workflows, tool preferences
 - Disabled by default, opt-in via config
 
-### Out of Scope
+**Instinct evolution:**
 
-- `/evolve` (instinct → skill clustering) — Phase A.2
+- `/evolve` skill for clustering related instincts into discoverable skills
+- Generated skills placed in `.claude/learned/evolved/skills/`
+- Auto-discoverable by Claude via standard skill discovery
+
+### Out of Scope
 - Session persistence, feature linking — Phase B
 - Cross-project instinct sync
 - Confidence decay timer
@@ -74,11 +79,12 @@ Port continuous learning from everything-claude-code to cc-workflows. Enables pa
 - FR1: The system SHALL capture tool usage events during sessions for later analysis. ^FR1
 - FR2: The system SHALL manage observation storage to prevent unbounded growth. ^FR2
 - FR3: The system SHALL integrate with existing hook infrastructure without disrupting current hooks. ^FR3
-- FR4: The system SHALL provide manual pattern extraction from session activity. ^FR4
+- FR4: ~~The system SHALL provide manual pattern extraction from session activity.~~ **DEFERRED** — v1 behavior; v2 uses automatic detection via observer daemon. ^FR4
 - FR5: The system SHALL persist learned patterns as structured, confidence-weighted instinct files. ^FR5
 - FR6: The system SHALL provide visibility into learned instincts and their confidence levels. ^FR6
 - FR7: The system SHALL support optional background pattern detection (disabled by default). ^FR7
 - FR8: The system SHALL support instinct portability via import and export with privacy controls. ^FR8
+- FR9: The system SHALL transform high-confidence instincts into discoverable skills via clustering and generation. ^FR9
 
 ### Non-Functional Requirements
 

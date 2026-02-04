@@ -12,15 +12,23 @@ Adapt generic requirements to your specific system through interactive research,
 ## When to Use
 
 Use this skill when:
-- Phase 1 requirements (PRD) exist and you're starting Phase 2
-- Need to bridge generic requirements to system-specific implementation
-- Adapting an existing system's patterns to a new codebase
-- Making architectural decisions that need documented rationale
+- **Heavy bridge:** Greenfield features, system integration, API design — many architectural decisions needed
+- **Medium bridge:** Brownfield enhancement, platform migration — some decisions needed
 
 **Do NOT use** for:
+- **Light bridge:** Ports, refactors — use `writing-spec-documents` directly (design absorbed into spec)
+- **Thin bridge:** Bug fixes, deprecation — use `writing-spec-documents` only
 - Phase 1 discovery/requirements (use `writing-requirements-documents`)
 - Phase 4 implementation planning (use `writing-plans`)
-- Simple changes that don't need design decisions
+
+### Bridge Weight Quick Reference
+
+| Weight | Scenarios | This Skill |
+|--------|-----------|------------|
+| Heavy | Greenfield, integration, API design | **Required** |
+| Medium | Brownfield, migration | Recommended |
+| Light | Port, refactor | Skip (use spec) |
+| Thin | Bug fix, deprecation | Skip (use spec) |
 
 ## Inputs
 
@@ -142,23 +150,33 @@ Save to: `{{feature-dir}}/2-design-phase/phase2-design-whiteboard.md`
 - **Phase 1 Whiteboard**: [Phase 1 Whiteboard](../1-elicit-discover-sense-make-problem-frame/whiteboard-phase1.md)
 ```
 
-## Two Phase 2 Artifacts
+## Phase 2 Artifacts (Bridge-Dependent)
 
-Phase 2 produces two distinct artifacts with different purposes:
+What you produce depends on bridge weight:
 
-### -design.md (Whiteboard + Design Doc)
-- **Purpose:** WHY rationale — documents decision history
+| Bridge | Whiteboard | Design Doc | Spec Doc |
+|--------|------------|------------|----------|
+| Heavy/Medium | Required | Required | Required |
+| Light/Thin | Required | Skip | Required |
+
+### Whiteboard (Always)
+- **Purpose:** Decision anchor — immutable history of choices made
+- **Stability:** Append-only — never modify past decisions
+- **Contains:** Research findings, decisions with rationale, draft ACs
+
+### Design Doc (Heavy/Medium only)
+- **Purpose:** WHY rationale — documents decision history formally
 - **Stability:** Stable — survives spec changes
-- **Contains:** Design decisions, rationale, trade-offs discussed
-- **When spec changes:** Design doc explains WHY the change was made
+- **When to create:** Greenfield, integration, API design — many architectural decisions
+- **When to skip:** Ports, refactors — whiteboard + spec sufficient
 
-### -spec.md (Implementation Spec)
+### Spec Doc (Always — use `writing-spec-documents` skill)
 - **Purpose:** Current HOW — concrete implementation instructions
-- **Stability:** Evolves — changes in Phase 3 (Sequencing) and Phase 4 (Implementation)
+- **Stability:** Living — evolves during sequencing/implementation
 - **Contains:** Component specs, interfaces, data schemas, port instructions
-- **Format:** XML in codeblock (see Spec Template)
+- **Traceability:** References whiteboard decisions via anchors
 
-**Relationship:** Design doc provides stable rationale. Spec doc is living implementation guide.
+**Relationship:** Whiteboard anchors decisions. Design doc formalizes rationale (when needed). Spec doc prescribes implementation.
 
 ## Draft AC Validation
 
@@ -323,10 +341,14 @@ After writing design documentation, create TodoWrite todos for:
 - `evaluate-against-architecture-principles` — validate design, then filter through MVP lens
 
 **Outputs to:**
-- `writing-plans` — design doc feeds Phase 4 implementation planning
+- `writing-spec-documents` — whiteboard decisions feed spec traceability
+- `writing-plans` — design doc + spec feed Phase 4 implementation planning
 
 **Referenced by:**
-- `enforcing-development-workflow` — Phase 2 REQUIRED skill
+- `enforcing-development-workflow` — Phase 2 skill (Heavy/Medium bridge)
+
+**Alternative for Light/Thin bridge:**
+- Skip this skill, use `writing-spec-documents` directly with whiteboard
 
 ---
 
