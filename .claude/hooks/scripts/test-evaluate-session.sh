@@ -40,6 +40,8 @@ test_script_exists() {
 test_no_pid_file() {
   echo "Test 2: Handles missing PID file gracefully"
 
+  setup
+
   rm -f "$CLAUDE_PROJECT_DIR/.claude/learned/.observer.pid"
 
   # Should not fail
@@ -53,6 +55,8 @@ test_no_pid_file() {
 # Test 3: Kills running observer daemon
 test_kills_daemon() {
   echo "Test 3: Kills running observer daemon"
+
+  setup
 
   # Start a mock daemon (sleep process)
   sleep 600 &
@@ -83,6 +87,8 @@ test_kills_daemon() {
 # Test 4: Logs observation count
 test_logs_observation_count() {
   echo "Test 4: Logs observation count to stderr"
+
+  setup
 
   # Create some observations
   echo '{\"event\":\"test1\"}' > "$CLAUDE_PROJECT_DIR/.claude/learned/observations.jsonl"

@@ -28,8 +28,8 @@ fi
 
 # Count observations in session
 obs_count=0
-if [ -f "$OBSERVATIONS_FILE" ]; then
-  obs_count=$(wc -l < "$OBSERVATIONS_FILE" | tr -d ' ')
+if [ -f "$OBSERVATIONS_FILE" ] && [ -r "$OBSERVATIONS_FILE" ]; then
+  obs_count=$(grep -c "^" "$OBSERVATIONS_FILE" 2>/dev/null || echo 0)
 fi
 
 # Log session summary
