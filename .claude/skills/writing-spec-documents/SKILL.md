@@ -78,20 +78,38 @@ The spec uses XML format in a codeblock for structured, machine-parseable conten
     {{Brief description of what's being built}}
   </overview>
 
+  <!-- Heavy Bridge: Include all optional sections -->
+  <!-- Medium/Light/Thin: Include only what's needed -->
+
+  <!-- OPTIONAL: Heavy Bridge only -->
+  <technology_stack>{{See Extended Templates}}</technology_stack>
+  <prerequisites>{{See Extended Templates}}</prerequisites>
+  <core_features>{{See Extended Templates}}</core_features>
+
+  <!-- CORE: All bridge weights -->
   <components>
     {{See Component Template below}}
   </components>
 
   <data_schemas>
     {{See Data Schema Template below}}
+    {{Or use Extended database_schema for Heavy Bridge}}
   </data_schemas>
 
   <integration>
     {{See Integration Template below}}
   </integration>
 
+  <!-- OPTIONAL: Heavy Bridge with UI -->
+  <api_endpoints>{{See Extended Templates}}</api_endpoints>
+  <ui_layout>{{See Extended Templates}}</ui_layout>
+  <design_system>{{See Extended Templates}}</design_system>
+  <key_interactions>{{See Extended Templates}}</key_interactions>
+
+  <!-- CORE: All bridge weights -->
   <acceptance_criteria>
     {{See AC Template below}}
+    {{Or use Extended success_criteria for Heavy Bridge}}
   </acceptance_criteria>
 
   <risks>
@@ -188,16 +206,293 @@ The spec uses XML format in a codeblock for structured, machine-parseable conten
 </risks>
 ```
 
+---
+
+## Heavy Bridge Extended Templates
+
+**When to use:** Greenfield apps, major integrations, full-stack features. These sections provide complete prescription for implementation.
+
+### Technology Stack Template
+
+Include when building new applications or adding major subsystems.
+
+```xml
+<technology_stack>
+  <frontend>
+    <framework>{{React, Vue, Svelte, etc.}}</framework>
+    <styling>{{Tailwind, CSS Modules, styled-components}}</styling>
+    <state_management>{{Context, Redux, Zustand, etc.}}</state_management>
+    <routing>{{React Router, Vue Router, etc.}}</routing>
+    <port>{{Port number if applicable}}</port>
+  </frontend>
+
+  <backend>
+    <runtime>{{Node.js, Python, Go, etc.}}</runtime>
+    <framework>{{Express, FastAPI, Gin, etc.}}</framework>
+    <database>{{PostgreSQL, SQLite, MongoDB, etc.}}</database>
+    <orm>{{Prisma, Drizzle, SQLAlchemy, etc.}}</orm>
+  </backend>
+
+  <communication>
+    <api>{{REST, GraphQL, gRPC}}</api>
+    <realtime>{{WebSocket, SSE, polling}}</realtime>
+    <external>{{Third-party API integrations}}</external>
+  </communication>
+</technology_stack>
+```
+
+### Prerequisites Template
+
+Include when environment setup is non-trivial.
+
+```xml
+<prerequisites>
+  <environment_setup>
+    - {{Required env vars with purpose}}
+    - {{Pre-installed dependencies}}
+    - {{Directory structure requirements}}
+    - {{External service dependencies}}
+  </environment_setup>
+
+  <assumptions>
+    - {{What's assumed to already exist}}
+    - {{What doesn't need to be built}}
+  </assumptions>
+</prerequisites>
+```
+
+### Core Features Template
+
+Include for feature-rich applications. Group by domain.
+
+```xml
+<core_features>
+  <feature_group name="{{Domain Name}}">
+    - {{Feature 1 with brief description}}
+    - {{Feature 2 with brief description}}
+    - {{Feature 3 with brief description}}
+  </feature_group>
+
+  <feature_group name="{{Another Domain}}">
+    - {{Feature 1}}
+    - {{Feature 2}}
+  </feature_group>
+</core_features>
+```
+
+**Guidance:** Each feature should be testable. Avoid vague descriptions like "good UX" — be specific.
+
+### Database Schema Template (Extended)
+
+For full-stack apps, use detailed table definitions instead of minimal schema.
+
+```xml
+<database_schema>
+  <tables>
+    <table name="{{table_name}}">
+      - id: {{type, constraints}}
+      - {{field_name}}: {{type, constraints, description}}
+      - {{field_name}}: {{type, constraints, FK reference}}
+      - created_at, updated_at: {{timestamp fields}}
+    </table>
+
+    <table name="{{another_table}}">
+      - id: {{type}}
+      - {{foreign_key}}_id: FK to {{referenced_table}}
+      - {{fields...}}
+    </table>
+  </tables>
+
+  <indexes>
+    - {{table.field}} — {{purpose}}
+  </indexes>
+
+  <constraints>
+    - {{Unique constraints, check constraints}}
+  </constraints>
+</database_schema>
+```
+
+### API Endpoints Template
+
+Include for backend services. Group by resource domain.
+
+```xml
+<api_endpoints>
+  <resource name="{{Resource Name}}">
+    - GET    /api/{{resource}}           — List all
+    - POST   /api/{{resource}}           — Create new
+    - GET    /api/{{resource}}/:id       — Get by ID
+    - PUT    /api/{{resource}}/:id       — Update
+    - DELETE /api/{{resource}}/:id       — Delete
+    - POST   /api/{{resource}}/:id/{{action}} — Custom action
+  </resource>
+
+  <resource name="{{Another Resource}}">
+    - {{endpoints...}}
+  </resource>
+
+  <special>
+    - GET  /api/health     — Health check
+    - POST /api/{{stream}} — SSE/WebSocket endpoint
+  </special>
+</api_endpoints>
+```
+
+### UI Layout Template
+
+Include for frontend-heavy applications.
+
+```xml
+<ui_layout>
+  <main_structure>
+    - {{Layout description: columns, panels, responsive behavior}}
+    - {{Navigation structure}}
+    - {{Persistent elements}}
+  </main_structure>
+
+  <section name="{{Section Name}}">
+    - {{Component 1}} — {{purpose}}
+    - {{Component 2}} — {{purpose}}
+    - {{Interactive elements}}
+  </section>
+
+  <modals_overlays>
+    - {{Modal 1}} — {{trigger and purpose}}
+    - {{Modal 2}} — {{trigger and purpose}}
+  </modals_overlays>
+
+  <responsive_breakpoints>
+    - mobile: {{behavior}}
+    - tablet: {{behavior}}
+    - desktop: {{behavior}}
+  </responsive_breakpoints>
+</ui_layout>
+```
+
+### Design System Template
+
+Include when visual consistency matters (user-facing apps).
+
+```xml
+<design_system>
+  <color_palette>
+    - Primary: {{color and hex}}
+    - Background: {{light mode / dark mode}}
+    - Text: {{primary / secondary}}
+    - Accent: {{for CTAs, highlights}}
+    - Error/Warning/Success: {{semantic colors}}
+  </color_palette>
+
+  <typography>
+    - Font family: {{system stack or custom fonts}}
+    - Headings: {{weight, sizes}}
+    - Body: {{size, line-height}}
+    - Code: {{monospace font}}
+  </typography>
+
+  <components>
+    <component name="{{Button}}">
+      - Primary: {{style description}}
+      - Secondary: {{style description}}
+      - States: hover, disabled, loading
+    </component>
+    {{Additional component patterns...}}
+  </components>
+
+  <animations>
+    - Transitions: {{duration, easing}}
+    - Loading states: {{spinner, skeleton, etc.}}
+    - Micro-interactions: {{hover, focus, click}}
+  </animations>
+</design_system>
+```
+
+### Key Interactions Template
+
+Include for complex user flows. Document sequences.
+
+```xml
+<key_interactions>
+  <flow name="{{Flow Name}}">
+    <steps>
+      1. {{User action}}
+      2. {{System response}}
+      3. {{User action}}
+      4. {{System response with state change}}
+      5. {{Completion/confirmation}}
+    </steps>
+    <edge_cases>
+      - {{Error condition}} → {{handling}}
+      - {{Timeout}} → {{handling}}
+    </edge_cases>
+  </flow>
+
+  <flow name="{{Another Flow}}">
+    {{steps...}}
+  </flow>
+</key_interactions>
+```
+
+### Success Criteria Template (Extended)
+
+For Heavy bridge, expand beyond basic ACs.
+
+```xml
+<success_criteria>
+  <category name="Functionality">
+    - {{Core feature works as specified}}
+    - {{CRUD operations complete}}
+    - {{Edge cases handled}}
+  </category>
+
+  <category name="User Experience">
+    - {{Responsive on target devices}}
+    - {{Loading states visible}}
+    - {{Error messages clear}}
+    - {{Performance targets met}}
+  </category>
+
+  <category name="Technical Quality">
+    - {{Test coverage threshold}}
+    - {{No lint errors}}
+    - {{Type safety maintained}}
+    - {{Error handling complete}}
+  </category>
+
+  <category name="Design Polish" fr="{{NFR}}">
+    - {{Matches design system}}
+    - {{Animations smooth}}
+    - {{Accessibility requirements met}}
+  </category>
+</success_criteria>
+```
+
+---
+
 ## Bridge-Specific Content
 
 ### Heavy Bridge (Greenfield, Integration, API)
 
-Full spec with all sections:
-- Detailed component specs with behavior descriptions
-- Complete data schemas
-- Interface contracts
-- All integration points
-- Comprehensive ACs
+Full spec with all sections. **Use Extended Templates above.**
+
+**Required sections:**
+- `<technology_stack>` — Full stack definition
+- `<prerequisites>` — Environment and assumptions
+- `<core_features>` — Grouped feature list
+- `<components>` — With behavior descriptions
+- `<database_schema>` — Full tables with fields
+- `<api_endpoints>` — Grouped by resource
+- `<integration>` — All integration points
+
+**For user-facing apps, also include:**
+- `<ui_layout>` — Structure and responsive behavior
+- `<design_system>` — Colors, typography, components
+- `<key_interactions>` — User flow sequences
+
+**Always include:**
+- `<success_criteria>` — Extended with categories
+- `<risks>` — With mitigations
 
 ### Medium Bridge (Brownfield, Migration)
 
