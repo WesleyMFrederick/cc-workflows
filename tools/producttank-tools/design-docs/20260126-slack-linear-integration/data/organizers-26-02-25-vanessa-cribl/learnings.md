@@ -10,7 +10,7 @@
 
 ### Session 1: Channel Discovery (2026-01-30 13:54)
 
-```python
+```bash
 # Step 1: Find channel ID
 mcp__slack__channels_list(channel_types="private_channel", limit=100)
 # Result: C0A1XLFQZLJ (#organizers-26-02-25-vanessa-cribl, 6 members)
@@ -22,7 +22,7 @@ mcp__slack__conversations_history(channel_id="C0A1XLFQZLJ", limit="90d")
 
 ### Session 2: Thread Fetching (2026-01-30 22:15)
 
-```python
+```bash
 # Fetch all 8 threads in parallel (single message, 8 tool calls)
 mcp__slack__conversations_replies(channel_id="C0A1XLFQZLJ", thread_ts="1769483902.589269", limit="90d")  # DRI Status (17 replies)
 mcp__slack__conversations_replies(channel_id="C0A1XLFQZLJ", thread_ts="1769458321.350549", limit="90d")  # A/V Coordination (2 replies)

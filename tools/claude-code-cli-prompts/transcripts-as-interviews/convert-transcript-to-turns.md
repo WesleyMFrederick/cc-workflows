@@ -1,0 +1,1 @@
+Treat the llm transcript below like an interview with me. I start the conversation. Convert the transcript to Turns in a conversation, clean up my input from filler words so we get to the meaning. Output in YAML.

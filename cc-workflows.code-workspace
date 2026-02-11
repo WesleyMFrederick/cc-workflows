@@ -20,6 +20,15 @@
 		},
 		{
 			"path": "../cc-workflows.worktree.ptsf-tools"
+		},
+		{
+			"path": "../../../../../../opt/homebrew/lib/node_modules/@anthropic-ai"
+		},
+		{
+			"path": "../docling"
+		},
+		{
+			"path": "../marker"
 		}
 	],
 	"settings": {}

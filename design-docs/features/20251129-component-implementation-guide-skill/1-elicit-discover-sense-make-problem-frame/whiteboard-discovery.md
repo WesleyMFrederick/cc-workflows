@@ -126,20 +126,23 @@ Engineers and agents module guides that:
 [One-line component summary]                  ← Concise description
 
 ### Problem                                   ← H3: Subsection
-- [Consumer need]
-- [Current gap/pain]
-- [Why it matters]
+1. [Consumer need] ^P1
+2. [Current gap/pain] ^P2
+3. [Why it matters] ^P3
 
 ### Solution                                  ← H3: Subsection
-- The [Component] acts as [role]. It:
-  - [capability 1]
-  - [capability 2]
-- The [Output]:
-  - [how it's consumed]
-  - [what it contains]
+The [Component] provides [capability] by:
+1. [capability + output reference] ([P1](#^P1)) ^S1
+2. [capability + pattern name] ([P2](#^P2)) ^S2
+3. [capability + mechanism] ([P3](#^P3)) ^S3
 
 ### Impact                                    ← H3: Subsection
-[Table: Solution → Impact → Principles]
+[Table: Problem ID | Problem | Solution ID | Solution | Impact | Principles | How Principle Applies]
+
+### Boundaries                                ← H3: Subsection
+[Positive responsibility statement + output link]
+[Limiting principle statement]
+[NOT responsible for: bullet list with delegation targets]
 
 ---                                           ← Horizontal rule separator
 ```
@@ -256,6 +259,68 @@ The [**`ParsedDocument`**](...) facade provides a stable query interface by:
 | [P1](#^P1) | Tight coupling to parser internals | [S1](#^S1) | Facade with query methods | Zero direct data structure access | [Black Box Interfaces](...#^black-box-interfaces) | Expose clean API; hide implementation |
 | [P2](#^P2) | Breaking changes propagate | [S2](#^S2) | Stable method-based API | Parser refactoring doesn't break consumers | [Replaceable Parts](...#^replaceable-parts) | Components swapped via interfaces |
 ```
+
+#### Boundaries Tone & Style
+
+- **Format**: H3 heading → positive responsibility statement → limiting principle → “NOT responsible for” bullet list
+- **Position**: After Impact table, before horizontal rule that separates Overview from Structure
+- **Purpose**: Draws explicit lines around component scope to prevent scope creep and clarify integration boundaries
+
+**Structure**:
+
+1. **Positive statement**: What the component IS exclusively responsible for (link to primary output)
+2. **Limiting principle**: The conceptual constraint (e.g., “syntactic only”, “orchestration only”)
+3. **Awareness boundary** (optional): What the component is NOT aware of (upstream/downstream components)
+4. **NOT responsible list**: 3-5 bullet points of explicit exclusions
+
+**Links**: Use [Level 4: Component.Functionality Reference](#Level%204%20Component.Funtionality%20Reference%20(→%20Component%20Guide%20section)) for output contracts mentioned in positive statement.
+
+##### Examples
+
+**Parser (syntactic boundary)**:
+
+```markdown
+### Boundaries
+
+The component is exclusively responsible for transforming a raw markdown string into the structured [**`ParserOutput`**](#ParserOutput%20Interface). Its responsibilities are strictly limited to syntactic analysis. The component is **not** aware of the `ParsedDocument` facade that wraps its output. The component is **not** responsible for:
+- Validating the existence or accessibility of file paths.
+- Verifying the semantic correctness of links or anchors.
+- Interpreting or executing any code within the document.
+```
+
+**Extractor (orchestration boundary)**:
+
+```markdown
+### Boundaries
+
+The component is exclusively responsible for orchestrating content extraction from pre-validated links into the [**`OutgoingLinksExtractedContent`**](#OutgoingLinksExtractedContent%20Schema) structure. Its responsibilities are strictly limited to extraction orchestration and deduplication. The component is **not** responsible for:
+- Link discovery or validation (expects pre-validated links from CLI Orchestrator)
+- Parsing markdown (delegated to MarkdownParser via ParsedFileCache)
+- Navigating parser output structures (delegated to ParsedDocument facade)
+- Reading files from disk (delegated to ParsedFileCache)
+- Final output formatting or file writing (delegated to CLI Orchestrator)
+```
+
+**Validator (enrichment boundary)**:
+
+```markdown
+### Boundaries
+
+The component is exclusively responsible for validating links and enriching them with [**`ValidationMetadata`**](#ValidationMetadata%20Type). Its responsibilities are strictly limited to validation and enrichment. The component is **not** responsible for:
+- Link discovery or parsing (expects LinkObjects from MarkdownParser)
+- Content extraction (delegated to ContentExtractor)
+- Determining extraction eligibility (delegated to ContentExtractor strategies)
+- Caching parsed documents (delegated to ParsedFileCache)
+```
+
+##### Anti-patterns to Avoid
+
+| Don’t                                | Do                                     | Why                                 |
+| ------------------------------------ | -------------------------------------- | ----------------------------------- |
+| List implementation details          | List responsibility boundaries         | Boundaries are about scope, not how |
+| Use vague exclusions (“other stuff”) | Be specific (“file I/O”, “validation”) | Clarity prevents scope creep        |
+| Repeat Problem/Solution content      | State fresh constraints                | Boundaries add new information      |
+| Skip the limiting principle          | Include conceptual constraint          | Anchors the boundary rationale      |
 
 #### Overview Horizontal Rule
 - Separates Overview from detailed Structure section below.

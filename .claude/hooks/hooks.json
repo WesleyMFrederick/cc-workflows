@@ -22,27 +22,7 @@
 				]
 			}
 		],
-		"PreToolUse": [
-			{
-				"matcher": ".*",
-				"hooks": [
-					{
-						"type": "command",
-						"command": "${CLAUDE_PROJECT_ROOT}/.claude/hooks/observe.sh pre"
-					}
-				]
-			}
-		],
 		"PostToolUse": [
-			{
-				"matcher": ".*",
-				"hooks": [
-					{
-						"type": "command",
-						"command": "${CLAUDE_PROJECT_ROOT}/.claude/hooks/observe.sh post"
-					}
-				]
-			},
 			{
 				"matcher": "Read",
 				"hooks": [
@@ -67,17 +47,6 @@
 					{
 						"type": "command",
 						"command": "${CLAUDE_PROJECT_ROOT}/.claude/hooks/status/task-sync.sh"
-					}
-				]
-			}
-		],
-		"Stop": [
-			{
-				"matcher": ".*",
-				"hooks": [
-					{
-						"type": "command",
-						"command": "${CLAUDE_PROJECT_ROOT}/.claude/hooks/stop.sh"
 					}
 				]
 			}
