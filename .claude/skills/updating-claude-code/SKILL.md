@@ -34,6 +34,7 @@ Then re-verify with `which -a claude` — wrapper must appear before `/opt/homeb
 
 **DO NOT proceed with version changes until wrapper is confirmed.**
 
+
 ## Commands
 
 ### Check version
