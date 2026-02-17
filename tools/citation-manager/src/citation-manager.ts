@@ -1178,8 +1178,8 @@ Exit Codes:
 		try {
 			await manager.extractLinks(sourceFile, options);
 
-			// D3: Write cache after successful extraction
-			if (options.session) {
+			// D3: Write cache only after successful extraction (exitCode 0)
+			if (options.session && process.exitCode !== 1) {
 				writeExtractCache(options.session, sourceFile, CACHE_DIR);
 			}
 		} catch (error) {

@@ -63,6 +63,40 @@ describe("extract links --session (cache integration)", () => {
 		expect(output.trim()).toBe("");
 	});
 
+	it("no-links file with --session does not write cache (allows retry)", () => {
+		// Create a file with no extractable links
+		const noLinksPath = join(testDir, "no-links.md");
+		writeFileSync(
+			noLinksPath,
+			"# No Links\n\nJust plain text, no citations.\n",
+		);
+
+		// First call — no links, exits with code 1 (thrown as error by execSync)
+		try {
+			execSync(
+				`node "${CLI_PATH}" extract links "${noLinksPath}" --scope "${testDir}" --session test-session-nolinks`,
+				{ encoding: "utf8", cwd: testDir },
+			);
+		} catch {
+			// Expected: exit code 1 for no eligible links
+		}
+
+		// Now add a citation to the file
+		writeFileSync(
+			noLinksPath,
+			"# Now Has Links\n\nSee [[target.md#Section One|Section One]] for details.\n",
+		);
+
+		// Second call — should extract (no cache was written for the failed attempt)
+		const output = execSync(
+			`node "${CLI_PATH}" extract links "${noLinksPath}" --scope "${testDir}" --session test-session-nolinks`,
+			{ encoding: "utf8", cwd: testDir },
+		);
+		const result = JSON.parse(output);
+		expect(result.extractedContentBlocks).toBeDefined();
+		expect(result.stats.uniqueContent).toBeGreaterThan(0);
+	});
+
 	it("call without --session always performs extraction (backward compat)", () => {
 		// Use existing fixtures that are known to work
 		const fixtureSource = join(__dirname, "../fixtures/extract-test-source.md");

@@ -43,7 +43,7 @@
 
 ## 8. Commit
 
-- [ ] 8.1 Use `/git-and-github:git-create-commit` to create a single commit of all implementation work
+- [x] 8.1 Use `/git-and-github:git-create-commit` to create a single commit of all implementation work
 
 ## 9. Verify
 
