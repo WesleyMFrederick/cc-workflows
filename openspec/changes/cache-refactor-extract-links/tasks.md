@@ -47,5 +47,5 @@
 
 ## 9. Verify
 
-- [ ] 9.1 Use `/requesting-code-review` to review the implementation commit against [design decisions](design.md) and [spec requirements](specs/extract-session-cache/spec.md). Fix any issues found as REFACTOR work and commit separately.
-- [ ] 9.2 Run full test suite (`npm test`) to confirm no regressions
+- [x] 9.1 Use `/requesting-code-review` to review the implementation commit against [design decisions](design.md) and [spec requirements](specs/extract-session-cache/spec.md). Fix any issues found as REFACTOR work and commit separately.
+- [x] 9.2 Run full test suite (`npm test`) to confirm no regressions

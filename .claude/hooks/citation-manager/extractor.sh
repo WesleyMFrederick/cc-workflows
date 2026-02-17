@@ -30,12 +30,19 @@ if ! command -v jq &> /dev/null; then
 fi
 echo "jq: available" >> "$DEBUG_LOG"
 
-# Check if citation-manager is available
-if ! command -v citation-manager &> /dev/null; then
+# Resolve citation-manager: prefer local build, fallback to global
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+LOCAL_CM="$SCRIPT_DIR/../../../tools/citation-manager/dist/citation-manager.js"
+if [[ -f "$LOCAL_CM" ]]; then
+    CM_CMD="node $LOCAL_CM"
+    echo "citation-manager: local build ($LOCAL_CM)" >> "$DEBUG_LOG"
+elif command -v citation-manager &> /dev/null; then
+    CM_CMD="citation-manager"
+    echo "citation-manager: global" >> "$DEBUG_LOG"
+else
     echo "EXIT: citation-manager not available" >> "$DEBUG_LOG"
-    exit 0  # Silently skip if citation-manager not available
+    exit 0
 fi
-echo "citation-manager: available" >> "$DEBUG_LOG"
 
 # Read JSON input from stdin
 if [[ -t 0 ]]; then
@@ -80,15 +87,31 @@ if [[ ! -f "$file_path" ]]; then
 fi
 echo "file exists: yes" >> "$DEBUG_LOG"
 
-# Run citation-manager extract links and filter to extractedContentBlocks
-echo "Running: citation-manager extract links $file_path" >> "$DEBUG_LOG"
-extracted_content=$(citation-manager extract links "$file_path" --session "$session_id" 2>/dev/null | jq '.extractedContentBlocks' 2>/dev/null)
+# Run citation-manager extract links — capture exit code separately from output
+echo "Running: $CM_CMD extract links $file_path --session $session_id" >> "$DEBUG_LOG"
+raw_output=$($CM_CMD extract links "$file_path" --session "$session_id" 2>/dev/null)
+cm_exit_code=$?
+echo "cm_exit_code: $cm_exit_code, raw_output length: ${#raw_output}" >> "$DEBUG_LOG"
+
+# Distinguish three exit conditions by exit code + output
+if [[ $cm_exit_code -eq 0 && -z "$raw_output" ]]; then
+    echo "EXIT: Citations have already been extracted in this session. Review your context window. (session: ${session_id})" >> "$DEBUG_LOG"
+    exit 0
+elif [[ $cm_exit_code -eq 1 ]]; then
+    echo "EXIT: No citations found in $file_path" >> "$DEBUG_LOG"
+    exit 0
+elif [[ $cm_exit_code -eq 2 || -z "$raw_output" ]]; then
+    echo "EXIT: Extraction error (exit code: $cm_exit_code)" >> "$DEBUG_LOG"
+    exit 0
+fi
+
+# Filter to extractedContentBlocks
+extracted_content=$(echo "$raw_output" | jq '.extractedContentBlocks' 2>/dev/null)
 echo "extracted_content length: ${#extracted_content}" >> "$DEBUG_LOG"
 
-# Check if extraction succeeded and has content
+# Check if content is usable
 if [[ -z "$extracted_content" || "$extracted_content" == "null" || "$extracted_content" == "{}" ]]; then
-    # No citations found or extraction failed - exit silently
-    echo "EXIT: No citations found or extraction failed" >> "$DEBUG_LOG"
+    echo "EXIT: Extraction returned no content blocks" >> "$DEBUG_LOG"
     exit 0
 fi
 echo "extraction: successful" >> "$DEBUG_LOG"
