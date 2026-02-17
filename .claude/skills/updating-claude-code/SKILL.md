@@ -14,6 +14,26 @@ description: Use when updating, downgrading, or checking Claude Code CLI version
 
 Version changes via npm only. Wrapper auto-uses whatever npm installed.
 
+## Pre-flight (MANDATORY)
+
+Before any version operation, verify the seatbelt wrapper is installed:
+
+```bash
+which claude
+# MUST show: ~/.local/bin/claude
+# If it shows /opt/homebrew/bin/claude → wrapper is MISSING
+```
+
+**If wrapper is missing**, install it first:
+
+```bash
+./packages/sandbox/install-claude-wrapper.sh
+```
+
+Then re-verify with `which -a claude` — wrapper must appear before `/opt/homebrew/bin/claude`.
+
+**DO NOT proceed with version changes until wrapper is confirmed.**
+
 ## Commands
 
 ### Check version

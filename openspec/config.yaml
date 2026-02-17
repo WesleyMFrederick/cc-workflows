@@ -1,0 +1,65 @@
+schema: my-workflow
+
+# HOW TO UPDATE THIS CONFIG:
+# 1. Run: citation-manager extract header ARCHITECTURE.md "Coding Standards and Conventions"
+# 2. Run: citation-manager extract header ARCHITECTURE.md "Testing Strategy"
+# 3. Summarize into token-optimized bullet format below
+# 4. Keep context under 50KB (openspec limit)
+# Source: ARCHITECTURE.md → Coding Standards and Conventions, Testing Strategy
+
+context: |
+  ## Tech Stack
+  - Runtime: Node.js >=18, ESM modules (.js extensions in imports)
+  - CLI: Commander.js >=14, marked >=15
+  - Testing: Vitest (shared workspace config), discovery: tools/**/test/**/*.test.js
+  - Linting: Biome (shared workspace config)
+  - Package mgmt: NPM Workspaces (deps hoisted to root)
+
+  ## Coding Standards (from ARCHITECTURE.md#Coding Standards and Conventions)
+  - Files: kebab-case.ts (executables), camelCase.ts (modules named by transformation)
+  - Functions/vars: camelCase | Constants: UPPER_SNAKE_CASE | Classes: TitleCase
+  - Types/interfaces: TitleCase | Type files: camelCaseTypes.ts
+  - Enums: TitleCase name, UPPER_SNAKE_CASE values
+  - NEVER use `any` — use unknown + type narrowing, type guards, generics
+  - Strict TS: strict:true, noExplicitAny enforced
+  - Formatting: tabs for indentation (Biome enforced)
+  - Interface segregation: components define own dependency interfaces inline
+    - 1 consumer: inline | 2 consumers: copy | 3+: promote to src/types/
+
+  ## Testing Standards (from ARCHITECTURE.md#Testing Strategy)
+  - Target ratio: 0.3:1 to 0.5:1 test-to-code
+  - Integration-driven: start with failing integration test
+  - Real systems, fake fixtures: real fs, real components, zero mocking
+  - Test descriptions: natural language in it() strings
+  - BDD structure: Given/When/Then comments required
+  - CLI testing: execSync() for E2E, factory-created components for integration
+  - stdout/stderr separation: data to stdout, diagnostics to stderr
+
+  ## Architecture Patterns
+  - Component factory with constructor DI (componentFactory.js)
+  - ParsedFileCache for in-memory parsed document caching (per-command lifecycle)
+  - ParsedDocument facade over MarkdownParser output
+  - Strategy pattern for extensible rule evaluation
+  - Action-based file organization: files named by transformation verb
+
+rules:
+  proposal:
+
+    - "Trace claims to evidence: key assertions (context, decisions, risk mitigations) should include inline markdown links to their source in dependency artifacts or prior documents. A reader should be able to click any major claim and land on the evidence."
+    - "Always link to a specific header or block anchor, not bare files. The citation-manager extracts content at anchors for context — a bare file link does not guarantee extraction. Use #Header%20Name (raw with %20 for spaces, NOT #header-name kebab-case) or #^block-anchor for Obsidian block references."
+    - "Link naturally in prose, not as footnotes. The link text IS the claim: '[shallow page copies](../evidence.md#Root%20Cause)' not 'shallow page copies [1]'."
+  specs:
+    - "Trace claims to evidence: key assertions (context, decisions, risk mitigations) should include inline markdown links to their source in dependency artifacts or prior documents. A reader should be able to click any major claim and land on the evidence."
+    - "Always link to a specific header or block anchor, not bare files. The citation-manager extracts content at anchors for context — a bare file link does not guarantee extraction. Use #Header%20Name (raw with %20 for spaces, NOT #header-name kebab-case) or #^block-anchor for Obsidian block references."
+    - "Link naturally in prose, not as footnotes. The link text IS the claim: '[shallow page copies](../evidence.md#Root%20Cause)' not 'shallow page copies [1]'."
+  design:
+    - "Trace claims to evidence: key assertions (context, decisions, risk mitigations) should include inline markdown links to their source in dependency artifacts or prior documents. A reader should be able to click any major claim and land on the evidence."
+    - "Always link to a specific header or block anchor, not bare files. The citation-manager extracts content at anchors for context — a bare file link does not guarantee extraction. Use #Header%20Name (raw with %20 for spaces, NOT #header-name kebab-case) or #^block-anchor for Obsidian block references."
+    - "Link naturally in prose, not as footnotes. The link text IS the claim: '[shallow page copies](../evidence.md#Root%20Cause)' not 'shallow page copies [1]'."
+  tasks:
+    - "Trace claims to evidence: key assertions (context, decisions, risk mitigations) should include inline markdown links to their source in dependency artifacts or prior documents. A reader should be able to click any major claim and land on the evidence."
+    - "Always link to a specific header or block anchor, not bare files. The citation-manager extracts content at anchors for context — a bare file link does not guarantee extraction. Use #Header%20Name (raw with %20 for spaces, NOT #header-name kebab-case) or #^block-anchor for Obsidian block references."
+    - "Link naturally in prose, not as footnotes. The link text IS the claim: '[shallow page copies](../evidence.md#Root%20Cause)' not 'shallow page copies [1]'."
+    - "Use /test-driven-development workflow: no production code without a failing test first. RED-GREEN-REFACTOR phases can be separate tasks (e.g. task 2.1 writes tests RED, task 2.2 implements GREEN) or within a single task — structure tasks to make the TDD cycle clear. Exceptions: config files, type-only definitions, generated code."
+    - "Include a Commit task group after all implementation tasks and before Verify. Use /git-and-github:git-create-commit to create a single commit of all implementation work."
+    - "The Verify section MUST include a code review step using /requesting-code-review that reviews against the implementation commit. Any issues found are REFACTOR work — fix and commit separately."

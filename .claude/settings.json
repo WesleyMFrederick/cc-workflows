@@ -41,7 +41,8 @@
       "Bash(./scripts/calculate-event-date.sh:*)",
       "Bash(gh:*)",
       "Bash(mgrep:*)",
-      "Bash(.claude/scripts/setup-worktree.sh:*)"
+      "Bash(.claude/scripts/setup-worktree.sh:*)",
+      "Bash(openspec instructions:*)"
     ],
     "deny": [],
     "ask": [],
@@ -98,7 +99,7 @@
           },
           {
             "type": "command",
-            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/citation-validator.sh"
+            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/citation-manager/validator.sh"
           }
         ]
       },
@@ -125,7 +126,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/citation-extractor.sh"
+            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/citation-manager/extractor.sh"
           }
         ]
       }
