@@ -9,8 +9,8 @@
 #   Injects extracted content as context for Claude via JSON hookSpecificOutput.
 #   Receives hook input via stdin from Claude Code PostToolUse event.
 #
-#   Uses session-based caching to avoid re-extracting the same file multiple times
-#   within a conversation (session_id + file_path tracking).
+#   Passes --session to citation-manager for session-based caching (cache logic
+#   lives in the tool, not the hook).
 #
 # EXIT CODES
 #   0 - Always (non-blocking, context injection only)
@@ -23,11 +23,6 @@ echo "=== Hook invoked at $(date) ===" >> "$DEBUG_LOG"
 echo "CLAUDE_PROJECT_DIR: [$CLAUDE_PROJECT_DIR]" >> "$DEBUG_LOG"
 echo "PWD: $(pwd)" >> "$DEBUG_LOG"
 
-# Cache directory for tracking extracted files per session
-# Use .citation-manager in project root for cache
-CACHE_DIR=".citation-manager/claude-cache"
-mkdir -p "$CACHE_DIR" 2>/dev/null || true
-
 # Check if jq is available
 if ! command -v jq &> /dev/null; then
     echo "EXIT: jq not available" >> "$DEBUG_LOG"
@@ -35,12 +30,19 @@ if ! command -v jq &> /dev/null; then
 fi
 echo "jq: available" >> "$DEBUG_LOG"
 
-# Check if citation-manager is available
-if ! command -v citation-manager &> /dev/null; then
+# Resolve citation-manager: prefer local build, fallback to global
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+LOCAL_CM="$SCRIPT_DIR/../../../tools/citation-manager/dist/citation-manager.js"
+if [[ -f "$LOCAL_CM" ]]; then
+    CM_CMD="node $LOCAL_CM"
+    echo "citation-manager: local build ($LOCAL_CM)" >> "$DEBUG_LOG"
+elif command -v citation-manager &> /dev/null; then
+    CM_CMD="citation-manager"
+    echo "citation-manager: global" >> "$DEBUG_LOG"
+else
     echo "EXIT: citation-manager not available" >> "$DEBUG_LOG"
-    exit 0  # Silently skip if citation-manager not available
+    exit 0
 fi
-echo "citation-manager: available" >> "$DEBUG_LOG"
 
 # Read JSON input from stdin
 if [[ -t 0 ]]; then
@@ -71,21 +73,6 @@ if [[ -z "$session_id" || "$session_id" == "null" ]]; then
     session_id="no-session"
 fi
 
-# Create cache key: session_id + file content hash
-# This ensures cache is invalidated if file content changes
-file_content_hash=$(md5 < "$file_path" 2>/dev/null || shasum -a 256 < "$file_path" 2>/dev/null | cut -d' ' -f1)
-cache_key="${session_id}_${file_content_hash}"
-cache_file="${CACHE_DIR}/${cache_key}"
-echo "cache_key: $cache_key" >> "$DEBUG_LOG"
-
-# Check if we've already extracted this file in this session
-if [[ -f "$cache_file" ]]; then
-    # Already extracted in this session - exit silently
-    echo "EXIT: Already cached - $cache_file" >> "$DEBUG_LOG"
-    exit 0
-fi
-echo "cache_file: not cached" >> "$DEBUG_LOG"
-
 # Check if the file is a markdown file
 if [[ ! "$file_path" =~ \.md$ ]]; then
     echo "EXIT: Not a markdown file" >> "$DEBUG_LOG"
@@ -100,15 +87,31 @@ if [[ ! -f "$file_path" ]]; then
 fi
 echo "file exists: yes" >> "$DEBUG_LOG"
 
-# Run citation-manager extract links and filter to extractedContentBlocks
-echo "Running: citation-manager extract links $file_path" >> "$DEBUG_LOG"
-extracted_content=$(citation-manager extract links "$file_path" 2>/dev/null | jq '.extractedContentBlocks' 2>/dev/null)
+# Run citation-manager extract links — capture exit code separately from output
+echo "Running: $CM_CMD extract links $file_path --session $session_id" >> "$DEBUG_LOG"
+raw_output=$($CM_CMD extract links "$file_path" --session "$session_id" 2>/dev/null)
+cm_exit_code=$?
+echo "cm_exit_code: $cm_exit_code, raw_output length: ${#raw_output}" >> "$DEBUG_LOG"
+
+# Distinguish three exit conditions by exit code + output
+if [[ $cm_exit_code -eq 0 && -z "$raw_output" ]]; then
+    echo "EXIT: Citations have already been extracted in this session. Review your context window. (session: ${session_id})" >> "$DEBUG_LOG"
+    exit 0
+elif [[ $cm_exit_code -eq 1 ]]; then
+    echo "EXIT: No citations found in $file_path" >> "$DEBUG_LOG"
+    exit 0
+elif [[ $cm_exit_code -eq 2 || -z "$raw_output" ]]; then
+    echo "EXIT: Extraction error (exit code: $cm_exit_code)" >> "$DEBUG_LOG"
+    exit 0
+fi
+
+# Filter to extractedContentBlocks
+extracted_content=$(echo "$raw_output" | jq '.extractedContentBlocks' 2>/dev/null)
 echo "extracted_content length: ${#extracted_content}" >> "$DEBUG_LOG"
 
-# Check if extraction succeeded and has content
+# Check if content is usable
 if [[ -z "$extracted_content" || "$extracted_content" == "null" || "$extracted_content" == "{}" ]]; then
-    # No citations found or extraction failed - exit silently
-    echo "EXIT: No citations found or extraction failed" >> "$DEBUG_LOG"
+    echo "EXIT: Extraction returned no content blocks" >> "$DEBUG_LOG"
     exit 0
 fi
 echo "extraction: successful" >> "$DEBUG_LOG"
@@ -123,10 +126,6 @@ if [[ -z "$formatted_content" || "$formatted_content" == "null" ]]; then
     exit 0
 fi
 echo "formatting: successful" >> "$DEBUG_LOG"
-
-# Mark this file as extracted in this session
-touch "$cache_file" 2>/dev/null || true
-echo "cache_file created: $cache_file" >> "$DEBUG_LOG"
 
 # Output JSON with hookSpecificOutput for context injection
 echo "Generating JSON output..." >> "$DEBUG_LOG"

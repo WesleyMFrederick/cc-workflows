@@ -187,3 +187,11 @@ Reason: CLI is 10-50x more token-efficient than MCP tool calls.
 - Fetch upload: `linear-cli up fetch URL -f file.png`
 - JSON output: Add `--output json` to any command (or set `LINEAR_CLI_OUTPUT=json`)
 - Agent help: `linear-cli agent`
+
+## OpenSpec CLI
+Use `openspec` directly (no `npx` needed).
+
+### Quick Commands
+- List changes: `openspec list` (add `--json` for JSON output)
+- New change: `openspec new <change-name>`
+- View change: `openspec show <change-name>`

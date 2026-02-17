@@ -41,7 +41,8 @@
       "Bash(./scripts/calculate-event-date.sh:*)",
       "Bash(gh:*)",
       "Bash(mgrep:*)",
-      "Bash(.claude/scripts/setup-worktree.sh:*)"
+      "Bash(.claude/scripts/setup-worktree.sh:*)",
+      "Bash(openspec instructions:*)"
     ],
     "deny": [],
     "ask": [],
@@ -70,15 +71,6 @@
     ],
     "PreToolUse": [
       {
-        "matcher": "*",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/observe.sh pre"
-          }
-        ]
-      },
-      {
         "matcher": "Task",
         "hooks": [
           {
@@ -89,15 +81,6 @@
       }
     ],
     "PostToolUse": [
-      {
-        "matcher": "*",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/observe.sh post"
-          }
-        ]
-      },
       {
         "matcher": "Task",
         "hooks": [
@@ -116,7 +99,7 @@
           },
           {
             "type": "command",
-            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/citation-validator.sh"
+            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/citation-manager/validator.sh"
           }
         ]
       },
@@ -143,7 +126,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/citation-extractor.sh"
+            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/citation-manager/extractor.sh"
           }
         ]
       }
@@ -154,11 +137,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/stop-sync.sh"
-          },
-          {
-            "type": "command",
-            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/evaluate-session.sh"
+            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/status/stop-sync.sh"
           }
         ]
       }

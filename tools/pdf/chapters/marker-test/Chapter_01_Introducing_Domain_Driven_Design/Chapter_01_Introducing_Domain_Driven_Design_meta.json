@@ -1,0 +1,1549 @@
+{
+  "table_of_contents": [
+    {
+      "title": "Introducing Domain-Driven Design",
+      "heading_level": null,
+      "page_id": 0,
+      "polygon": [
+        [
+          144.4921875,
+          168.64453125
+        ],
+        [
+          455.0940246582031,
+          168.64453125
+        ],
+        [
+          455.0940246582031,
+          195.85546875
+        ],
+        [
+          144.4921875,
+          195.85546875
+        ]
+      ]
+    },
+    {
+      "title": "The Importance of a Shared Model",
+      "heading_level": null,
+      "page_id": 1,
+      "polygon": [
+        [
+          89.6484375,
+          57.26953125
+        ],
+        [
+          312.7350158691406,
+          57.26953125
+        ],
+        [
+          312.7350158691406,
+          73.0
+        ],
+        [
+          89.6484375,
+          73.0
+        ]
+      ]
+    },
+    {
+      "title": "The Insanely Effective Delivery Machine",
+      "heading_level": null,
+      "page_id": 3,
+      "polygon": [
+        [
+          100.1953125,
+          294.5279541015625
+        ],
+        [
+          300.5859375,
+          294.5279541015625
+        ],
+        [
+          300.5859375,
+          306.16796875
+        ],
+        [
+          100.1953125,
+          306.16796875
+        ]
+      ]
+    },
+    {
+      "title": "Understanding the Domain Through Business Events",
+      "heading_level": null,
+      "page_id": 4,
+      "polygon": [
+        [
+          89.6484375,
+          57.5859375
+        ],
+        [
+          431.6400146484375,
+          57.5859375
+        ],
+        [
+          431.6400146484375,
+          73.0
+        ],
+        [
+          89.6484375,
+          73.0
+        ]
+      ]
+    },
+    {
+      "title": "Using Event Storming to Discover the Domain",
+      "heading_level": null,
+      "page_id": 4,
+      "polygon": [
+        [
+          89.6484375,
+          439.171875
+        ],
+        [
+          328.0078125,
+          439.171875
+        ],
+        [
+          328.0078125,
+          452.74000549316406
+        ],
+        [
+          89.6484375,
+          452.74000549316406
+        ]
+      ]
+    },
+    {
+      "title": "Discovering the Domain: An Order-Taking System",
+      "heading_level": null,
+      "page_id": 5,
+      "polygon": [
+        [
+          88.59375,
+          235.3599853515625
+        ],
+        [
+          347.0519714355469,
+          235.3599853515625
+        ],
+        [
+          347.0519714355469,
+          247.4296875
+        ],
+        [
+          88.59375,
+          247.4296875
+        ]
+      ]
+    },
+    {
+      "title": "\u2022 A shared model of the business",
+      "heading_level": null,
+      "page_id": 7,
+      "polygon": [
+        [
+          98.0859375,
+          135.10546875
+        ],
+        [
+          254.47003173828125,
+          135.10546875
+        ],
+        [
+          254.47003173828125,
+          146.54000854492188
+        ],
+        [
+          98.0859375,
+          146.54000854492188
+        ]
+      ]
+    },
+    {
+      "title": "\u2022 Awareness of all the teams",
+      "heading_level": null,
+      "page_id": 7,
+      "polygon": [
+        [
+          98.0859375,
+          255.97265625
+        ],
+        [
+          235.1953125,
+          255.97265625
+        ],
+        [
+          235.1953125,
+          267.1800231933594
+        ],
+        [
+          98.0859375,
+          267.1800231933594
+        ]
+      ]
+    },
+    {
+      "title": "\u2022 Finding gaps in the requirements",
+      "heading_level": null,
+      "page_id": 7,
+      "polygon": [
+        [
+          97.55859375,
+          378.10546875
+        ],
+        [
+          261.260009765625,
+          378.10546875
+        ],
+        [
+          261.260009765625,
+          388.43798828125
+        ],
+        [
+          97.55859375,
+          388.43798828125
+        ]
+      ]
+    },
+    {
+      "title": "Connections between teams",
+      "heading_level": null,
+      "page_id": 8,
+      "polygon": [
+        [
+          98.0859375,
+          55.37109375
+        ],
+        [
+          239.25,
+          55.37109375
+        ],
+        [
+          239.25,
+          63.0
+        ],
+        [
+          98.0859375,
+          63.0
+        ]
+      ]
+    },
+    {
+      "title": "\u2022 Awareness of reporting requirements",
+      "heading_level": null,
+      "page_id": 8,
+      "polygon": [
+        [
+          97.5,
+          354.75
+        ],
+        [
+          280.5,
+          354.75
+        ],
+        [
+          280.5,
+          363.75
+        ],
+        [
+          97.5,
+          363.75
+        ]
+      ]
+    },
+    {
+      "title": "Expanding the Events to the Edges",
+      "heading_level": null,
+      "page_id": 8,
+      "polygon": [
+        [
+          89.25,
+          451.828125
+        ],
+        [
+          270.75,
+          451.828125
+        ],
+        [
+          270.75,
+          464.484375
+        ],
+        [
+          89.25,
+          464.484375
+        ]
+      ]
+    },
+    {
+      "title": "Workflows, Scenarios, and Use Cases",
+      "heading_level": null,
+      "page_id": 9,
+      "polygon": [
+        [
+          100.5,
+          60.1171875
+        ],
+        [
+          285.0,
+          60.1171875
+        ],
+        [
+          285.0,
+          70.5
+        ],
+        [
+          100.5,
+          70.5
+        ]
+      ]
+    },
+    {
+      "title": "Documenting Commands",
+      "heading_level": null,
+      "page_id": 10,
+      "polygon": [
+        [
+          89.6484375,
+          267.99609375
+        ],
+        [
+          223.03199768066406,
+          267.99609375
+        ],
+        [
+          223.03199768066406,
+          280.52001953125
+        ],
+        [
+          89.6484375,
+          280.52001953125
+        ]
+      ]
+    },
+    {
+      "title": "Partitioning the Domain into Subdomains",
+      "heading_level": null,
+      "page_id": 11,
+      "polygon": [
+        [
+          88.5,
+          462.75
+        ],
+        [
+          362.25,
+          462.75
+        ],
+        [
+          362.25,
+          477.7734375
+        ],
+        [
+          88.5,
+          477.7734375
+        ]
+      ]
+    },
+    {
+      "title": "Creating a Solution Using Bounded Contexts",
+      "heading_level": null,
+      "page_id": 13,
+      "polygon": [
+        [
+          88.59375,
+          445.1510009765625
+        ],
+        [
+          378.1650695800781,
+          445.1510009765625
+        ],
+        [
+          378.1650695800781,
+          460.1510009765625
+        ],
+        [
+          88.59375,
+          460.1510009765625
+        ]
+      ]
+    },
+    {
+      "title": "Getting the Contexts Right",
+      "heading_level": null,
+      "page_id": 15,
+      "polygon": [
+        [
+          90.0,
+          279.0703125
+        ],
+        [
+          228.33984375,
+          279.0703125
+        ],
+        [
+          228.33984375,
+          291.2799987792969
+        ],
+        [
+          90.0,
+          291.2799987792969
+        ]
+      ]
+    },
+    {
+      "title": "Creating Context Maps",
+      "heading_level": null,
+      "page_id": 16,
+      "polygon": [
+        [
+          87.802734375,
+          254.94000244140625
+        ],
+        [
+          208.88400268554688,
+          254.94000244140625
+        ],
+        [
+          208.88400268554688,
+          266.94000244140625
+        ],
+        [
+          87.802734375,
+          266.94000244140625
+        ]
+      ]
+    },
+    {
+      "title": "Focusing on the Most Important Bounded Contexts",
+      "heading_level": null,
+      "page_id": 17,
+      "polygon": [
+        [
+          89.6484375,
+          456.10899353027344
+        ],
+        [
+          355.4296875,
+          456.10899353027344
+        ],
+        [
+          355.4296875,
+          469.546875
+        ],
+        [
+          89.6484375,
+          469.546875
+        ]
+      ]
+    },
+    {
+      "title": "Creating a Ubiquitous Language",
+      "heading_level": null,
+      "page_id": 18,
+      "polygon": [
+        [
+          89.12109375,
+          299.2799987792969
+        ],
+        [
+          299.625,
+          299.2799987792969
+        ],
+        [
+          299.625,
+          314.2799987792969
+        ],
+        [
+          89.12109375,
+          314.2799987792969
+        ]
+      ]
+    },
+    {
+      "title": "Summarizing the Concepts of Domain-Driven Design",
+      "heading_level": null,
+      "page_id": 19,
+      "polygon": [
+        [
+          88.59375,
+          332.2265625
+        ],
+        [
+          432.1199645996094,
+          332.2265625
+        ],
+        [
+          432.1199645996094,
+          349.0199890136719
+        ],
+        [
+          88.59375,
+          349.0199890136719
+        ]
+      ]
+    },
+    {
+      "title": "Wrapping Up",
+      "heading_level": null,
+      "page_id": 20,
+      "polygon": [
+        [
+          89.384765625,
+          188.63998413085938
+        ],
+        [
+          176.42999267578125,
+          188.63998413085938
+        ],
+        [
+          176.42999267578125,
+          203.63998413085938
+        ],
+        [
+          89.384765625,
+          203.63998413085938
+        ]
+      ]
+    },
+    {
+      "title": "Events and Processes",
+      "heading_level": null,
+      "page_id": 20,
+      "polygon": [
+        [
+          88.330078125,
+          376.20703125
+        ],
+        [
+          199.98001098632812,
+          376.20703125
+        ],
+        [
+          199.98001098632812,
+          388.8399963378906
+        ],
+        [
+          88.330078125,
+          388.8399963378906
+        ]
+      ]
+    },
+    {
+      "title": "Subdomains and Bounded Contexts",
+      "heading_level": null,
+      "page_id": 20,
+      "polygon": [
+        [
+          89.12109375,
+          540.73828125
+        ],
+        [
+          276.156005859375,
+          540.73828125
+        ],
+        [
+          276.156005859375,
+          552.8600006103516
+        ],
+        [
+          89.12109375,
+          552.8600006103516
+        ]
+      ]
+    },
+    {
+      "title": "The Ubiquitous Language",
+      "heading_level": null,
+      "page_id": 21,
+      "polygon": [
+        [
+          89.6484375,
+          236.0390625
+        ],
+        [
+          223.83599853515625,
+          236.0390625
+        ],
+        [
+          223.83599853515625,
+          248.1920166015625
+        ],
+        [
+          89.6484375,
+          248.1920166015625
+        ]
+      ]
+    },
+    {
+      "title": "What's Next?",
+      "heading_level": null,
+      "page_id": 21,
+      "polygon": [
+        [
+          89.6484375,
+          333.17578125
+        ],
+        [
+          157.5,
+          333.17578125
+        ],
+        [
+          157.5,
+          345.8919982910156
+        ],
+        [
+          89.6484375,
+          345.8919982910156
+        ]
+      ]
+    }
+  ],
+  "page_stats": [
+    {
+      "page_id": 0,
+      "text_extraction_method": "pdftext",
+      "block_counts": [
+        [
+          "Span",
+          65
+        ],
+        [
+          "Line",
+          28
+        ],
+        [
+          "Text",
+          6
+        ],
+        [
+          "PageHeader",
+          1
+        ],
+        [
+          "SectionHeader",
+          1
+        ],
+        [
+          "Footnote",
+          1
+        ],
+        [
+          "PageFooter",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 1,
+      "text_extraction_method": "pdftext",
+      "block_counts": [
+        [
+          "Span",
+          75
+        ],
+        [
+          "Line",
+          33
+        ],
+        [
+          "Text",
+          5
+        ],
+        [
+          "PageHeader",
+          1
+        ],
+        [
+          "SectionHeader",
+          1
+        ],
+        [
+          "Picture",
+          1
+        ],
+        [
+          "PageFooter",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 2,
+      "text_extraction_method": "surya",
+      "block_counts": [
+        [
+          "Line",
+          33
+        ],
+        [
+          "Span",
+          9
+        ],
+        [
+          "Text",
+          5
+        ],
+        [
+          "Picture",
+          2
+        ],
+        [
+          "PageHeader",
+          1
+        ],
+        [
+          "PageFooter",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 3,
+      "text_extraction_method": "pdftext",
+      "block_counts": [
+        [
+          "Span",
+          97
+        ],
+        [
+          "Line",
+          38
+        ],
+        [
+          "ListItem",
+          8
+        ],
+        [
+          "Text",
+          5
+        ],
+        [
+          "ListGroup",
+          2
+        ],
+        [
+          "PageHeader",
+          1
+        ],
+        [
+          "SectionHeader",
+          1
+        ],
+        [
+          "PageFooter",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 4,
+      "text_extraction_method": "pdftext",
+      "block_counts": [
+        [
+          "Span",
+          82
+        ],
+        [
+          "Line",
+          37
+        ],
+        [
+          "Text",
+          9
+        ],
+        [
+          "SectionHeader",
+          2
+        ],
+        [
+          "PageHeader",
+          1
+        ],
+        [
+          "PageFooter",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 5,
+      "text_extraction_method": "pdftext",
+      "block_counts": [
+        [
+          "Span",
+          83
+        ],
+        [
+          "Line",
+          38
+        ],
+        [
+          "Text",
+          12
+        ],
+        [
+          "PageHeader",
+          1
+        ],
+        [
+          "SectionHeader",
+          1
+        ],
+        [
+          "Footnote",
+          1
+        ],
+        [
+          "PageFooter",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 6,
+      "text_extraction_method": "surya",
+      "block_counts": [
+        [
+          "Line",
+          67
+        ],
+        [
+          "Span",
+          22
+        ],
+        [
+          "Text",
+          10
+        ],
+        [
+          "ListItem",
+          10
+        ],
+        [
+          "PageHeader",
+          1
+        ],
+        [
+          "Figure",
+          1
+        ],
+        [
+          "PageFooter",
+          1
+        ],
+        [
+          "ListGroup",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 7,
+      "text_extraction_method": "pdftext",
+      "block_counts": [
+        [
+          "Span",
+          85
+        ],
+        [
+          "Line",
+          38
+        ],
+        [
+          "Text",
+          9
+        ],
+        [
+          "SectionHeader",
+          3
+        ],
+        [
+          "PageHeader",
+          1
+        ],
+        [
+          "PageFooter",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 8,
+      "text_extraction_method": "surya",
+      "block_counts": [
+        [
+          "Line",
+          57
+        ],
+        [
+          "Span",
+          15
+        ],
+        [
+          "Text",
+          8
+        ],
+        [
+          "SectionHeader",
+          3
+        ],
+        [
+          "PageHeader",
+          1
+        ],
+        [
+          "Picture",
+          1
+        ],
+        [
+          "PageFooter",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 9,
+      "text_extraction_method": "surya",
+      "block_counts": [
+        [
+          "Line",
+          66
+        ],
+        [
+          "Span",
+          23
+        ],
+        [
+          "Text",
+          5
+        ],
+        [
+          "ListItem",
+          3
+        ],
+        [
+          "PageHeader",
+          1
+        ],
+        [
+          "SectionHeader",
+          1
+        ],
+        [
+          "Figure",
+          1
+        ],
+        [
+          "PageFooter",
+          1
+        ],
+        [
+          "ListGroup",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 10,
+      "text_extraction_method": "pdftext",
+      "block_counts": [
+        [
+          "Span",
+          91
+        ],
+        [
+          "Line",
+          37
+        ],
+        [
+          "Text",
+          6
+        ],
+        [
+          "ListItem",
+          4
+        ],
+        [
+          "PageHeader",
+          1
+        ],
+        [
+          "SectionHeader",
+          1
+        ],
+        [
+          "PageFooter",
+          1
+        ],
+        [
+          "ListGroup",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 11,
+      "text_extraction_method": "surya",
+      "block_counts": [
+        [
+          "Line",
+          62
+        ],
+        [
+          "Span",
+          14
+        ],
+        [
+          "Text",
+          7
+        ],
+        [
+          "Figure",
+          2
+        ],
+        [
+          "PageHeader",
+          1
+        ],
+        [
+          "SectionHeader",
+          1
+        ],
+        [
+          "PageFooter",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 12,
+      "text_extraction_method": "pdftext",
+      "block_counts": [
+        [
+          "Span",
+          77
+        ],
+        [
+          "Line",
+          35
+        ],
+        [
+          "Text",
+          5
+        ],
+        [
+          "PageHeader",
+          1
+        ],
+        [
+          "Picture",
+          1
+        ],
+        [
+          "PageFooter",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 13,
+      "text_extraction_method": "pdftext",
+      "block_counts": [
+        [
+          "Span",
+          79
+        ],
+        [
+          "Line",
+          34
+        ],
+        [
+          "Text",
+          7
+        ],
+        [
+          "PageHeader",
+          1
+        ],
+        [
+          "Picture",
+          1
+        ],
+        [
+          "SectionHeader",
+          1
+        ],
+        [
+          "PageFooter",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 14,
+      "text_extraction_method": "pdftext",
+      "block_counts": [
+        [
+          "Span",
+          111
+        ],
+        [
+          "Line",
+          47
+        ],
+        [
+          "Text",
+          5
+        ],
+        [
+          "PageHeader",
+          1
+        ],
+        [
+          "Figure",
+          1
+        ],
+        [
+          "PageFooter",
+          1
+        ],
+        [
+          "Reference",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 15,
+      "text_extraction_method": "pdftext",
+      "block_counts": [
+        [
+          "Span",
+          108
+        ],
+        [
+          "Line",
+          46
+        ],
+        [
+          "ListItem",
+          4
+        ],
+        [
+          "Text",
+          2
+        ],
+        [
+          "PageHeader",
+          1
+        ],
+        [
+          "Picture",
+          1
+        ],
+        [
+          "SectionHeader",
+          1
+        ],
+        [
+          "PageFooter",
+          1
+        ],
+        [
+          "ListGroup",
+          1
+        ],
+        [
+          "Reference",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 16,
+      "text_extraction_method": "pdftext",
+      "block_counts": [
+        [
+          "Span",
+          94
+        ],
+        [
+          "Line",
+          41
+        ],
+        [
+          "Text",
+          7
+        ],
+        [
+          "PageHeader",
+          1
+        ],
+        [
+          "SectionHeader",
+          1
+        ],
+        [
+          "Picture",
+          1
+        ],
+        [
+          "PageFooter",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 17,
+      "text_extraction_method": "pdftext",
+      "block_counts": [
+        [
+          "Span",
+          92
+        ],
+        [
+          "Line",
+          38
+        ],
+        [
+          "Text",
+          6
+        ],
+        [
+          "PageHeader",
+          1
+        ],
+        [
+          "Picture",
+          1
+        ],
+        [
+          "SectionHeader",
+          1
+        ],
+        [
+          "PageFooter",
+          1
+        ],
+        [
+          "Reference",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 18,
+      "text_extraction_method": "pdftext",
+      "block_counts": [
+        [
+          "Span",
+          93
+        ],
+        [
+          "Line",
+          38
+        ],
+        [
+          "Text",
+          9
+        ],
+        [
+          "PageHeader",
+          1
+        ],
+        [
+          "SectionHeader",
+          1
+        ],
+        [
+          "PageFooter",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 19,
+      "text_extraction_method": "pdftext",
+      "block_counts": [
+        [
+          "Span",
+          99
+        ],
+        [
+          "Line",
+          38
+        ],
+        [
+          "Text",
+          4
+        ],
+        [
+          "ListItem",
+          4
+        ],
+        [
+          "PageHeader",
+          1
+        ],
+        [
+          "SectionHeader",
+          1
+        ],
+        [
+          "PageFooter",
+          1
+        ],
+        [
+          "ListGroup",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 20,
+      "text_extraction_method": "pdftext",
+      "block_counts": [
+        [
+          "Span",
+          97
+        ],
+        [
+          "Line",
+          35
+        ],
+        [
+          "ListItem",
+          7
+        ],
+        [
+          "Text",
+          7
+        ],
+        [
+          "SectionHeader",
+          3
+        ],
+        [
+          "ListGroup",
+          2
+        ],
+        [
+          "PageHeader",
+          1
+        ],
+        [
+          "PageFooter",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 21,
+      "text_extraction_method": "pdftext",
+      "block_counts": [
+        [
+          "Span",
+          70
+        ],
+        [
+          "Line",
+          29
+        ],
+        [
+          "Text",
+          9
+        ],
+        [
+          "SectionHeader",
+          2
+        ],
+        [
+          "PageHeader",
+          1
+        ],
+        [
+          "PageFooter",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    }
+  ],
+  "debug_data_path": "debug_data/Chapter_01_Introducing_Domain_Driven_Design"
+}
