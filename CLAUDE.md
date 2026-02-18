@@ -193,6 +193,39 @@ Reason: CLI is 10-50x more token-efficient than MCP tool calls.
 - JSON output: Add `--output json` to any command (or set `LINEAR_CLI_OUTPUT=json`)
 - Agent help: `linear-cli agent`
 
+## MCP GDrive (Google Drive & Sheets)
+
+**Package:** `packages/mcp-gdrive`
+**Credentials dir:** `.oauthtokens/` (contains `gcp-oauth.keys.json` and `.gdrive-server-credentials.json`)
+**Scopes:** `drive.file` (read/write files), `spreadsheets` (read/write sheets)
+
+### Re-auth (after scope changes or expired credentials)
+
+```bash
+# Delete old credentials first
+rm .oauthtokens/.gdrive-server-credentials.json
+
+# Run auth flow (opens browser for OAuth)
+GDRIVE_CREDS_DIR="$(pwd)/.oauthtokens" node packages/mcp-gdrive/dist/index.js
+```
+
+### Rebuild after source changes
+
+```bash
+npm run build -w packages/mcp-gdrive
+```
+
+### MCP config
+
+Env vars are set in `.mcp.json` under the `gdrive` server entry:
+- `GDRIVE_CREDS_DIR` — path to `.oauthtokens/`
+- `CLIENT_ID` / `CLIENT_SECRET` — from `gcp-oauth.keys.json` (needed for token refresh)
+
+### Claude permissions
+
+- **Read tools** (`gdrive_search`, `gdrive_read_file`, `gdrive_download_file`, `gsheets_read`) — auto-allowed
+- **Write tools** (`gsheets_update_cell`, `gdrive_upload_file`) — require user permission (`ask` in `settings.local.json`)
+
 ## OpenSpec CLI
 Use `openspec` directly (no `npx` needed).
 
