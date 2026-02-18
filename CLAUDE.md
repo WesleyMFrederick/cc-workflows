@@ -98,6 +98,11 @@ markdownlint "**/*.md"
 markdownlint "**/*.md" --fix
 ```
 
+## Linking Convention in Markdown Files
+
+- `.md` files → markdown links with full path context in display text (e.g., `[tools/citation-manager/README.md](../../../tools/citation-manager/README.md)`)
+- All other files (`.ts`, `.yaml`, `.json`, etc.) → backtick codeblock paths (e.g., `` `tools/citation-manager/src/citation-manager.ts` ``)
+
 ## TypeScript Coding Standards
 
 **NEVER use `any` type** - Defeats the purpose of TypeScript. Instead:

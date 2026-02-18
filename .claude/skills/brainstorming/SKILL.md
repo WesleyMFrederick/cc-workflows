@@ -132,17 +132,33 @@ Copy this checklist to track progress:
 
 ```markdown
 Brainstorming Progress:
-- [ ] Prep: Autonomous Recon (repo/docs/commits reviewed, initial model shared)
+- [ ] Prep: Autonomous Recon (repo/docs/commits reviewed, change captured, whiteboard started)
 - [ ] Phase 1: Understanding (purpose, constraints, criteria gathered)
 - [ ] Phase 2: Exploration (2-3 approaches proposed and evaluated)
 - [ ] Phase 3: Design Presentation (design validated in sections)
-- [ ] Phase 4: Design Documentation (design written to project design documen folder)
+- [ ] Phase 4: Design Documentation (design written to project design document folder)
 ```
 
 ### Prep: Autonomous Recon
+
+**Step 1: Capture the change request**
+- If project uses OpenSpec, have a sub-agent create the change record first (`/opsx:new`)
+- This establishes the directory where all artifacts (whiteboard, proposals, specs) will live
+
+**Step 2: Research**
 - Use existing tools (file browsing, docs, git history, tests) to understand current project state before asking anything.
 - Form your draft model: what problem you're solving, what artifacts exist, and what questions remain.
-- Start the conversation by sharing that model: "Based on exploring the project state, docs, working copy, and recent commits, here's how I think this should work…"
+
+**Step 3: Create whiteboard**
+- Create `whiteboard.md` in the change directory (e.g., `openspec/changes/<change-name>/whiteboard.md`)
+- Must include:
+  - **Original Request** — verbatim user request in blockquote
+  - **Artifacts & Paths** — every file reviewed during recon, with markdown links for `.md` files and codeblock paths for all other file types
+  - **Recon Findings** — synthesized understanding, measurements, key data structures
+  - **Design Questions** — open questions for Phase 1/2
+
+**Step 4: Share model**
+- Start the conversation by sharing your draft model: "Based on exploring the project state, docs, working copy, and recent commits, here's how I think this should work…"
 - Ask follow-up questions only for information you cannot infer from available materials.
   
 ### Phase 1: Understanding

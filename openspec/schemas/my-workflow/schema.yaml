@@ -1,13 +1,186 @@
 name: my-workflow
-version: 1
-description: Default OpenSpec workflow - proposal → specs → design → tasks
+version: 2
+description: OpenSpec workflow - whiteboard → baseline → ideal → delta → proposal → specs → design → tasks
 artifacts:
+  - id: whiteboard
+    generates: whiteboard.md
+    description: Scratchpad that parses inputs into Baseline, Ideal, and Delta buckets
+    template: whiteboard.md
+    instruction: >
+      Create the whiteboard — the scratchpad that organizes research and user
+      feedback into Baseline, Ideal, and Delta buckets. Use the /brainstorming
+      skill.
+
+
+      This is a PARSING step, not a deep-dive. Research the codebase, gather
+      user feedback, and sort everything into three buckets. Do not go deep
+      on any bucket — that happens in the baseline and ideal artifacts.
+
+
+      Evidence Taxonomy (used across all artifacts):
+
+      - **[O]** Observed — code reviewed, behavior confirmed (cite file:line)
+
+      - **[M]** Measured — quantified data exists (cite command + result)
+
+      - **[F-INF]** Fact Inferred — conclusion from combining O/M evidence
+
+      - **[A]** Assumed — hypothesis, not yet tested
+
+      - **[C]** Constraint — external requirement, cannot change
+
+      - **[D]** Decision — commitment of a resource (time, effort, scope)
+
+      - **[Q]** Question — open unknown, needs investigation
+
+      Rule: No untagged claims.
+
+
+      Required sections:
+
+      - **Original Request**: Verbatim user request in blockquote + goal.
+
+      - **Artifacts & Paths**: Files reviewed, grouped by concern. Include
+      hooks and consumers — they define constraints on output/format.
+
+      - **Baseline Bucket**: What we know about how the system works today.
+      High-level observations, pointers to code, initial measurements.
+
+      - **Ideal Bucket**: What the user wants. Target behavior, goals,
+      mockups if provided. Capture user intent, not implementation.
+
+      - **Delta Bucket**: Initial notes on what changes. Placeholder —
+      cannot be completed until baseline and ideal are done.
+
+      - **Open Questions**: What needs to be resolved in later artifacts.
+    requires: []
+
+  - id: baseline
+    generates: baseline.md
+    description: Deep-dive on current system state with evidence-backed claims
+    template: baseline.md
+    instruction: >
+      Create the baseline document — a thorough, evidence-backed model of how
+      the system works TODAY for the scope of this change.
+
+
+      Use the evidence taxonomy from whiteboard.md. Every claim must be tagged.
+
+
+      Required sections:
+
+      - **Artifacts**: Minimum set of files for this baseline. Table format:
+      Artifact | Path | Role. Only include files that inform the baseline —
+      not every file in the project.
+
+      - **Process Tree or Traces**: Model ALL entry points, paths, and
+      consumers the change touches.
+
+        - Use process tree operators: → sequential, × exclusive choice,
+        ∧ parallel, ↻ redo loop.
+
+        - When paths cross component boundaries (e.g., hook calls CLI),
+        model as **traces** — sequential steps with evidence tags and
+        file:line sources showing the full execution path including
+        boundary crossings and returns.
+
+      - **Measurements**: Quantified current state — output sizes, counts,
+      waste. Include reproduction commands.
+
+      - **Inferred Facts [F-INF]**: Conclusions drawn from combining O/M
+      evidence. Each must cite which trace steps or measurements it derives
+      from.
+
+      - **Constraints [C]**: External requirements that cannot change.
+      These are hard boundaries on the delta.
+
+      - **Assumptions [A]**: Hypotheses not yet tested. These are risks —
+      if wrong, the delta changes.
+
+      - **Open Questions [Q]**: Unknowns that surfaced during baseline work.
+      Resolve before proceeding to ideal if they affect same-units comparison.
+    requires:
+      - whiteboard
+
+  - id: ideal
+    generates: ideal.md
+    description: Target system state expressed in same units as baseline
+    template: ideal.md
+    instruction: >
+      Create the ideal document — the target system configuration expressed
+      in the SAME UNITS as baseline.md.
+
+
+      Critical rule: Every attribute measured or observed in the baseline
+      MUST have a corresponding value in the ideal. If baseline says
+      `extract.output_format = JSON`, ideal must say
+      `extract.output_format = ???` or `extract.output_format = YAML`.
+      Omitting an attribute means it is unchanged — state this explicitly.
+
+
+      Use the evidence taxonomy from whiteboard.md. Tag ideal claims too —
+      most will be [A] (assumed target) or [D] (decided target).
+
+
+      Required sections:
+
+      - **Ideal Process Tree or Traces**: Same structure as baseline.
+      Changed values annotated. ??? for unresolved values.
+
+      - **Output Mockups**: Concrete examples of target output for every
+      user-facing change. One mockup per command/path affected.
+
+      - **Ideal Claims**: What we believe about the target state. Tag
+      each with evidence level. Most will be [A] until validated.
+
+      - **Same-Units Checklist**: Verify every baseline attribute has a
+      corresponding ideal value. List any gaps.
+    requires:
+      - whiteboard
+      - baseline
+
+  - id: delta
+    generates: delta.md
+    description: Computed diff between baseline and ideal with risk assessment
+    template: delta.md
+    instruction: >
+      Create the delta document — the computed diff between baseline.md and
+      ideal.md. This artifact REQUIRES both baseline and ideal to be complete.
+
+
+      The delta is NOT a wish list. It is a structured comparison showing
+      exactly what changes, what stays the same, and what is unresolved.
+
+
+      Required sections:
+
+      - **Same-Units Comparison Table**: One row per attribute. Columns:
+      Attribute | Baseline | Ideal | Delta. Every baseline attribute must
+      appear. Mark unchanged rows as "no change" (validates scope).
+      Mark unresolved rows as ??? with explanation.
+
+      - **Unresolved Decisions**: ??? rows from the table that MUST be
+      resolved before proceeding. Frame as: what question, what it depends
+      on, what it cascades to. These block the proposal.
+
+      - **Risk Assessment**: Risks visible from the comparison. Focus on
+      schema breaks, consumer compatibility, cascade effects. Each risk
+      should point to specific rows in the comparison table.
+
+      - **Scope Boundary**: What is explicitly OUT of scope. Derived from
+      "no change" rows and baseline constraints.
+    requires:
+      - baseline
+      - ideal
+
   - id: proposal
     generates: proposal.md
     description: Initial proposal document outlining the change
     template: proposal.md
     instruction: >
       Create the proposal document that establishes WHY this change is needed.
+      The delta.md provides the WHAT — this document provides the WHY and
+      identifies capabilities for spec writing.
 
 
       Sections:
@@ -17,7 +190,7 @@ artifacts:
 
       - **What Changes**: Bullet list of changes. Be specific about new
       capabilities, modifications, or removals. Mark breaking changes with
-      **BREAKING**.
+      **BREAKING**. Derived from delta.md comparison table.
 
       - **Capabilities**: Identify which specs will be created or modified:
         - **New Capabilities**: List capabilities being introduced. Each becomes a new `specs/<name>/spec.md`. Use kebab-case names (e.g., `user-auth`, `data-export`).
@@ -39,7 +212,8 @@ artifacts:
 
 
       This is the foundation - specs, design, and tasks all build on this.
-    requires: []
+    requires:
+      - delta
   - id: specs
     generates: specs/**/*.md
     description: Detailed specifications for the change
@@ -211,8 +385,38 @@ artifacts:
 
 
       Good design docs explain the "why" behind technical decisions.
+
+
+      Evidence linking requirements:
+
+      - EVERY factual claim MUST include an inline markdown link to its evidence
+      source (proposal, whiteboard, specs, or source code paths documented in
+      whiteboard).
+
+      - Goals, Non-Goals, Decisions, and Risks sections are ALL subject to this
+      rule — not just Context.
+
+      - Claims derived from dependency artifacts: link to the specific header/anchor
+      in proposal.md, whiteboard.md, or specs/.
+
+      - Claims about source code: link to the whiteboard's Artifacts & Paths section
+      where file paths and line numbers are documented.
+
+      - Design decisions that synthesize prior artifacts are NOT new — they should
+      link to the whiteboard/proposal/spec evidence that led to the decision.
+
+      - Only genuinely novel technical assertions (e.g., YAML spec behavior,
+      library API details, runtime characteristics) that cannot be derived from
+      any prior artifact qualify as NEW. Prepend these with
+      `<mark style="background:red;color:white">NEW</mark>` so reviewers can
+      identify claims needing independent validation.
+
+      - If a claim cannot be linked and is not marked NEW, it is either wrong or
+      missing from prior artifacts. Fix the gap before including the claim.
     requires:
       - proposal
+      - baseline
+      - specs
   - id: tasks
     generates: tasks.md
     description: Implementation checklist with trackable tasks
