@@ -90,3 +90,43 @@ describe("CitationValidator Anchor Matching with Dual IDs", () => {
 		expect(linkObject.validation.error).toContain("Anchor not found");
 	});
 });
+
+describe("CitationValidator Issue #100 - cleanMarkdownForComparison false positives", () => {
+	it("should accept colon-in-heading anchor where colon encodes as space (Bug 1)", async () => {
+		// Given: Heading "TRACE: LLM ... (opsx:continue)" in target file
+		// Link uses Obsidian encoding: colon → space → #TRACE%20LLM%20...%20(opsx%20continue)
+		const validator = createCitationValidator();
+		const testFile = join(fixturesDir, "issue-100-source.md");
+
+		// When: Validate the file
+		const result = await validator.validateFile(testFile);
+
+		// Then: The colon-in-heading link resolves as valid (not a false positive)
+		const linkObject = result.links.find(
+			(link) =>
+				link.fullMatch ===
+				"[Colon in heading - opsx continue](issue-100-colon-heading.md#TRACE%20LLM%20...%20(opsx%20continue))",
+		);
+		expect(linkObject).toBeDefined();
+		expect(linkObject.validation.status).toBe("valid");
+	});
+
+	it("should accept backslash-encoded bracket anchor where %5C maps to backslash (Bug 2)", async () => {
+		// Given: Heading "**[M-002]** Tag distribution" in target file
+		// Link uses %5C (backslash) encoding: #**%5CM-002%5C]**%20Tag%20distribution
+		const validator = createCitationValidator();
+		const testFile = join(fixturesDir, "issue-100-source.md");
+
+		// When: Validate the file
+		const result = await validator.validateFile(testFile);
+
+		// Then: The backslash-bracket link resolves as valid (not a false positive)
+		const linkObject = result.links.find(
+			(link) =>
+				link.fullMatch ===
+				"[Backslash bracket M-002](issue-100-backslash-bracket-heading.md#**%5CM-002%5C]**%20Tag%20distribution)",
+		);
+		expect(linkObject).toBeDefined();
+		expect(linkObject.validation.status).toBe("valid");
+	});
+});

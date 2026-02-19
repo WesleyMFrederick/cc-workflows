@@ -410,7 +410,9 @@ export class CitationValidator {
 
 		// Check if target resolves to a directory (folder link detection)
 		// Use targetPath (resolved) as authoritative; fall back to standardPath only when targetPath doesn't exist
-		const directoryCheckPath = existsSync(targetPath) ? targetPath : standardPath;
+		const directoryCheckPath = existsSync(targetPath)
+			? targetPath
+			: standardPath;
 		if (this.isDirectory(directoryCheckPath)) {
 			return this.createValidationResult(
 				citation,
@@ -900,6 +902,10 @@ export class CitationValidator {
 			.replace(/\*/g, "") // Remove italic markers
 			.replace(/==([^=]+)==/g, "$1") // Remove highlight markers
 			.replace(/\[([^\]]+)\]\([^)]+\)/g, "$1") // Remove links, keep text
+			.replace(/:/g, " ") // Colon → space (matches Obsidian heading anchor behavior)
+			.replace(/\\/g, "") // Strip backslash escape chars
+			.replace(/[\[\]]/g, "") // Strip lone bracket chars
+			.replace(/ {2,}/g, " ") // Collapse multiple spaces
 			.trim();
 	}
 
