@@ -1,16 +1,28 @@
 # {{change-name}} — Ideal
 
 > **Change:** {{change-name}}
+> **Domain:** {{domain}}
 > **Date:** {{date}}
 > **Evidence taxonomy:** See `whiteboard.md` Evidence Glossary section
 
 ---
 
-## Ideal Process Tree / Traces
+## Ideal Traces
 
-<!-- Same structure as baseline. Changed values annotated.
+<!-- Same structure as baseline traces. Changed values annotated.
   ??? for unresolved values that need decisions.
-  Every baseline attribute must have a corresponding ideal value.
+  Every baseline trace attribute must have a corresponding ideal value.
+-->
+
+```text
+```
+
+---
+
+## Ideal Process Tree
+
+<!-- OPTIONAL — same structure as baseline process tree.
+  Changed branches annotated. ??? for unresolved paths.
 -->
 
 ```text

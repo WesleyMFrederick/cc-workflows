@@ -9,6 +9,14 @@ description: Use when writing or reviewing OpenSpec baseline documents to verify
 
 Baseline documents are the factual foundation for ideal, delta, and all downstream artifacts. **A weak baseline propagates errors through every artifact that depends on it.** This skill provides a systematic verification pass to ensure every claim is tagged, every tag has valid evidence, and every derivation chain is traceable.
 
+## Key Definitions
+
+**Trace** = Literal execution record. This is the **evidence layer**. Each step is numbered and tagged with `[O: file:line]` or `[M: command → result]`. Boundary crossings between components are explicit (e.g., `HOOK → CLI`, `RETURN ←──`). A trace records what ACTUALLY HAPPENED in a specific execution path.
+
+**Process Tree** = Abstracted workflow model derived FROM traces. This is the **inference layer**, tagged with `[F-INF]`. Uses operators (→ sequential, × exclusive choice, ∧ parallel, ↻ redo loop) to describe POSSIBLE paths — not a single execution. Every branch must reference the trace step(s) that evidence it.
+
+**Write traces first. Derive process trees from them.** You cannot model structure until you have recorded evidence. A baseline may have only traces if the workflow is purely linear.
+
 ## When to Use
 
 - Writing a new baseline document
@@ -154,6 +162,8 @@ This jumps from "CLI outputs 94KB" to "compact output saves tokens" without esta
 - [C] that fails the "could another team choose differently?" test
 - Empty Open Questions section
 - Process tree with untagged steps
+- "Trace" that uses → × ∧ ↻ operators instead of numbered [O]/[M]-tagged steps (this is a process tree mislabeled as a trace)
+- Process tree with no [F-INF] references back to trace steps
 - "About", "roughly", "approximately" in measurements without actual measured value
 
 ## Quick Reference: Verification Output Format
