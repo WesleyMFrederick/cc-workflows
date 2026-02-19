@@ -1,4 +1,7 @@
 {
+  "env": {
+    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
+  },
   "permissions": {
     "allow": [
       "Bash(rm:*)",
@@ -151,14 +154,23 @@
             "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/session-start.sh"
           }
         ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node .claude/hooks/gsd-check-update.js"
+          }
+        ]
       }
     ]
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "/Users/wesleyfrederick/.claude/scripts/status-line/statusline-script.sh"
   },
   "enabledPlugins": {
     "code-review@claude-plugins-official": false,
     "code-simplifier@claude-plugins-official": false
-  },
-  "env": {
-    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
   }
 }

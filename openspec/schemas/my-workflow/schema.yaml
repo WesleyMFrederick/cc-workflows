@@ -73,16 +73,32 @@ artifacts:
       Artifact | Path | Role. Only include files that inform the baseline —
       not every file in the project.
 
-      - **Process Tree or Traces**: Model ALL entry points, paths, and
-      consumers the change touches.
+      - **Traces**: Literal execution records — raw evidence of what
+      actually happens when the system runs. Write traces FIRST. They
+      are the evidence layer.
 
-        - Use process tree operators: → sequential, × exclusive choice,
-        ∧ parallel, ↻ redo loop.
+        - Numbered steps, each tagged with [O: file:line] or [M: command]
 
-        - When paths cross component boundaries (e.g., hook calls CLI),
-        model as **traces** — sequential steps with evidence tags and
-        file:line sources showing the full execution path including
-        boundary crossings and returns.
+        - Explicit boundary crossings (e.g., HOOK → CLI, RETURN ←──)
+
+        - Sub-steps for what happens inside called components
+
+        - Key lines called out where interesting behavior lives
+
+        - <CRITICAL>You must read `.claude/skills/verifying-baseline-evidence/trace-reference.md` in verifying-baseline-evidence skill for the gold standard format
+
+      - **Process Tree** (optional): Abstracted workflow model derived
+      FROM traces. This is the inference layer — tagged with [F-INF].
+      Omit if the workflow is purely linear (traces alone are sufficient).
+
+        - Use operators: → sequential, × exclusive choice, ∧ parallel,
+        ↻ redo loop
+
+        - Every branch/choice must reference the trace step(s) that
+        evidence it
+
+        - Write this AFTER traces — you cannot model structure until
+        you have recorded evidence
 
       - **Measurements**: Quantified current state — output sizes, counts,
       waste. Include reproduction commands.
@@ -124,8 +140,11 @@ artifacts:
 
       Required sections:
 
-      - **Ideal Process Tree or Traces**: Same structure as baseline.
-      Changed values annotated. ??? for unresolved values.
+      - **Ideal Traces**: Same structure as baseline traces. Changed
+      values annotated. ??? for unresolved values.
+
+      - **Ideal Process Tree** (optional): Same structure as baseline
+      process tree. Changed branches annotated.
 
       - **Output Mockups**: Concrete examples of target output for every
       user-facing change. One mockup per command/path affected.

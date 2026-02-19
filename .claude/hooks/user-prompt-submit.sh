@@ -100,6 +100,11 @@ CEO_DIRECTIVES="<system-notification>
 - Front-load key information
 - Omit verbose explanations unless explicitly requested
 
+**Explaining Configuration:**
+- Show BOTH the concept AND the concrete: file path, current content, exact edit
+- Default to "here's what to paste" alongside "here's why"
+- Never give abstract instructions without showing the actual file to edit
+
 **File Output Rules:**
 - Detailed documentation allowed in files
 - Code comments, full examples acceptable

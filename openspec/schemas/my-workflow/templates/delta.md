@@ -1,6 +1,7 @@
 # {{change-name}} — Delta
 
 > **Change:** {{change-name}}
+> **Domain:** {{domain}}
 > **Date:** {{date}}
 
 ---
