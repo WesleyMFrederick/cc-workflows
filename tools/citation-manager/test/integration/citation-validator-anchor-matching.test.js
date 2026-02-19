@@ -111,6 +111,25 @@ describe("CitationValidator Issue #100 - cleanMarkdownForComparison false positi
 		expect(linkObject.validation.status).toBe("valid");
 	});
 
+	it("should accept backtick-in-heading anchor with URL-encoded characters (Issue #27)", async () => {
+		// Given: Heading "`hasAnchor(anchorId: string): boolean`" in target file
+		// Link uses URL-encoded backticks and spaces
+		const validator = createCitationValidator();
+		const testFile = join(fixturesDir, "issue-100-source.md");
+
+		// When: Validate the file
+		const result = await validator.validateFile(testFile);
+
+		// Then: The backtick-in-heading link resolves as valid
+		const linkObject = result.links.find(
+			(link) =>
+				link.fullMatch ===
+				"[**`hasAnchor(anchorId: string): boolean`**](issue-27-backtick-heading.md#%60hasAnchor(anchorId%20string)%20boolean%60)",
+		);
+		expect(linkObject).toBeDefined();
+		expect(linkObject.validation.status).toBe("valid");
+	});
+
 	it("should accept backslash-encoded bracket anchor where %5C maps to backslash (Bug 2)", async () => {
 		// Given: Heading "**[M-002]** Tag distribution" in target file
 		// Link uses %5C (backslash) encoding: #**%5CM-002%5C]**%20Tag%20distribution

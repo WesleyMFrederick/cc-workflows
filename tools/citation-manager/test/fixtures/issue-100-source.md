@@ -9,3 +9,7 @@ Test links for issue #100 false-positive patterns.
 ## Bug 2: Backslash-Encoded Bracket
 
 [Backslash bracket M-002](issue-100-backslash-bracket-heading.md#**%5CM-002%5C]**%20Tag%20distribution)
+
+## Issue 27: Backtick Anchor
+
+[**`hasAnchor(anchorId: string): boolean`**](issue-27-backtick-heading.md#%60hasAnchor(anchorId%20string)%20boolean%60)
