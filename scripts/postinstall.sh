@@ -3,14 +3,10 @@
 # Handles worktree environments by symlinking gitignored files from main repo.
 set -e
 
-# 1. Build citation-manager TypeScript
-npm run build -w tools/citation-manager
+# 1. Populate .claude submodule (cc-workflows-plugin)
+git -c protocol.file.allow=always submodule update --init --recursive
 
-# 2. Create root dist/ symlink (CLI integration tests expect it here)
-mkdir -p dist
-ln -sf ../tools/citation-manager/dist/citation-manager.js dist/citation-manager.js
-
-# 3. In worktrees: symlink gitignored files from main repo
+# 2. In worktrees: symlink gitignored files from main repo
 git_common_dir=$(git rev-parse --git-common-dir 2>/dev/null || echo ".git")
 if [ "$git_common_dir" != ".git" ]; then
   main_repo=$(cd "$git_common_dir/.." && pwd)
