@@ -21,7 +21,7 @@
   Numbered steps, each tagged with [O: file:line] or [M: command].
   Explicit boundary crossings (HOOK → CLI, RETURN ←──).
   Sub-steps for what happens inside called components.
-  See trace-reference.md in verifying-baseline-evidence skill for gold standard format.
+  See writing-traces skill for gold standard format.
 -->
 
 ```text

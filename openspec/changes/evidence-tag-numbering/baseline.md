@@ -126,7 +126,7 @@ Of those 43:
 - 0 are section header labels (no `## X [TAG]` headings in this artifact)
 - **36 are body instances that need numbering**
 
-##### **[M-003]** The transcript whiteboard has **0** escaped brackets — all tags use raw `[O]` format
+##### **\[M-003\]** The transcript whiteboard has **0** escaped brackets — all tags use raw `[O]` format
 - **Repro-steps:** `grep -c '\\\[' transcript-event-log-extraction/whiteboard.md`
 
 ##### **\[M-004\]** The transcript whiteboard has **0** block anchors
@@ -152,11 +152,15 @@ The schema instruction tells the LLM to use the taxonomy but provides no numberi
 
 ##### **\[F-INF-002\]** Body tags appear in two positions — line-start and mid-line
 Tags at line start: `**[O]** Some claim...`. Tags mid-line: `some text **[O]** (citation)`. Lines 55-58 of the transcript whiteboard show 4 mid-line tags used as inline evidence markers at the end of bullet points. The numbering script must handle tags at any position on a line, not just line-start.
-- [O-012](#TRACE:%20LLM%20creates%20evidence%20tags%20during%20artifact%20authoring) — Trace 1 step 5, mid-line tags in list items
+- [O-012](#TRACE%20LLM%20creates%20evidence%20tags%20during%20artifact%20authoring%20(opsxcontinue)) — Trace 1 step 5, mid-line tags in list items
+  
+  [#TRACE%20LLM%20creates%20evidence%20tags%20during%20artifact%20authoring%20(opsx%20continue)]
+  [#TRACE%20LLM%20creates%20evidence%20tags%20during%20artifact%20authoring%20(opsxcontinue)]
+  
 
 ##### **\[F-INF-003\]** Zero consistency in bracket escaping across existing artifacts
 Transcript whiteboard: 0 escapes, 0 anchors. Slack-MCP whiteboard: 2 escapes (glossary only), 0 anchors. Evidence-tag-numbering whiteboard (hand-done): 37 escapes, 29 anchors. The script must normalize all these states to the target format.
-- [M-003](#**%5CM-003%5C]**%20The%20transcript%20whiteboard%20has%20**0**%20escaped%20brackets) — 0 escapes in transcript
+- [M-003](#**%5CM-003%5C]**%20The%20transcript%20whiteboard%20has%20**0**%20escaped%20brackets) — 0 escapes in transcript 
 - [M-004](#**%5CM-004%5C]**%20The%20transcript%20whiteboard%20has%20**0**%20block%20anchors) — 0 anchors in transcript
 - [M-005](#**%5CM-005%5C]**%20The%20hand-numbered%20whiteboard%20has%20**37**%20escaped%20bracket) — 37 escapes, 29 anchors in target
 - [M-006](#**%5CM-006%5C]**%20The%20slack-mcp%20whiteboard%20has%20**2**%20escaped%20bracket) — 2 escapes, inconsistent

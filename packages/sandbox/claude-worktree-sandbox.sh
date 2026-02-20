@@ -111,6 +111,23 @@ if git rev-parse --git-dir &>/dev/null 2>&1; then
     fi
 fi
 
+# Detect submodule local-path remotes and allow writes to hub repos
+if [[ -n "${git_work_tree:-}" && -f "$git_work_tree/.gitmodules" ]]; then
+    echo "📦 Scanning submodule hubs:" >&2
+    while IFS= read -r line; do
+        local_url="${line##* }"
+        # Resolve relative paths against worktree root
+        if [[ "$local_url" != /* ]]; then
+            local_url="$(cd "$git_work_tree" && cd "$local_url" 2>/dev/null && pwd -P)" || continue
+        fi
+        # Only local filesystem paths that exist
+        if [[ -d "$local_url" ]]; then
+            write_paths+=("$local_url")
+            echo "   ✅ Hub: $local_url" >&2
+        fi
+    done < <(git -C "$git_work_tree" config -f .gitmodules --get-regexp 'submodule\..*\.url')
+fi
+
 # Process denied paths from environment variable
 denied_paths=()
 if [[ -n "${DENY_PATHS:-}" ]]; then

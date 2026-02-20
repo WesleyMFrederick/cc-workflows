@@ -77,6 +77,15 @@ artifacts:
       actually happens when the system runs. Write traces FIRST. They
       are the evidence layer.
 
+        - <CRITICAL>HARD GATE — STOP and ask the user to confirm the
+        trace subject BEFORE reading any source files or writing any
+        trace content. Ask: "What system/format am I tracing?" For
+        extraction tools, trace the INPUT DATA FORMAT. For behavior
+        changes, trace EXECUTION FLOW. The whiteboard's motivation
+        section is context, not the trace subject. Do NOT speculatively
+        gather evidence in parallel with this confirmation
+        step.</CRITICAL>
+
         - Numbered steps, each tagged with [O: file:line] or [M: command]
 
         - Explicit boundary crossings (e.g., HOOK → CLI, RETURN ←──)
@@ -85,7 +94,7 @@ artifacts:
 
         - Key lines called out where interesting behavior lives
 
-        - <CRITICAL>You must read `.claude/skills/verifying-baseline-evidence/trace-reference.md` in verifying-baseline-evidence skill for the gold standard format
+        - <CRITICAL>You must read the `writing-traces` skill for the gold standard trace format
 
       - **Process Tree** (optional): Abstracted workflow model derived
       FROM traces. This is the inference layer — tagged with [F-INF].
@@ -113,8 +122,12 @@ artifacts:
       - **Assumptions [A]**: Hypotheses not yet tested. These are risks —
       if wrong, the delta changes.
 
-      - **Open Questions [Q]**: Unknowns that surfaced during baseline work.
-      Resolve before proceeding to ideal if they affect same-units comparison.
+      - **Open Questions [Q]**: Structural unknowns about the CURRENT
+      system/format being traced that affect whether the baseline is accurate.
+      Resolve before ideal if they affect same-units comparison. Test: "Does
+      resolving this change my understanding of how the system works TODAY?"
+      Yes → baseline [Q]. No → move to whiteboard Ideal Bucket. Design choices
+      about what to build or produce are NOT baseline [Q]s.
     requires:
       - whiteboard
 
@@ -136,6 +149,8 @@ artifacts:
 
       Use the evidence taxonomy from whiteboard.md. Tag ideal claims too —
       most will be [A] (assumed target) or [D] (decided target).
+      <CRITICAL>Read the `verifying-evidence` skill for evidence tag rules,
+      [A]/[Q] utility assessment format, and verification checklist.</CRITICAL>
 
 
       Required sections:

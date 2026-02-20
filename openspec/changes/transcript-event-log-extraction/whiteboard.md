@@ -148,6 +148,10 @@
 
 **[A]** Human decision events (corrections, approvals, direction changes) should be captured as a separate event type, since they represent workflow inflection points that explain why the process tree has certain branches.
 
+**[Q]** Should `progress` events (hook_progress, bash_progress, mcp_progress) be excluded from the event log entirely, or retained as a separate infrastructure layer?
+
+**[Q]** How to handle `file-history-snapshot` events (no `sessionId` field) — exclude, or link via `messageId`?
+
 **[Q]** What output format? CSV (simple, universal), JSONL (streaming), or XES (process mining standard)?
 
 **[Q]** Should the extractor live in `tools/` as a Node.js CLI, or as a standalone bash/jq script?
