@@ -1,8 +1,8 @@
 schema: my-workflow
 
 # HOW TO UPDATE THIS CONFIG:
-# 1. Run: citation-manager extract header ARCHITECTURE.md "Coding Standards and Conventions"
-# 2. Run: citation-manager extract header ARCHITECTURE.md "Testing Strategy"
+# 1. Run: jact extract header ARCHITECTURE.md "Coding Standards and Conventions"
+# 2. Run: jact extract header ARCHITECTURE.md "Testing Strategy"
 # 3. Summarize into token-optimized bullet format below
 # 4. Keep context under 50KB (openspec limit)
 # Source: ARCHITECTURE.md → Coding Standards and Conventions, Testing Strategy
@@ -46,19 +46,19 @@ rules:
   proposal:
 
     - "Trace claims to evidence: key assertions (context, decisions, risk mitigations) should include inline markdown links to their source in dependency artifacts or prior documents. A reader should be able to click any major claim and land on the evidence."
-    - "Always link to a specific header or block anchor, not bare files. The citation-manager extracts content at anchors for context — a bare file link does not guarantee extraction. Use #Header%20Name (raw with %20 for spaces, NOT #header-name kebab-case) or #^block-anchor for Obsidian block references."
+    - "Always link to a specific header or block anchor, not bare files. jact extracts content at anchors for context — a bare file link does not guarantee extraction. Use #Header%20Name (raw with %20 for spaces, NOT #header-name kebab-case) or #^block-anchor for Obsidian block references."
     - "Link naturally in prose, not as footnotes. The link text IS the claim: '[shallow page copies](../evidence.md#Root%20Cause)' not 'shallow page copies [1]'."
   specs:
     - "Trace claims to evidence: key assertions (context, decisions, risk mitigations) should include inline markdown links to their source in dependency artifacts or prior documents. A reader should be able to click any major claim and land on the evidence."
-    - "Always link to a specific header or block anchor, not bare files. The citation-manager extracts content at anchors for context — a bare file link does not guarantee extraction. Use #Header%20Name (raw with %20 for spaces, NOT #header-name kebab-case) or #^block-anchor for Obsidian block references."
+    - "Always link to a specific header or block anchor, not bare files. jact extracts content at anchors for context — a bare file link does not guarantee extraction. Use #Header%20Name (raw with %20 for spaces, NOT #header-name kebab-case) or #^block-anchor for Obsidian block references."
     - "Link naturally in prose, not as footnotes. The link text IS the claim: '[shallow page copies](../evidence.md#Root%20Cause)' not 'shallow page copies [1]'."
   design:
     - "Trace claims to evidence: key assertions (context, decisions, risk mitigations) should include inline markdown links to their source in dependency artifacts or prior documents. A reader should be able to click any major claim and land on the evidence."
-    - "Always link to a specific header or block anchor, not bare files. The citation-manager extracts content at anchors for context — a bare file link does not guarantee extraction. Use #Header%20Name (raw with %20 for spaces, NOT #header-name kebab-case) or #^block-anchor for Obsidian block references."
+    - "Always link to a specific header or block anchor, not bare files. jact extracts content at anchors for context — a bare file link does not guarantee extraction. Use #Header%20Name (raw with %20 for spaces, NOT #header-name kebab-case) or #^block-anchor for Obsidian block references."
     - "Link naturally in prose, not as footnotes. The link text IS the claim: '[shallow page copies](../evidence.md#Root%20Cause)' not 'shallow page copies [1]'."
   tasks:
     - "Trace claims to evidence: key assertions (context, decisions, risk mitigations) should include inline markdown links to their source in dependency artifacts or prior documents. A reader should be able to click any major claim and land on the evidence."
-    - "Always link to a specific header or block anchor, not bare files. The citation-manager extracts content at anchors for context — a bare file link does not guarantee extraction. Use #Header%20Name (raw with %20 for spaces, NOT #header-name kebab-case) or #^block-anchor for Obsidian block references."
+    - "Always link to a specific header or block anchor, not bare files. jact extracts content at anchors for context — a bare file link does not guarantee extraction. Use #Header%20Name (raw with %20 for spaces, NOT #header-name kebab-case) or #^block-anchor for Obsidian block references."
     - "Link naturally in prose, not as footnotes. The link text IS the claim: '[shallow page copies](../evidence.md#Root%20Cause)' not 'shallow page copies [1]'."
     - "Use /test-driven-development workflow: no production code without a failing test first. RED-GREEN-REFACTOR phases can be separate tasks (e.g. task 2.1 writes tests RED, task 2.2 implements GREEN) or within a single task — structure tasks to make the TDD cycle clear. Exceptions: config files, type-only definitions, generated code."
     - "Include a Commit task group after all implementation tasks and before Verify. Use /git-and-github:git-create-commit to create a single commit of all implementation work."

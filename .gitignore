@@ -107,7 +107,7 @@ critique-risks-logs/
 # repo-mix files
 .repomix/
 *-repo.md
-citation-manager-repo.md
+jact-repo.md
 
 # Git worktrees
 .worktrees/
@@ -124,8 +124,8 @@ _worktrees/
 # Claude Local Settings
 .claude/settings.local.json
 
-# JACT state folder
-.citation-manager/
+# jact state folder
+.jact/
 
 # lsmcp cache
 .lsmcp/cache

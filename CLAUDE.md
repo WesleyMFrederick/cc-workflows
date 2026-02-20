@@ -47,11 +47,11 @@ Note: mgrep should always return something if the content exists. Empty results 
 - The `citation-extractor.sh` hook auto-extracts linked file content on every `.md` Read
 - Trust hook output — avoid redundant tool calls for files already delivered
 
-### TypeScript Build Pipeline (Citation Manager)
-- **Source is `.ts`, CLI needs `.js`** - after TS migration, `bin` points to `dist/citation-manager.js`
-- **Build before linking**: `npm run build -w tools/citation-manager` compiles `src/*.ts` → `dist/*.js`
-- **Re-link after build**: `npm link -w tools/citation-manager` updates the global `citation-manager` CLI
-- **Hook dependency**: The `citation-validator.sh` PostToolUse hook calls `citation-manager` — if CLI is stale, hook silently fails
+### jact CLI (Just Another Context Tool)
+- **Globally linked via `npm link`** from `/Users/wesleyfrederick/Documents/ObsidianVault/0_SoftwareDevelopment/jact`
+- **Build before re-linking**: `npm run build` in jact repo compiles `src/*.ts` → `dist/jact.js`
+- **Re-link after build**: `npm link` in jact repo updates the global `jact` CLI
+- **Hook dependency**: The `citation-validator.sh` PostToolUse hook calls `jact` — if CLI is stale, hook silently fails
 
 ---
 
@@ -100,8 +100,8 @@ markdownlint "**/*.md" --fix
 
 ## Linking Convention in Markdown Files
 
-- `.md` files → markdown links with full path context in display text (e.g., `[tools/citation-manager/README.md](../../../tools/citation-manager/README.md)`)
-- All other files (`.ts`, `.yaml`, `.json`, etc.) → backtick codeblock paths (e.g., `` `tools/citation-manager/src/citation-manager.ts` ``)
+- `.md` files → markdown links with full path context in display text (e.g., `[CLAUDE.md](../CLAUDE.md)`)
+- All other files (`.ts`, `.yaml`, `.json`, etc.) → backtick codeblock paths (e.g., `` `openspec/config.yaml` ``)
 
 ## TypeScript Coding Standards
 
@@ -113,38 +113,35 @@ markdownlint "**/*.md" --fix
 
 **Why:** TypeScript's value is compile-time type safety. Using `any` disables all type checking and defeats the entire purpose of using TypeScript.
 
-## Citation Manager
+## jact CLI
 
 ```bash
-# Build TypeScript and re-link CLI (run after TS changes)
-npm run build -w tools/citation-manager && npm link -w tools/citation-manager
-
 # Validate citations in a file
-citation-manager validate <file-path>
+jact validate <file-path>
 
 # Validate with JSON output
-citation-manager validate <file-path> --format json
+jact validate <file-path> --format json
 
 # Validate specific line range
-citation-manager validate <file-path> --lines 150-160
+jact validate <file-path> --lines 150-160
 
 # Validate with folder scope and auto-fix
-citation-manager validate <file-path> --fix --scope /path/to/docs
+jact validate <file-path> --fix --scope /path/to/docs
 
 # Extract content from all citations in a file
-citation-manager extract links <file-path>
+jact extract links <file-path>
 
 # Extract with full file content (not just sections)
-citation-manager extract links <file-path> --full-files
+jact extract links <file-path> --full-files
 
 # Extract specific header section from a file
-citation-manager extract header <file-path> "Header Name"
+jact extract header <file-path> "Header Name"
 
 # Extract entire file content
-citation-manager extract file <file-path>
+jact extract file <file-path>
 
 # Display AST for debugging
-citation-manager ast <file-path>
+jact ast <file-path>
 ```
 
 ## Mock Tool
