@@ -38,7 +38,7 @@
 		"marked": "^17.0.1"
 	},
 	"devDependencies": {
-		"@biomejs/biome": "^1.9.4",
+		"@biomejs/biome": "^2.4.4",
 		"@types/marked": "^5.0.2",
 		"@vitest/ui": "^4.0.18",
 		"c8": "^10.1.3",
