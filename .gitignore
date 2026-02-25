@@ -136,6 +136,9 @@ config/mcporter.json
 # Session status tracking
 current-status.json
 
+# QR generator output
+tools/branded-qr-generator/output/
+
 # Continuous learning personal data (but allow template config)
 .claude/learned/
 !.claude/learned/config.json

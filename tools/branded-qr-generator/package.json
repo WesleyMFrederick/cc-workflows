@@ -1,0 +1,22 @@
+{
+	"name": "@cc-workflows/branded-qr-generator",
+	"version": "1.0.0",
+	"type": "module",
+	"description": "Generate branded QR codes with custom logo embedding for any URL",
+	"main": "src/branded-qr-generator.js",
+	"scripts": {
+		"test": "vitest run",
+		"test:watch": "vitest"
+	},
+	"dependencies": {
+		"commander": "^14.0.3",
+		"qrcode": "^1.5.0",
+		"sharp": "^0.33.0"
+	},
+	"devDependencies": {
+		"vitest": "*"
+	},
+	"keywords": ["qr-code", "branding", "url-shortener"],
+	"author": "",
+	"license": "ISC"
+}
