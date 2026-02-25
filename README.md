@@ -13,32 +13,7 @@ This project eliminates repetitive tasks and maintains consistency across develo
 
 ## Tools
 
-### [Citation Manager](./tools/citation-manager/README.md)
-
-Validates and manages markdown citations in documentation projects. The tool detects broken links, validates anchor references, and auto-fixes common citation errors.
-
-**Key features:**
-- Three-tier validation (errors, warnings, informational)
-- Smart path resolution with folder scope
-- Auto-fix with backup creation
-- Support for Obsidian-style wiki links
-- Header anchor validation
-- JSON output for CI/CD integration
-
-**Quick usage:**
-
-```bash
-# Validate citations in a file
-npm run citation:validate path/to/file.md
-
-# Auto-fix with scope
-npm run citation:validate path/to/file.md -- --fix --scope /path/to/docs
-
-# Generate JSON report
-npm run citation:validate path/to/file.md -- --format json
-```
-
-### [LinkedIn QR Generator](./tools/linkedin-qr-generator/README.md)
+### [Branded QR Generator](./tools/branded-qr-generator/README.md)
 
 Generates branded QR codes with custom logo embedding for any URL. The tool creates scannable QR codes optimized for digital sharing and screen display.
 
@@ -104,8 +79,7 @@ npx biome check --write .
 ```text
 cc-workflows/
 ├── tools/                      # CLI tools (npm workspaces)
-│   ├── citation-manager/       # Markdown citation validator
-│   ├── linkedin-qr-generator/  # QR code generator
+│   ├── branded-qr-generator/   # QR code generator
 │   └── mock-tool/              # Proof-of-concept tool
 ├── design-docs/                # Architecture and planning docs
 │   ├── features/               # Feature specifications
@@ -125,8 +99,7 @@ cc-workflows/
 - **Vitest** - Test framework with UI and coverage
 - **Biome** - Fast linting and formatting
 - **Commander.js** - CLI framework
-- **marked** - Markdown parsing (citation-manager)
-- **qrcode** + **sharp** - QR generation and image processing (qr-generator)
+- **qrcode** + **sharp** - QR generation and image processing (branded-qr-generator)
 
 ## Development
 
