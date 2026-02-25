@@ -44,6 +44,11 @@
 
 ## Baseline Bucket
 
+:::evidence{tag="O" id="O-001" source="file:line"}
+Evidence tags appear in 3 distinct contexts across openspec artifacts.
+:::
+
+
 **\[O-001\]** Evidence tags appear in 3 distinct contexts across openspec artifacts: ^O-001
 
 1. **Glossary definitions** (table rows): `**\[O\]**` — tag type only, no numbering, bold. Found in `## Evidence Glossary` section of whiteboards.

@@ -52,7 +52,11 @@ artifacts:
       - **Delta Bucket**: Initial notes on what changes. Placeholder —
       cannot be completed until baseline and ideal are done.
 
-      - **Open Questions**: What needs to be resolved in later artifacts.
+      Place [Q] items in the bucket they relate to — not in a separate
+      section. A question about current system behavior goes in Baseline.
+      A question about target behavior goes in Ideal. A question about
+      scope of change goes in Delta. This keeps questions co-located
+      with the context needed to resolve them.
     requires: []
 
   - id: baseline
@@ -121,6 +125,8 @@ artifacts:
 
       - **Assumptions [A]**: Hypotheses not yet tested. These are risks —
       if wrong, the delta changes.
+      <CRITICAL>Read the `verifying-evidence` skill for evidence tag rules,
+      [A]/[Q] utility assessment format, and verification checklist.</CRITICAL>
 
       - **Open Questions [Q]**: Structural unknowns about the CURRENT
       system/format being traced that affect whether the baseline is accurate.

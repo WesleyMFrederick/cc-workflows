@@ -30,10 +30,10 @@
 
 ### Documentation
 
-- [writing-ddd-domain-models/SKILL.md](../../../.claude/skills/writing-ddd-domain-models/SKILL.md) — DDD capture skill (the consumer of event logs)
-- [ddd-slack-thread-export.md](/Users/wesleyfrederick/Documents/ObsidianVault/0_SoftwareDevelopment/producttank-sf/docs/design-docs/domain-model/baseline/interactions-threads-slack/data-shapes-and-workflows/ddd-slack-thread-export.md) — corrected DDD output from the session (final state)
-- [slack-event-producttank-sf-cribl-2026-02-18.md](/Users/wesleyfrederick/Documents/ObsidianVault/0_SoftwareDevelopment/producttank-sf/docs/design-docs/domain-model/baseline/interactions-threads-slack/slack-event-producttank-sf-cribl-2026-02-18.md) — input Slack thread export used as source material
-- [Chapter 5 — Getting the Data](/Users/wesleyfrederick/Documents/ObsidianVaultNew/Projects/PDF Books/process-mining-data-science-in-action/chapters-markdown/Chapter_05_Chapter_5_Getting_the_Data/Chapter_05_Chapter_5_Getting_the_Data) — process mining event log theory (van der Aalst)
+- [writing-ddd-domain-models/SKILL.md](../../../claude/skills/writing-ddd-domain-models/SKILL.md) — DDD capture skill (the consumer of event logs)
+- [ddd-slack-thread-export](../../../../producttank-sf/docs/design-docs/domain-model/baseline/interactions-threads-slack/data-shapes-and-workflows/ddd-slack-thread-export.md) — corrected DDD output from the session (final state)
+- [slack-event-producttank-sf-cribl-2026-02-18](../../../../producttank-sf/docs/design-docs/domain-model/baseline/interactions-threads-slack/slack-event-producttank-sf-cribl-2026-02-18.md) — input Slack thread export used as source material
+- [Chapter_05_Chapter_5_Getting_the_Data](../../../../../Projects/PDF%20Books/process-mining-data-science-in-action/chapters-markdown/Chapter_05_Chapter_5_Getting_the_Data/Chapter_05_Chapter_5_Getting_the_Data/Chapter_05_Chapter_5_Getting_the_Data.md) — process mining event log theory (van der Aalst)
 
 ### Source / Data
 

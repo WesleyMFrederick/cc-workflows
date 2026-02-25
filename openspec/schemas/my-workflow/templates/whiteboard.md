@@ -44,24 +44,21 @@
 ## Baseline Bucket
 
 <!-- How the system works today. High-level observations, pointers to code,
-  initial measurements. Do not go deep — that happens in baseline.md. -->
+  initial measurements. Do not go deep — that happens in baseline.md.
+  Include [Q] items here for unknowns about the current system. -->
 
 ---
 
 ## Ideal Bucket
 
 <!-- What the user wants. Target behavior, goals, mockups if provided.
-  Capture user intent, not implementation. Deep-dive in ideal.md. -->
+  Capture user intent, not implementation. Deep-dive in ideal.md.
+  Include [Q] items here for unknowns about target behavior. -->
 
 ---
 
 ## Delta Bucket
 
 <!-- Initial notes on what changes. Placeholder — cannot be completed
-  until baseline and ideal are done. Deep-dive in delta.md. -->
-
----
-
-## Open Questions
-
-<!-- What needs to be resolved in later artifacts. -->
+  until baseline and ideal are done. Deep-dive in delta.md.
+  Include [Q] items here for unknowns about what needs to change. -->
