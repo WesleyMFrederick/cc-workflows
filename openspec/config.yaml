@@ -43,6 +43,10 @@ context: |
   - Action-based file organization: files named by transformation verb
 
 rules:
+  spec:
+    - "Trace claims to evidence: key assertions (context, decisions, risk mitigations) should include inline markdown links to their source in dependency artifacts or prior documents. A reader should be able to click any major claim and land on the evidence."
+    - "Always link to a specific header or block anchor, not bare files. jact extracts content at anchors for context — a bare file link does not guarantee extraction. Use #Header%20Name (raw with %20 for spaces, NOT #header-name kebab-case) or #^block-anchor for Obsidian block references."
+    - "Link naturally in prose, not as footnotes. The link text IS the claim: '[shallow page copies](../evidence.md#Root%20Cause)' not 'shallow page copies [1]'."
   proposal:
 
     - "Trace claims to evidence: key assertions (context, decisions, risk mitigations) should include inline markdown links to their source in dependency artifacts or prior documents. A reader should be able to click any major claim and land on the evidence."

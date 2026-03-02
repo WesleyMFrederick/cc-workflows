@@ -1,6 +1,6 @@
 name: my-workflow
 version: 2
-description: OpenSpec workflow - whiteboard → baseline → ideal → delta → proposal → specs → design → tasks
+description: OpenSpec workflow - whiteboard → baseline → ideal → delta → spec | proposal → specs → design → tasks
 artifacts:
   - id: whiteboard
     generates: whiteboard.md
@@ -224,6 +224,56 @@ artifacts:
     requires:
       - baseline
       - ideal
+
+  - id: spec
+    generates: spec.md
+    description: Structured XML specification with interface boundaries, test contract, and TDD tasks
+    template: specification.md
+    instruction: >
+      Create a structured XML specification that combines interface boundaries,
+      test contract, and TDD tasks into a single executable document.
+
+
+      Before writing, read these context files from the change directory:
+
+      - delta.md (required — defines scope via ADD/CHANGE rows)
+
+      - baseline.md (required — current system traces and measurements)
+
+      - ideal.md (required — target system state)
+
+
+      Reference the spec glossary at design-docs/workflows/spec-glossary.md
+      for vocabulary and element definitions.
+
+
+      Construction rules:
+
+      1. Map each ADD/CHANGE row in delta → one <boundary> in
+      <interface_boundaries>. Each boundary defines: name, inputs, outputs,
+      constraints, and location in the codebase.
+
+      2. Derive <test_contract> assertions from boundaries. Each boundary
+      should have at least one positive assertion. Add negative assertions
+      for guard conditions (empty input, unchanged state, error paths).
+
+      3. Scale tasks to delta scope:
+         - Single-file change (patch): 1 dev task + 1 review task
+         - Multi-file change (feature): N dev tasks + N review tasks
+         - Each dev task follows TDD phases: RED → GREEN → COMMIT
+         - Review tasks have checklist + verdict (APPROVED | FIX_REQUIRED)
+
+      4. The <artifacts> section lists the primary target file(s) and links
+      back to context files (baseline, ideal, delta).
+
+      5. The <success_criteria> section defines pass/fail conditions derived
+      from the test contract assertions and reviewer verdict.
+
+
+      Output format: Markdown file containing a single XML code block with
+      root element <specification>. Follow the template structure exactly.
+    requires:
+      - delta
 
   - id: proposal
     generates: proposal.md
