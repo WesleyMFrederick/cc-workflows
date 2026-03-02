@@ -28,7 +28,7 @@ TRACE: JSONL line — envelope (all event types)
     File: 1,712 lines, 3.5 MB (3,703,799 bytes)
     Each line = one JSON object (newline-delimited)
 
- 2. [O: line 3, line 6, line 9, line 67]
+ 2. [OBS: line 3, line 6, line 9, line 67]
     Common envelope fields present on most event types:
     ├── type          (string) — event classifier (see TRACE 2–6)
     ├── uuid          (string) — unique ID for this event
@@ -68,20 +68,20 @@ END TRACE
 TRACE: user event — two content subtypes
 ═════════════════════════════════════════
 
- 1. [O: line 1]
+ 1. [OBS: line 1]
     user envelope keys: parentUuid, isSidechain, userType, cwd, sessionId,
     version, gitBranch, slug, type, message, uuid, timestamp
 
  USER MESSAGE BODY
  ─────────────────
- 2. [O: line 1]
+ 2. [OBS: line 1]
     message keys: role ("user"), content
 
     content is EITHER:
 
     ┌── SUBTYPE A: text content (human input) ──────────────────────┐
     │                                                                 │
-    │ 3a. [O: line 1]                                                │
+    │ 3a. [OBS: line 1]                                                │
     │     content: list with one or more text/str blocks             │
     │     ├── content[0].type = "text"  (dict block)                 │
     │     └── OR content = str          (plain string, 76 occurrences [M]) │
@@ -90,7 +90,7 @@ TRACE: user event — two content subtypes
 
     ┌── SUBTYPE B: tool_result content (tool response) ─────────────┐
     │                                                                 │
-    │ 3b. [O: line 25]                                               │
+    │ 3b. [OBS: line 25]                                               │
     │     content: list with tool_result blocks                       │
     │     Each block keys: tool_use_id, type, content, is_error      │
     │     ├── tool_use_id  cross-references assistant tool_use.id     │
@@ -119,20 +119,20 @@ END TRACE
 TRACE: assistant event — three content block subtypes
 ══════════════════════════════════════════════════════
 
- 1. [O: line 6]
+ 1. [OBS: line 6]
     assistant envelope keys: parentUuid, isSidechain, userType, cwd, sessionId,
     version, gitBranch, slug, message, requestId, type, uuid, timestamp
 
  ASSISTANT MESSAGE BODY
  ──────────────────────
- 2. [O: line 6]
+ 2. [OBS: line 6]
     message keys: model, id, type, role ("assistant"), content,
     stop_reason, stop_sequence, usage
     content: array of content blocks (1–N blocks per message)
 
     ┌── BLOCK TYPE A: text ─────────────────────────────────────────┐
     │                                                                 │
-    │ 3a. [O: line 6]                                                │
+    │ 3a. [OBS: line 6]                                                │
     │     keys: type ("text"), text                                   │
     │     156 occurrences [M]                                         │
     │                                                                 │
@@ -140,7 +140,7 @@ TRACE: assistant event — three content block subtypes
 
     ┌── BLOCK TYPE B: thinking ──────────────────────────────────────┐
     │                                                                 │
-    │ 3b. [O: line 7]                                                │
+    │ 3b. [OBS: line 7]                                                │
     │     keys: type ("thinking"), thinking, signature               │
     │     28 occurrences [M]                                          │
     │                                                                 │
@@ -148,7 +148,7 @@ TRACE: assistant event — three content block subtypes
 
     ┌── BLOCK TYPE C: tool_use ──────────────────────────────────────┐
     │                                                                 │
-    │ 3c. [O: line 9]                                                │
+    │ 3c. [OBS: line 9]                                                │
     │     keys: type ("tool_use"), id, name, input, caller           │
     │     ├── id     unique identifier (referenced by tool_result)    │
     │     ├── name   tool name (e.g., "Bash", "Read", "Edit")         │
@@ -187,7 +187,7 @@ END TRACE
 TRACE: progress event — three data subtypes
 ════════════════════════════════════════════
 
- 1. [O: line 3]
+ 1. [OBS: line 3]
     progress envelope keys: parentUuid, isSidechain, userType, cwd, sessionId,
     version, gitBranch, slug, type, data, parentToolUseID, toolUseID,
     timestamp, uuid
@@ -198,7 +198,7 @@ TRACE: progress event — three data subtypes
 
     ┌── DATA SUBTYPE: hook_progress ────────────────────────────────┐
     │                                                                 │
-    │ 2a. [O: line 3]                                                │
+    │ 2a. [OBS: line 3]                                                │
     │     data keys: type ("hook_progress"), hookEvent, hookName,    │
     │     command                                                     │
     │     ├── hookEvent   e.g., "SessionStart"                        │
@@ -209,7 +209,7 @@ TRACE: progress event — three data subtypes
 
     ┌── DATA SUBTYPE: bash_progress ────────────────────────────────┐
     │                                                                 │
-    │ 2b. [O: line 13]                                               │
+    │ 2b. [OBS: line 13]                                               │
     │     data keys: type ("bash_progress"), output, fullOutput,     │
     │     elapsedTimeSeconds, totalLines, timeoutMs                   │
     │     Live streaming output from running Bash commands            │
@@ -218,7 +218,7 @@ TRACE: progress event — three data subtypes
 
     ┌── DATA SUBTYPE: mcp_progress ─────────────────────────────────┐
     │                                                                 │
-    │ 2c. [O: line 83]                                               │
+    │ 2c. [OBS: line 83]                                               │
     │     data keys: type ("mcp_progress"), status, serverName,      │
     │     toolName                                                    │
     │     ├── status      e.g., "running"                             │
@@ -239,7 +239,7 @@ END TRACE
 TRACE: system event — three subtypes
 ══════════════════════════════════════
 
- 1. [O: line 67]
+ 1. [OBS: line 67]
     system envelope keys: parentUuid, isSidechain, userType, cwd, sessionId,
     version, gitBranch, slug, type, subtype, timestamp, uuid
     + subtype-specific fields
@@ -247,7 +247,7 @@ TRACE: system event — three subtypes
 
     ┌── SUBTYPE: stop_hook_summary ─────────────────────────────────┐
     │                                                                 │
-    │ 2a. [O: line 67]                                               │
+    │ 2a. [OBS: line 67]                                               │
     │     Additional keys: hookCount, hookInfos, hookErrors,          │
     │     preventedContinuation, stopReason, hasOutput, level,        │
     │     toolUseID                                                   │
@@ -257,7 +257,7 @@ TRACE: system event — three subtypes
 
     ┌── SUBTYPE: turn_duration ──────────────────────────────────────┐
     │                                                                 │
-    │ 2b. [O: line 68]                                               │
+    │ 2b. [OBS: line 68]                                               │
     │     Additional keys: durationMs, isMeta                         │
     │     Timing record for each turn                                 │
     │                                                                 │
@@ -265,7 +265,7 @@ TRACE: system event — three subtypes
 
     ┌── SUBTYPE: local_command ──────────────────────────────────────┐
     │                                                                 │
-    │ 2c. [O: line 76]                                               │
+    │ 2c. [OBS: line 76]                                               │
     │     Additional keys: content, level, isMeta                     │
     │     Slash command output (e.g., /model, /clear)                 │
     │                                                                 │
@@ -283,7 +283,7 @@ END TRACE
 TRACE: file-history-snapshot event
 ════════════════════════════════════
 
- 1. [O: line 2]
+ 1. [OBS: line 2]
     file-history-snapshot keys: type, messageId, snapshot, isSnapshotUpdate
     ├── messageId    references the triggering message
     ├── snapshot     dict with keys: messageId, trackedFileBackups, timestamp
@@ -302,12 +302,12 @@ END TRACE
 TRACE: tool_use / tool_result UUID linkage
 ═══════════════════════════════════════════
 
- 1. [O: line 9]
+ 1. [OBS: line 9]
     Assistant emits tool_use block with:
     ├── type = "tool_use"
     ├── id   = "toolu_016TannwDiyib9..."  ← unique identifier
 
- 2. [O: line 25]
+ 2. [OBS: line 25]
     User message contains tool_result block with:
     ├── type        = "tool_result"
     └── tool_use_id = "toolu_016TannwDiyib9..."  ← matches tool_use.id
@@ -318,7 +318,7 @@ TRACE: tool_use / tool_result UUID linkage
     ├── tool_use line 11 → tool_result line 31  (toolu_01Qarocpn1UJ2g...)
     └── tool_use line 12 → tool_result line 34  (toolu_0156yHmRaLPUib...)
 
- 4. [F-INF: from steps 1–3]
+ 4. [F-LK: from steps 1–3]
     tool_use.id == tool_result.tool_use_id is the primary join key for
     pairing invocations with responses across different JSONL lines.
     These may be separated by many lines (9→25 = 16 lines apart).
@@ -332,14 +332,14 @@ END TRACE
 ## Process Tree
 
 ```text
-SESSION FILE [F-INF: from TRACE 1 step 3]
+SESSION FILE [F-LK: from TRACE 1 step 3]
 │
 ├── line 1:  user (sessionId=cd301bd3)  ← prior session artifact
 ├── line 2:  file-history-snapshot (no sessionId)
 │            ... 85 snapshot events interleaved throughout
 └── lines 3–1712: primary session (sessionId=0f75dced)
      │
-     └── TURN CYCLE [F-INF: from TRACE 2–5]
+     └── TURN CYCLE [F-LK: from TRACE 2–5]
           ┌──────────────────────────────────────┐
           │ → user (human input OR tool_result)  │
           │ → progress* (hook/bash/mcp events)   │ ↻ (0–N per turn)
@@ -371,17 +371,17 @@ SESSION FILE [F-INF: from TRACE 1 step 3]
 
 ---
 
-## Inferred Facts [F-INF]
+## Locked Facts [F-LK]
 
-1. **[F-INF: from TRACE 7 steps 1–3]** tool_use blocks (in assistant events) and tool_result blocks (in user events) are linked by UUID cross-reference (`tool_use.id` == `tool_result.tool_use_id`). Reconstruction of complete tool invocations requires joining across different JSONL lines.
+1. **[F-LK: from TRACE 7 steps 1–3]** tool_use blocks (in assistant events) and tool_result blocks (in user events) are linked by UUID cross-reference (`tool_use.id` == `tool_result.tool_use_id`). Reconstruction of complete tool invocations requires joining across different JSONL lines.
 
-2. **[F-INF: from TRACE 1 step 4 + TRACE 4 step 1]** `progress` events (55.6%) dominate the file numerically but carry no content relevant to tool call sequences — they are instrumentation (hook status, bash streaming, MCP status). Any event log extractor must filter or demote them.
+2. **[F-LK: from TRACE 1 step 4 + TRACE 4 step 1]** `progress` events (55.6%) dominate the file numerically but carry no content relevant to tool call sequences — they are instrumentation (hook status, bash streaming, MCP status). Any event log extractor must filter or demote them.
 
-3. **[F-INF: from TRACE 6 step 1]** `file-history-snapshot` events have no `sessionId` field — they cannot be attributed to a session using the standard session field. The `messageId` field provides an alternative linkage path.
+3. **[F-LK: from TRACE 6 step 1]** `file-history-snapshot` events have no `sessionId` field — they cannot be attributed to a session using the standard session field. The `messageId` field provides an alternative linkage path.
 
-4. **[F-INF: from TRACE 1 step 3]** The file contains events from two sessions (one line from cd301bd3, 1,626 from 0f75dced). A multi-session file means session filtering is required before event log extraction.
+4. **[F-LK: from TRACE 1 step 3]** The file contains events from two sessions (one line from cd301bd3, 1,626 from 0f75dced). A multi-session file means session filtering is required before event log extraction.
 
-5. **[F-INF: from TRACE 3 step 4]** tool_use calls skew heavily toward file manipulation: Edit (70) + Read (38) + Write (6) = 114 of 156 calls (73%). The session was primarily a file editing workflow.
+5. **[F-LK: from TRACE 3 step 4]** tool_use calls skew heavily toward file manipulation: Edit (70) + Read (38) + Write (6) = 114 of 156 calls (73%). The session was primarily a file editing workflow.
 
 ---
 
@@ -400,11 +400,11 @@ SESSION FILE [F-INF: from TRACE 1 step 3]
 ## Assumptions [A]
 
 1. **[A]** `tool_use.id` == `tool_result.tool_use_id` is a stable, reliable join key across all transcripts (verified for 3 pairs in this file; assumed to hold universally).
-   - **To strengthen → [F-INF]:** Verify all 156 tool_use/tool_result pairs in this file match. If 100% match, promote to [F-INF].
+   - **To strengthen → [F-LK]:** Verify all 156 tool_use/tool_result pairs in this file match. If 100% match, promote to [F-LK].
    - **Utility of strengthening:** Low. 3-pair verification already demonstrates the pattern. If the join key fails on edge cases, the extractor code will surface it immediately at build time.
 
 2. **[A]** The `parentUuid` chain forms a tree that can be used to segment the session into conversation turns, though this has not been validated structurally.
-   - **To strengthen → [F-INF]:** Trace the full parentUuid chain — check for orphans, cycles, and whether the tree cleanly maps to turn boundaries.
+   - **To strengthen → [F-LK]:** Trace the full parentUuid chain — check for orphans, cycles, and whether the tree cleanly maps to turn boundaries.
    - **Utility of strengthening:** Low. Whether to use parentUuid for turn segmentation is a design choice (ideal artifact). The turn cycle is already observable from event type sequencing (user → progress → assistant → system) without parentUuid.
 
 > **Moved to ideal artifact:** Former A3 (progress events excludable) and A4 (thinking blocks excludable) are design decisions about what to include/exclude in the output, not facts about the current format. They belong in the ideal artifact.

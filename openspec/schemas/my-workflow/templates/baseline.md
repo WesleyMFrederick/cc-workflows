@@ -18,7 +18,7 @@
 ## Traces
 
 <!-- Write traces FIRST — they are evidence (raw execution records).
-  Numbered steps, each tagged with [O: file:line] or [M: command].
+  Numbered steps, each tagged with [OBS: file:line] or [M: command].
   Explicit boundary crossings (HOOK → CLI, RETURN ←──).
   Sub-steps for what happens inside called components.
   See writing-traces skill for gold standard format.
@@ -28,15 +28,15 @@
 TRACE: <name> (<trigger>)
 ══════════════════════════
 
- 1. [O: file.ts:line]
+ 1. [OBS: file.ts:line]
     Step description
 
  COMPONENT A → COMPONENT B (boundary crossing)
  ──────────────────────────────────────────────
- 2. [O: file.ts:line]
+ 2. [OBS: file.ts:line]
     CALL ──→ target
     │
-    │  2a. [O: inner-file.ts:line]
+    │  2a. [OBS: inner-file.ts:line]
     │      Sub-step inside called component
     │
     RETURN ←── result
@@ -49,7 +49,7 @@ END TRACE
 
 ## Process Tree
 
-<!-- OPTIONAL — derive FROM traces. This is inference, tagged with [F-INF].
+<!-- OPTIONAL — derive FROM traces. This is inference, tagged with [F-LK].
   Omit if the workflow is purely linear (traces alone are sufficient).
   Operators: → sequential, × exclusive choice, ∧ parallel, ↻ redo loop.
   Every branch must reference trace step(s) that evidence it.
@@ -66,9 +66,9 @@ END TRACE
 
 ---
 
-## Inferred Facts [F-INF]
+## Locked Facts [F-LK]
 
-<!-- Conclusions from combining O/M evidence. Cite source steps/measurements. -->
+<!-- Conclusions from combining OBS/M evidence. Cite source steps/measurements. -->
 
 ---
 

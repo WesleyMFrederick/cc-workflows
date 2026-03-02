@@ -18,9 +18,10 @@ Every claim in this document is tagged with an evidence type and source.
 
 | Tag | Meaning | Example |
 |-----|---------|---------|
-| **[O]** | **Observed** — code reviewed, behavior confirmed | `[O: extractor.sh:109]` |
+| **[OBS]** | **Observation** — code reviewed, behavior confirmed | `[OBS: extractor.sh:109]` |
 | **[M]** | **Measured** — quantified data exists | `[M: 94KB extract output]` |
-| **[F-INF]** | **Fact Inferred** — conclusion from combining O/M evidence | `[F-INF: from O+M]` |
+| **[F-LK]** | **Fact Locked** — empirical conclusion frozen for analysis | `[F-LK: from OBS+M]` |
+| **[F-ID]** | **Fact by Identity** — true by definition, math, or structural logic | `[F-ID: total = A + B]` |
 | **[A]** | **Assumed** — hypothesis, not yet tested | `[A: LLM ignores metadata]` |
 | **[C]** | **Constraint** — external requirement, cannot change | `[C: jq required by hook]` |
 | **[D]** | **Decision** — commitment of a resource (time, effort, scope) | `[D: use --verbose flag]` |
@@ -58,55 +59,55 @@ TRACE: extractor hook (PostToolUse:Read)
 
  HOOK: GUARDS
  ────────────
- 2. [O: extractor.sh:27-30]
+ 2. [OBS: extractor.sh:27-30]
     Guard: jq available?
     FAIL → exit 0 (silent skip)
 
- 3. [O: extractor.sh:34-45]
+ 3. [OBS: extractor.sh:34-45]
     Resolve: citation-manager binary
     Try: local build (dist/citation-manager.js)
     Fallback: global CLI
     FAIL → exit 0 (silent skip)
 
- 4. [O: extractor.sh:56-63]
+ 4. [OBS: extractor.sh:56-63]
     Parse: stdin JSON from Claude Code
     Extract: file_path, session_id
     FAIL (no file_path) → exit 0
 
- 5. [O: extractor.sh:77-80]
+ 5. [OBS: extractor.sh:77-80]
     Guard: file_path ends in .md?
     FAIL → exit 0 (silent skip)
 
  HOOK → CLI (boundary crossing)
  ──────────────────────────────
- 6. [O: extractor.sh:92]
+ 6. [OBS: extractor.sh:92]
     CALL ──→ citation-manager extract links "$file_path" --session "$session_id"
     │
     │  CLI: PARSE ARGS
     │  ────────────────
-    │  6a. [O: citation-manager.ts:1131-1291]
+    │  6a. [OBS: citation-manager.ts:1131-1291]
     │      Commander.js parses: extract links <file> --session <id>
     │
     │  CLI: ORCHESTRATE
     │  ────────────────
-    │  6b. [O: citation-manager.ts:429-480]
+    │  6b. [OBS: citation-manager.ts:429-480]
     │      extractLinks() → validate links → extract content
     │
     │  CLI: EXTRACT + DEDUPLICATE
     │  ──────────────────────────
-    │  6c. [O: ContentExtractor.ts:88-235]
+    │  6c. [OBS: ContentExtractor.ts:88-235]
     │      Strategy chain → content extraction → SHA-256 dedup
     │
     │  CLI: OUTPUT
     │  ───────────
-    │  6d. [O: citation-manager.ts:466]
+    │  6d. [OBS: citation-manager.ts:466]
     │      console.log(JSON.stringify(result, null, 2))
     │      ├── extractedContentBlocks  (50KB)  [M]
     │      ├── outgoingLinksReport     (44KB)  [M]
     │      └── stats                   (124B)  [M]
     │      TOTAL: 94KB to stdout               [M]
     │
-    │  6e. [O: citation-manager.ts:exit codes]
+    │  6e. [OBS: citation-manager.ts:exit codes]
     │      Exit: 0 (success) | 1 (no content) | 2 (error)
     │
     RETURN ←── stdout (94KB JSON) + exit code
@@ -114,26 +115,26 @@ TRACE: extractor hook (PostToolUse:Read)
 
  HOOK: PROCESS CLI OUTPUT
  ────────────────────────
- 7. [O: extractor.sh:93]
+ 7. [OBS: extractor.sh:93]
     Capture: exit code from CLI
 
- 8. [O: extractor.sh:97-106]
+ 8. [OBS: extractor.sh:97-106]
     Branch on exit code:
     ├── 0 + empty output → exit 0 (cache hit, already extracted)
     ├── 1             → exit 0 (no citations found)
     └── 2 or empty    → exit 0 (error, silent)
 
- 9. [O: extractor.sh:109]                         ← KEY LINE
+ 9. [OBS: extractor.sh:109]                         ← KEY LINE
     Parse: jq '.extractedContentBlocks'
     USES:    50KB (content blocks)
     DISCARDS: 44KB (outgoingLinksReport) + 124B (stats)
     WASTE:   46% of received data                  [M: 44KB / 94KB]
 
-10. [O: extractor.sh:112-116]
+10. [OBS: extractor.sh:112-116]
     Guard: extracted content not null/empty?
     FAIL → exit 0
 
-11. [O: extractor.sh:121]                         ← KEY LINE
+11. [OBS: extractor.sh:121]                         ← KEY LINE
     Transform: jq maps content blocks →
     "## Citation: <contentId>\n\n<content>\n---"
 
@@ -142,7 +143,7 @@ TRACE: extractor hook (PostToolUse:Read)
 
  HOOK: EMIT RESULT
  ─────────────────
-12. [O: extractor.sh:132-139]
+12. [OBS: extractor.sh:132-139]
     Wrap: jq builds hookSpecificOutput JSON envelope
     {
       "hookSpecificOutput": {
@@ -151,23 +152,23 @@ TRACE: extractor hook (PostToolUse:Read)
       }
     }
 
-13. [O: extractor.sh:141]
+13. [OBS: extractor.sh:141]
     Output: JSON to stdout → Claude Code injects as additionalContext
 
-14. [O: extractor.sh:144]
+14. [OBS: extractor.sh:144]
     Exit: 0 (always non-blocking)
 
 ══════════════════════════════════════════
 END TRACE
 ```
 
-### Inferred Facts [F-INF]
+### Locked/Identity Facts [F-LK / F-ID]
 
 These conclusions come from combining evidence in the trace:
 
-1. **[F-INF: from steps 6d + 9]** The hook receives 94KB but uses only 50KB. The 44KB (46%) is **pipe waste, not context waste** — the CLI serializes it, the pipe transmits it, and the hook immediately discards it via `jq '.extractedContentBlocks'`. Claude never sees the `outgoingLinksReport`. The waste is CPU/IO in the CLI→hook transfer, not tokens in Claude's context window.
+1. **[F-LK: from steps 6d + 9]** The hook receives 94KB but uses only 50KB. The 44KB (46%) is **pipe waste, not context waste** — the CLI serializes it, the pipe transmits it, and the hook immediately discards it via `jq '.extractedContentBlocks'`. Claude never sees the `outgoingLinksReport`. The waste is CPU/IO in the CLI→hook transfer, not tokens in Claude's context window.
 
-2. **[F-INF: from steps 9 + 11]** The hook performs two format transformations: JSON → extracted blocks (jq) → markdown text (jq). The final output to Claude is markdown, not JSON. The intermediate JSON format is a means, not an end. **Final format Claude receives** [O: extractor.sh:121]:
+2. **[F-LK: from steps 9 + 11]** The hook performs two format transformations: JSON → extracted blocks (jq) → markdown text (jq). The final output to Claude is markdown, not JSON. The intermediate JSON format is a means, not an end. **Final format Claude receives** [OBS: extractor.sh:121]:
 
 ```markdown
 ## Citation: d240fa5864c3063f
@@ -186,11 +187,11 @@ These conclusions come from combining evidence in the trace:
 
 Each content block becomes a `## Citation: <sha256-hash>` heading followed by the raw content, separated by `---`. This is the format visible in this conversation's own hook output.
 
-3. **[F-INF: from step 6d]** The CLI's `console.log(JSON.stringify(result, null, 2))` is the single output point. Any change to default output format affects ALL consumers simultaneously — there is no per-consumer output path.
+3. **[F-LK: from step 6d]** The CLI's `console.log(JSON.stringify(result, null, 2))` is the single output point. Any change to default output format affects ALL consumers simultaneously — there is no per-consumer output path.
 
-4. **[F-INF: from steps 2-5]** The hook has 4 guard clauses that exit silently (exit 0). Any of these failing means no content injection. The hook is designed to be invisible when it can't operate.
+4. **[F-ID: from steps 2-5]** The hook has 4 guard clauses that exit silently (exit 0). Any of these failing means no content injection. The hook is designed to be invisible when it can't operate.
 
-5. **[F-INF: from O on lines 466, 1234, 1280]** All three extract subcommands use identical output format (`console.log(JSON.stringify(result, null, 2))`). Output point differs — `extractLinks` outputs inside the method (line 466), while `extractHeader` (line 1234) and `extractFile` (line 1280) return results to CLI wiring which outputs. But the format is the same: pretty-printed JSON of `OutgoingLinksExtractedContent`.
+5. **[F-LK: from OBS on lines 466, 1234, 1280]** All three extract subcommands use identical output format (`console.log(JSON.stringify(result, null, 2))`). Output point differs — `extractLinks` outputs inside the method (line 466), while `extractHeader` (line 1234) and `extractFile` (line 1280) return results to CLI wiring which outputs. But the format is the same: pretty-printed JSON of `OutgoingLinksExtractedContent`.
 
 ### Constraints [C]
 
@@ -206,7 +207,7 @@ Each content block becomes a `## Citation: <sha256-hash>` heading followed by th
 
 2. **[A]** The compact output (~50KB) would be sufficient for LLM context needs. (No measurement of what LLM actually consumes from the 94KB.)
 
-3. ~~**[A]**~~ → **[O: citation-manager.ts:466,1234,1280]** All three extract subcommands use `console.log(JSON.stringify(result, null, 2))`. Confirmed: `extractLinks` at line 466, `extractHeader` at line 1234 (CLI wiring), `extractFile` at line 1280 (CLI wiring). Same format, different output locations.
+3. ~~**[A]**~~ → **[OBS: citation-manager.ts:466,1234,1280]** All three extract subcommands use `console.log(JSON.stringify(result, null, 2))`. Confirmed: `extractLinks` at line 466, `extractHeader` at line 1234 (CLI wiring), `extractFile` at line 1280 (CLI wiring). Same format, different output locations.
 
 ### Open Questions [Q]
 

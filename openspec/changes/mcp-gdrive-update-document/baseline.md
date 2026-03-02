@@ -29,11 +29,11 @@ TRACE: MCP tool call dispatch (Claude calls any gdrive tool)
 
  SERVER STARTUP
  ──────────────
- 1. [O: index.ts:17]
+ 1. [OBS: index.ts:17]
     import { tools } from "./tools/index.js"
     tools = typed tuple of 6 Tool<T> objects
 
- 2. [O: tools/index.ts:17-48]
+ 2. [OBS: tools/index.ts:17-48]
     tools array: 6 entries, each is { ...schema, handler }
     ├── [0] gdrive_search
     ├── [1] gdrive_read_file
@@ -42,44 +42,44 @@ TRACE: MCP tool call dispatch (Claude calls any gdrive tool)
     ├── [4] gsheets_update_cell
     └── [5] gsheets_read
 
- 3. [O: tools/index.ts:25-26]                    ← KEY LINE
+ 3. [OBS: tools/index.ts:25-26]                    ← KEY LINE
     Each tool entry: spread schema (name, description, inputSchema)
     + attach handler function
     Pattern: { ...gdriveSearchSchema, handler: search }
 
  TOOL LISTING (ListTools request)
  ────────────────────────────────
- 4. [O: index.ts:102-110]
+ 4. [OBS: index.ts:102-110]
     ListToolsRequestSchema handler:
     tools.map(({ name, description, inputSchema }) => ...)
     Returns only name + description + inputSchema (strips handler)
 
  TOOL CALL (CallTool request)
  ────────────────────────────
- 5. [O: index.ts:121-131]
+ 5. [OBS: index.ts:121-131]
     CallToolRequestSchema handler:
     │
-    │  5a. [O: index.ts:122]
+    │  5a. [OBS: index.ts:122]
     │      await ensureAuth()
     │      Forces valid OAuth credentials before any tool runs
     │
-    │  5b. [O: index.ts:123]                     ← KEY LINE
+    │  5b. [OBS: index.ts:123]                     ← KEY LINE
     │      const tool = tools.find(t => t.name === request.params.name)
     │      Name-based lookup in tools array
     │
-    │  5c. [O: index.ts:124-126]
+    │  5c. [OBS: index.ts:124-126]
     │      Guard: tool not found → throw Error("Tool not found")
     │
-    │  5d. [O: index.ts:129]
+    │  5d. [OBS: index.ts:129]
     │      const result = await tool.handler(request.params.arguments as any)
     │      Passes raw MCP arguments to handler — each tool validates internally
     │
-    │  5e. [O: index.ts:130]
+    │  5e. [OBS: index.ts:130]
     │      return convertToolResponse(result)
 
  RESPONSE CONVERSION
  ───────────────────
- 6. [O: index.ts:113-119]
+ 6. [OBS: index.ts:113-119]
     convertToolResponse(): wraps InternalToolResponse →
     { _meta: {}, content: [...], isError: bool }
 
@@ -95,7 +95,7 @@ TRACE: gdrive_upload_file (Claude uploads a file)
 
  INPUT
  ─────
- 1. [O: types.ts:45-50]
+ 1. [OBS: types.ts:45-50]
     GDriveUploadFileInput {
       filePath: string       (required)
       fileName?: string      (optional — defaults to basename)
@@ -103,25 +103,25 @@ TRACE: gdrive_upload_file (Claude uploads a file)
       folderId?: string      (optional — root if omitted)
     }
 
- 2. [O: gdrive_upload_file.ts:6-32]
+ 2. [OBS: gdrive_upload_file.ts:6-32]
     schema export: name, description, inputSchema with JSON Schema
     properties mirror the TypeScript interface
     required: ["filePath"]
 
  HANDLER EXECUTION
  ─────────────────
- 3. [O: gdrive_upload_file.ts:41-46]
+ 3. [OBS: gdrive_upload_file.ts:41-46]
     Guard: fs.existsSync(args.filePath)
     FAIL → return { isError: true, text: "File not found: ..." }
 
- 4. [O: gdrive_upload_file.ts:49-50]
+ 4. [OBS: gdrive_upload_file.ts:49-50]
     Resolve filename: args.fileName || path.basename(args.filePath)
     Create read stream: fs.createReadStream(args.filePath)
 
- 5. [O: gdrive_upload_file.ts:52-58]
+ 5. [OBS: gdrive_upload_file.ts:52-58]
     Build requestBody: { name, parents?: [folderId] }
 
- 6. [O: gdrive_upload_file.ts:60-67]             ← KEY LINE
+ 6. [OBS: gdrive_upload_file.ts:60-67]             ← KEY LINE
     CALL ──→ drive.files.create({
       requestBody: { name, parents? },
       media: { mimeType, body: stream },
@@ -133,13 +133,13 @@ TRACE: gdrive_upload_file (Claude uploads a file)
     │
     RETURN ←── response.data: { id, name, webViewLink }
 
- 7. [O: gdrive_upload_file.ts:69-88]
+ 7. [OBS: gdrive_upload_file.ts:69-88]
     Success path: return {
       isError: false,
       content: JSON.stringify({ success, fileId, fileName, webViewLink })
     }
 
- 8. [O: gdrive_upload_file.ts:89-101]
+ 8. [OBS: gdrive_upload_file.ts:89-101]
     Error path: catch → return {
       isError: true,
       text: "Failed to upload file: <message>"
@@ -161,17 +161,17 @@ END TRACE
 
 ---
 
-## Inferred Facts [F-INF]
+## Locked/Identity Facts [F-LK / F-ID]
 
-1. **[F-INF: from Trace 1, steps 2-3]** Adding a new tool requires exactly 3 changes: (a) new `.ts` file with `schema` + handler exports, (b) new input interface in `types.ts`, (c) new entry in `tools/index.ts` array with import + spread + handler.
+1. **[F-ID: from Trace 1, steps 2-3]** Adding a new tool requires exactly 3 changes: (a) new `.ts` file with `schema` + handler exports, (b) new input interface in `types.ts`, (c) new entry in `tools/index.ts` array with import + spread + handler.
 
-2. **[F-INF: from Trace 1, step 5b]** Tool dispatch is name-based (`tools.find(t => t.name === name)`). No routing table, no config — just match the `name` field in the schema. A new tool is automatically available once added to the `tools` array.
+2. **[F-LK: from Trace 1, step 5b]** Tool dispatch is name-based (`tools.find(t => t.name === name)`). No routing table, no config — just match the `name` field in the schema. A new tool is automatically available once added to the `tools` array.
 
-3. **[F-INF: from Trace 2, step 6]** The upload tool uses `drive.files.create()` — the Google Drive API has a separate `drive.files.update()` method that accepts a `fileId` parameter for updating existing files. The update tool can follow the same streaming pattern (`media: { body: stream }`) but target an existing file instead of creating one.
+3. **[F-LK: from Trace 2, step 6]** The upload tool uses `drive.files.create()` — the Google Drive API has a separate `drive.files.update()` method that accepts a `fileId` parameter for updating existing files. The update tool can follow the same streaming pattern (`media: { body: stream }`) but target an existing file instead of creating one.
 
-4. **[F-INF: from Trace 1, step 5a]** All tool calls go through `ensureAuth()` first. A new tool inherits auth automatically — no per-tool auth setup needed.
+4. **[F-LK: from Trace 1, step 5a]** All tool calls go through `ensureAuth()` first. A new tool inherits auth automatically — no per-tool auth setup needed.
 
-5. **[F-INF: from Trace 2, steps 1-2]** The schema/type pattern is 1:1 — each property in the TypeScript interface has a matching JSON Schema property in the `schema` const. New tool follows same pattern.
+5. **[F-LK: from Trace 2, steps 1-2]** The schema/type pattern is 1:1 — each property in the TypeScript interface has a matching JSON Schema property in the `schema` const. New tool follows same pattern.
 
 ---
 
@@ -190,11 +190,11 @@ END TRACE
 ## Assumptions [A]
 
 1. **[A]** `drive.files.update()` in the `googleapis` npm package supports streaming media upload the same way `drive.files.create()` does (same `media: { body: stream }` pattern). Needs verification against googleapis types.
-   - **To strengthen → [F-INF]:** Check `googleapis` TypeScript types for `drive.files.update()` — confirm `media` parameter accepts `{ mimeType, body: ReadStream }`.
+   - **To strengthen → [F-LK]:** Check `googleapis` TypeScript types for `drive.files.update()` — confirm `media` parameter accepts `{ mimeType, body: ReadStream }`.
    - **Utility of strengthening:** High. If the API shape differs, the implementation approach changes significantly. Worth a 30-second type check before design.
 
 2. **[A]** Updating a Google Doc by uploading markdown content will replace the doc content (reimport). This is the simple path — the alternative (`docs.documents.batchUpdate()`) is significantly more complex.
-   - **To strengthen → [F-INF]:** Test uploading a `.md` file with `drive.files.update()` against an existing Google Doc fileId and verify the content replaces.
+   - **To strengthen → [F-LK]:** Test uploading a `.md` file with `drive.files.update()` against an existing Google Doc fileId and verify the content replaces.
    - **Utility of strengthening:** Low for baseline, moderate for design. Implementation will surface this immediately. The baseline only needs to document that no update path exists today.
 
 ---

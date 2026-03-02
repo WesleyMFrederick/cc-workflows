@@ -16,13 +16,19 @@
 
 | Tag | Meaning |
 |-----|---------|
-| **[O]** | **Observed** — code reviewed, behavior confirmed (cite file:line) |
+| **[OBS]** | **Observation** — code reviewed, behavior confirmed (cite file:line) |
 | **[M]** | **Measured** — quantified data exists (cite command + result) |
-| **[F-INF]** | **Fact Inferred** — conclusion from combining O/M evidence |
+| **[F-ID]** | **Fact by Identity** — true by definition, math, or structural logic |
+| **[F-LK]** | **Fact Locked** — empirical conclusion frozen for analysis |
 | **[A]** | **Assumed** — hypothesis, not yet tested |
 | **[C]** | **Constraint** — external requirement, cannot change |
 | **[D]** | **Decision** — commitment of a resource (time, effort, scope) |
 | **[Q]** | **Question** — open unknown, needs investigation |
+| **[E]** | **Evidence** — supporting data or artifact |
+| **[H]** | **Hypothesis** — testable prediction |
+| **[O]** | **Outcome** — result of an action or experiment |
+| **[G]** | **Goal** — target objective |
+| **[P]** | **Priority** — relative importance ranking |
 
 ---
 

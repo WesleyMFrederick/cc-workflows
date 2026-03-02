@@ -16,9 +16,10 @@
 
 | Tag         | Meaning                                                           |
 | ----------- | ----------------------------------------------------------------- |
-| **[O]**     | **Observed** — code reviewed, behavior confirmed (cite file:line) |
+| **[OBS]**   | **Observation** — code reviewed, behavior confirmed (cite file:line) |
 | **[M]**     | **Measured** — quantified data exists (cite command + result)     |
-| **[F-INF]** | **Fact Inferred** — conclusion from combining O/M evidence        |
+| **[F-LK]**  | **Fact Locked** — empirical conclusion frozen for analysis        |
+| **[F-ID]**  | **Fact by Identity** — true by definition, math, or structural logic |
 | **[A]**     | **Assumed** — hypothesis, not yet tested                          |
 | **[C]**     | **Constraint** — external requirement, cannot change              |
 | **[D]**     | **Decision** — commitment of a resource (time, effort, scope)     |
@@ -50,26 +51,26 @@
 
 ### JSONL Transcript Structure
 
-**[O]** Each line in the JSONL is a JSON object with a `type` field. Observed types from sampling lines 1-10 and lines 420-480:
+**[OBS]** Each line in the JSONL is a JSON object with a `type` field. Observed types from sampling lines 1-10 and lines 420-480:
 
-- `type: "user"` — human messages, includes `message.content` (text or tool_result) **[O]** (line 5, 421, 440)
-- `type: "assistant"` — Claude responses, includes `message.content` array with `text`, `thinking`, and `tool_use` blocks **[O]** (line 6-9, 422-424)
-- `type: "progress"` — hook execution events (PreToolUse, PostToolUse, Stop, SessionStart) **[O]** (line 3-4, 10, 470-474)
-- `type: "file-history-snapshot"` — file backup tracking **[O]** (line 2, 420)
+- `type: "user"` — human messages, includes `message.content` (text or tool_result) **[OBS]** (line 5, 421, 440)
+- `type: "assistant"` — Claude responses, includes `message.content` array with `text`, `thinking`, and `tool_use` blocks **[OBS]** (line 6-9, 422-424)
+- `type: "progress"` — hook execution events (PreToolUse, PostToolUse, Stop, SessionStart) **[OBS]** (line 3-4, 10, 470-474)
+- `type: "file-history-snapshot"` — file backup tracking **[OBS]** (line 2, 420)
 
-**[O]** Every line has `timestamp`, `uuid`, `parentUuid`, `sessionId` fields. Timestamps are ISO-8601 format.
+**[OBS]** Every line has `timestamp`, `uuid`, `parentUuid`, `sessionId` fields. Timestamps are ISO-8601 format.
 
-**[O]** Tool calls appear as `tool_use` content blocks inside assistant messages with `name` and `input` fields. Tool results appear as `tool_result` content blocks inside user messages with `tool_use_id` back-reference. (line 9 = Bash tool_use, line 475 = Edit tool_result)
+**[OBS]** Tool calls appear as `tool_use` content blocks inside assistant messages with `name` and `input` fields. Tool results appear as `tool_result` content blocks inside user messages with `tool_use_id` back-reference. (line 9 = Bash tool_use, line 475 = Edit tool_result)
 
 ### What Went Wrong in the DDD Capture
 
-**[O]** At line 424, Claude wrote the first DDD document (`slack-thread-export.md`) from its thinking block — no transcript evidence was consulted. The thinking at line 423 says: "Let me think about the data shapes and workflows I used..." — pure recall, no tool reads.
+**[OBS]** At line 424, Claude wrote the first DDD document (`slack-thread-export.md`) from its thinking block — no transcript evidence was consulted. The thinking at line 423 says: "Let me think about the data shapes and workflows I used..." — pure recall, no tool reads.
 
-**[O]** At line 440, the user caught a precision error: the process tree claimed `∧ FetchChannelMembers, FetchConversationHistory` (parallel), but the user pointed out this implied Trace 5 would happen before Trace 4, which contradicted actual execution order.
+**[OBS]** At line 440, the user caught a precision error: the process tree claimed `∧ FetchChannelMembers, FetchConversationHistory` (parallel), but the user pointed out this implied Trace 5 would happen before Trace 4, which contradicted actual execution order.
 
-**[O]** At line 441, Claude acknowledged it wrote the process tree wrong — it claimed parallelism that didn't match what actually happened during the session.
+**[OBS]** At line 441, Claude acknowledged it wrote the process tree wrong — it claimed parallelism that didn't match what actually happened during the session.
 
-**[F-INF]** The DDD skill's "Capture Protocol" (Step 1: Tool Call Inventory) requires listing every tool call made. But Claude skipped this step and jumped to writing data shapes and process trees from memory. The tool call table was added later in corrections (visible in final `ddd-slack-thread-export.md` lines 5-14).
+**[F-LK]** The DDD skill's "Capture Protocol" (Step 1: Tool Call Inventory) requires listing every tool call made. But Claude skipped this step and jumped to writing data shapes and process trees from memory. The tool call table was added later in corrections (visible in final `ddd-slack-thread-export.md` lines 5-14).
 
 ### Process Mining Event Log Theory
 
@@ -89,7 +90,7 @@
 
 ### Mapping Transcript to Event Log
 
-**[F-INF]** Natural mapping from Claude Code JSONL to process mining event log:
+**[F-LK]** Natural mapping from Claude Code JSONL to process mining event log:
 
 | Event Log Concept | JSONL Mapping |
 | ----------------- | --- |
@@ -104,18 +105,18 @@
 
 ### Multi-Phase Session Pattern
 
-**[O]** Session `0f75dced` contained at least 3 distinct semantic phases within a single `sessionId`:
+**[OBS]** Session `0f75dced` contained at least 3 distinct semantic phases within a single `sessionId`:
 1. **Lines 5-419**: Build slack-mcp-server binary + update .mcp.json config
 2. **Lines 420-441**: Capture DDD domain model from Slack thread export (writing-ddd-domain-models skill)
 3. **Lines 441-1712**: Corrections and refinements to the DDD output
 
-**[F-INF]** A single session can contain multiple logical workflows. This means case segmentation is not simply `sessionId` — there may be sub-cases or phase boundaries within a session. User messages that change the task direction (e.g., line 421: "go" starting the DDD capture after completing the build task) serve as natural phase boundaries.
+**[F-LK]** A single session can contain multiple logical workflows. This means case segmentation is not simply `sessionId` — there may be sub-cases or phase boundaries within a session. User messages that change the task direction (e.g., line 421: "go" starting the DDD capture after completing the build task) serve as natural phase boundaries.
 
 **[Q]** How to detect phase boundaries deterministically? Candidates: user messages that introduce new commands/skills, shifts in tool usage patterns, explicit plan references.
 
 ### Prior Art: claude-mem Transcript Extraction
 
-**[O]** claude-mem (thedotmack/claude-mem) parses Claude Code JSONL transcripts via `extractLastMessage()` in `src/shared/transcript-parser.ts`. Key findings:
+**[OBS]** claude-mem (thedotmack/claude-mem) parses Claude Code JSONL transcripts via `extractLastMessage()` in `src/shared/transcript-parser.ts`. Key findings:
 
 - **Event types stored in SQLite**: `transcript_events` table with columns: `session_id`, `event_index`, `event_type` (user-message, assistant-message, tool-use, tool-result), `raw_json`, `captured_at`
 - **Parsing approach**: Reads file line-by-line, filters by `type` field, extracts `message.content` (string or array of content blocks)
@@ -123,7 +124,7 @@
 - **Tool events**: Captured via OpenClaw gateway's `tool_result_persist` event system, which extracts `toolName`, `params` from tool_use and response text from tool_result blocks.
 - **Observation classification**: Uses a mode config system (`plugin/modes/code.json`) with `ObservationType` (bugfix, feature, refactor, discovery, decision, change) and `ObservationConcept` (how-it-works, why-it-exists, what-changed, problem-solution, gotcha, pattern, trade-off). An AI agent classifies raw tool usage into these categories.
 
-**[F-INF]** claude-mem's approach is relevant but different from our goal:
+**[F-LK]** claude-mem's approach is relevant but different from our goal:
 - claude-mem extracts *observations* (semantic summaries) from transcripts using AI classification
 - We need to extract *event logs* (ordered factual records) from transcripts using deterministic parsing
 - claude-mem's `event_type` taxonomy (user-message, assistant-message, tool-use, tool-result) is a useful starting point for our event classification

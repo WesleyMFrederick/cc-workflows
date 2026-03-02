@@ -6,7 +6,7 @@
 
 ## Original Request
 
-> We want to have a deterministic script that numbers all evidence tags and makes sure they are labeled correctly. All tags should be `**[{{tag-type}}]**` in basic formatting (glossary definitions). All used tags should follow this pattern: `**[{{tag-type}}-{{nnn}}]**` with a corresponding `^block` at the end of the line (e.g., `^O-001`).
+> We want to have a deterministic script that numbers all evidence tags and makes sure they are labeled correctly. All tags should be `**[{{tag-type}}]**` in basic formatting (glossary definitions). All used tags should follow this pattern: `**[{{tag-type}}-{{nnn}}]**` with a corresponding `^block` at the end of the line (e.g., `^OBS-001`).
 
 **Goal:** Create a deterministic script that auto-numbers evidence tag instances in openspec artifacts and appends Obsidian block anchors, while leaving glossary definitions and section header labels untouched.
 
@@ -16,9 +16,10 @@
 
 | Tag         | Meaning                                                           |
 | ----------- | ----------------------------------------------------------------- |
-| **\[O\]**     | **Observed** — code reviewed, behavior confirmed (cite file:line) |
+| **\[OBS\]**   | **Observation** — code reviewed, behavior confirmed (cite file:line) |
 | **\[M\]**     | **Measured** — quantified data exists (cite command + result)     |
-| **\[F-INF\]** | **Fact Inferred** — conclusion from combining O/M evidence        |
+| **\[F-LK\]**  | **Fact Locked** — empirical conclusion frozen for analysis        |
+| **\[F-ID\]**  | **Fact by Identity** — true by definition, math, or structural logic |
 | **\[A\]**     | **Assumed** — hypothesis, not yet tested                          |
 | **\[C\]**     | **Constraint** — external requirement, cannot change              |
 | **\[D\]**     | **Decision** — commitment of a resource (time, effort, scope)     |
@@ -49,13 +50,13 @@ Evidence tags appear in 3 distinct contexts across openspec artifacts.
 :::
 
 
-**\[O-001\]** Evidence tags appear in 3 distinct contexts across openspec artifacts: ^O-001
+**\[OBS-001\]** Evidence tags appear in 3 distinct contexts across openspec artifacts: ^OBS-001
 
 1. **Glossary definitions** (table rows): `**\[O\]**` — tag type only, no numbering, bold. Found in `## Evidence Glossary` section of whiteboards.
 2. **Section header labels** (h2 headings): `## Inferred Facts [F-INF]` — tag type only, no bold, no numbering. Found in baseline templates.
 3. **Body instances** (inline): `**\[O\]**` at start/middle of a sentence — these are evidence claims that need numbering.
 
-**\[O-002\]** The glossary is extensible — `slack-mcp-users-search-polish` added `[R]` and `[R-LOCK]` beyond the standard 7 types. ^O-002
+**\[OBS-002\]** The glossary is extensible — `slack-mcp-users-search-polish` added `[R]` and `[R-LOCK]` beyond the standard 7 types. ^OBS-002
 
 **\[M-001\]** The `transcript-event-log-extraction` whiteboard has 43 tag usages. Tag distribution: ^M-001
 - `[O]` — most frequent (~15 usages)
@@ -65,19 +66,19 @@ Evidence tags appear in 3 distinct contexts across openspec artifacts.
 - `[Q]` — ~5 usages
 - `[D]` — ~1 usage
 
-**\[O-003\]** No existing tooling in `tools/` handles evidence tag numbering or validation. ^O-003
+**\[OBS-003\]** No existing tooling in `tools/` handles evidence tag numbering or validation. ^OBS-003
 
-**\[O-004\]** Current tag format uses bold markdown: `**\[TAG\]**`. The bold wrapping is consistent across all artifacts. ^O-004
+**\[OBS-004\]** Current tag format uses bold markdown: `**\[TAG\]**`. The bold wrapping is consistent across all artifacts. ^OBS-004
 
 ### OpenSpec Workflow Context
 
-**\[O-005\]** Evidence tags are created as part of the openspec my-workflow schema. The schema defines an 8-artifact dependency chain: whiteboard → baseline → ideal → delta → proposal → specs → design → tasks. The schema lives at `openspec/schemas/my-workflow/schema.yaml`. ^O-005
+**\[OBS-005\]** Evidence tags are created as part of the openspec my-workflow schema. The schema defines an 8-artifact dependency chain: whiteboard → baseline → ideal → delta → proposal → specs → design → tasks. The schema lives at `openspec/schemas/my-workflow/schema.yaml`. ^OBS-005
 
-**\[O-006\]** The evidence taxonomy is defined in `schema.yaml` lines 20-34 (whiteboard instruction) and propagated via "Use the evidence taxonomy from whiteboard.md" instructions in baseline (line 67), ideal (line 121), and other artifact instructions. The rule "No untagged claims" appears at line 36. ^O-006
+**\[OBS-006\]** The evidence taxonomy is defined in `schema.yaml` lines 20-34 (whiteboard instruction) and propagated via "Use the evidence taxonomy from whiteboard.md" instructions in baseline (line 67), ideal (line 121), and other artifact instructions. The rule "No untagged claims" appears at line 36. ^OBS-006
 
-**\[O-007\]** Artifact templates at `openspec/schemas/my-workflow/templates/` embed the glossary table (whiteboard template lines 17-25) and use tag-type labels in section headers (baseline template: `## Inferred Facts [F-INF]`, `## Constraints [C]`, etc.). ^O-007
+**\[OBS-007\]** Artifact templates at `openspec/schemas/my-workflow/templates/` embed the glossary table (whiteboard template lines 17-25) and use tag-type labels in section headers (baseline template: `## Inferred Facts [F-INF]`, `## Constraints [C]`, etc.). ^OBS-007
 
-**\[O-008\]** The `openspec` CLI creates artifacts via `openspec new change`, `openspec instructions`, and skill-driven creation (e.g., `/brainstorming` for whiteboards). Tags are written by the LLM during artifact creation — no automated numbering or validation exists today. ^O-008
+**\[OBS-008\]** The `openspec` CLI creates artifacts via `openspec new change`, `openspec instructions`, and skill-driven creation (e.g., `/brainstorming` for whiteboards). Tags are written by the LLM during artifact creation — no automated numbering or validation exists today. ^OBS-008
 
 **\[C-001\]** Obsidian interprets `[text]` as wikilink syntax. Brackets in evidence tags MUST be escaped: `**\[O\]**` not `**[O]**`. Without escapes, Obsidian renders tags as broken wikilinks. ^C-001
 
@@ -87,7 +88,7 @@ Evidence tags appear in 3 distinct contexts across openspec artifacts.
 
 ## Ideal Bucket
 
-**\[A-001\]** After running the script, a body tag like `**[O]**` becomes `**\[O-001\]**` with ` ^O-001` appended to the line end. Escaped brackets (`\[` and `\]`) prevent Obsidian from interpreting tags as wikilinks. ^A-001
+**\[A-001\]** After running the script, a body tag like `**[O]**` becomes `**\[OBS-001\]**` with ` ^OBS-001` appended to the line end. Escaped brackets (`\[` and `\]`) prevent Obsidian from interpreting tags as wikilinks. ^A-001
 
 **\[D-001\]** Scope: processes all artifacts in a change directory together, with continuous numbering across files (e.g., O-001 in whiteboard.md, O-015 continues in baseline.md). File processing order follows the schema dependency chain. ^D-001
 
@@ -97,7 +98,7 @@ Evidence tags appear in 3 distinct contexts across openspec artifacts.
 - Parse the Evidence Glossary from the whiteboard to discover valid tag types (handles custom tags like `[R]`)
 - Skip glossary rows and section header labels — only number body instances
 - Number sequentially per tag type: O-001, O-002, ..., C-001, C-002, etc.
-- Escape brackets: `**\[O-001\]**`
+- Escape brackets: `**\[OBS-001\]**`
 - Append Obsidian block anchor `^TAG-NNN` at end of the tagged line
 
 **\[A-003\]** The script should be idempotent — safe to re-run on already-numbered tags, stripping old numbers/anchors and renumbering from scratch. ^A-003

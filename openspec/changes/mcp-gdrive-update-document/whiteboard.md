@@ -16,9 +16,10 @@
 
 | Tag | Meaning |
 |-----|---------|
-| **[O]** | **Observed** — code reviewed, behavior confirmed (cite file:line) |
+| **[OBS]** | **Observation** — code reviewed, behavior confirmed (cite file:line) |
 | **[M]** | **Measured** — quantified data exists (cite command + result) |
-| **[F-INF]** | **Fact Inferred** — conclusion from combining O/M evidence |
+| **[F-LK]** | **Fact Locked** — empirical conclusion frozen for analysis |
+| **[F-ID]** | **Fact by Identity** — true by definition, math, or structural logic |
 | **[A]** | **Assumed** — hypothesis, not yet tested |
 | **[C]** | **Constraint** — external requirement, cannot change |
 | **[D]** | **Decision** — commitment of a resource (time, effort, scope) |
@@ -55,14 +56,14 @@
 
 ## Baseline Bucket
 
-- **[O]** 6 tools registered in `tools/index.ts:17-48`: `gdrive_search`, `gdrive_read_file`, `gdrive_upload_file`, `gdrive_download_file`, `gsheets_update_cell`, `gsheets_read`
-- **[O]** `gdrive_upload_file` calls `drive.files.create()` at `gdrive_upload_file.ts:60` — always creates a new file, never updates existing
-- **[O]** No `fileId` parameter in `GDriveUploadFileInput` (`types.ts:45-50`) — no way to target an existing file
-- **[F-INF]** No tool in the current inventory can update an existing file's content — `upload` creates, `read` reads, `download` downloads
-- **[O]** Each tool follows a consistent pattern: separate `.ts` file with `schema` export + handler function, input type in `types.ts`, registered in `tools/index.ts`
-- **[O]** `gdrive_read_file` detects Google Docs via `application/vnd.google-apps` MIME prefix (`gdrive_read_file.ts:53`) and exports Google Docs as markdown (`gdrive_read_file.ts:57`)
-- **[O]** `gdrive_upload_file` streams files via `fs.createReadStream()` (`gdrive_upload_file.ts:50`) — not base64
-- **[O]** Server dispatches tool calls by name lookup in `index.ts:122-131`
+- **[OBS]** 6 tools registered in `tools/index.ts:17-48`: `gdrive_search`, `gdrive_read_file`, `gdrive_upload_file`, `gdrive_download_file`, `gsheets_update_cell`, `gsheets_read`
+- **[OBS]** `gdrive_upload_file` calls `drive.files.create()` at `gdrive_upload_file.ts:60` — always creates a new file, never updates existing
+- **[OBS]** No `fileId` parameter in `GDriveUploadFileInput` (`types.ts:45-50`) — no way to target an existing file
+- **[F-LK]** No tool in the current inventory can update an existing file's content — `upload` creates, `read` reads, `download` downloads
+- **[OBS]** Each tool follows a consistent pattern: separate `.ts` file with `schema` export + handler function, input type in `types.ts`, registered in `tools/index.ts`
+- **[OBS]** `gdrive_read_file` detects Google Docs via `application/vnd.google-apps` MIME prefix (`gdrive_read_file.ts:53`) and exports Google Docs as markdown (`gdrive_read_file.ts:57`)
+- **[OBS]** `gdrive_upload_file` streams files via `fs.createReadStream()` (`gdrive_upload_file.ts:50`) — not base64
+- **[OBS]** Server dispatches tool calls by name lookup in `index.ts:122-131`
 - **[C]** MCP permissions in `settings.local.json` — write tools require `ask` permission (from CLAUDE.md)
 
 ---
@@ -83,7 +84,7 @@
 
 <!-- Placeholder — cannot be completed until baseline and ideal are done. -->
 
-- **[F-INF]** New file `packages/mcp-gdrive/tools/gdrive_update_file.ts` — follows existing tool-per-file pattern
-- **[F-INF]** New input type `GDriveUpdateFileInput` in `types.ts` — follows existing type-per-tool pattern
-- **[F-INF]** New entry in `tools/index.ts` registry
-- **[F-INF]** Permission entry in `settings.local.json` / CLAUDE.md — follows existing write-tool permission pattern
+- **[F-LK]** New file `packages/mcp-gdrive/tools/gdrive_update_file.ts` — follows existing tool-per-file pattern
+- **[F-LK]** New input type `GDriveUpdateFileInput` in `types.ts` — follows existing type-per-tool pattern
+- **[F-LK]** New entry in `tools/index.ts` registry
+- **[F-LK]** Permission entry in `settings.local.json` / CLAUDE.md — follows existing write-tool permission pattern

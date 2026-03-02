@@ -1,0 +1,534 @@
+```yaml
+name: my-workflow
+version: 2
+description: OpenSpec workflow - whiteboard → baseline → ideal → delta → proposal → specs → design → tasks
+artifacts:
+  - id: whiteboard
+    generates: whiteboard.md
+    description: Scratchpad that parses inputs into Baseline, Ideal, and Delta buckets
+    template: whiteboard.md
+    instruction: >
+      Create the whiteboard — the scratchpad that organizes research and user
+      feedback into Baseline, Ideal, and Delta buckets. Use the /brainstorming
+      skill.
+
+
+      This is a PARSING step, not a deep-dive. Research the codebase, gather
+      user feedback, and sort everything into three buckets. Do not go deep
+      on any bucket — that happens in the baseline and ideal artifacts.
+
+
+      Evidence Taxonomy (used across all artifacts):
+
+      - **[OBS]** Observation — code reviewed, behavior confirmed (cite file:line)
+
+      - **[M]** Measured — quantified data exists (cite command + result)
+
+      - **[F-ID]** Fact by Identity — true by definition, math, or structural logic
+
+      - **[F-LK]** Fact Locked — empirical conclusion frozen for analysis
+
+      - **[A]** Assumed — hypothesis, not yet tested
+
+      - **[C]** Constraint — external requirement, cannot change
+
+      - **[D]** Decision — commitment of a resource (time, effort, scope)
+
+      - **[Q]** Question — open unknown, needs investigation
+
+      - **[E]** Evidence — supporting data or artifact
+
+      - **[H]** Hypothesis — testable prediction
+
+      - **[O]** Outcome — result of an action or experiment
+
+      - **[G]** Goal — target objective
+
+      - **[P]** Priority — relative importance ranking
+
+      Rule: No untagged claims.
+
+
+      Required sections:
+
+      - **Original Request**: Verbatim user request in blockquote + goal.
+
+      - **Artifacts & Paths**: Files reviewed, grouped by concern. Include
+      hooks and consumers — they define constraints on output/format.
+
+      - **Baseline Bucket**: What we know about how the system works today.
+      High-level observations, pointers to code, initial measurements.
+
+      - **Ideal Bucket**: What the user wants. Target behavior, goals,
+      mockups if provided. Capture user intent, not implementation.
+
+      - **Delta Bucket**: Initial notes on what changes. Placeholder —
+      cannot be completed until baseline and ideal are done.
+
+      Place [Q] items in the bucket they relate to — not in a separate
+      section. A question about current system behavior goes in Baseline.
+      A question about target behavior goes in Ideal. A question about
+      scope of change goes in Delta. This keeps questions co-located
+      with the context needed to resolve them.
+    requires: []
+
+  - id: baseline
+    generates: baseline.md
+    description: Deep-dive on current system state with evidence-backed claims
+    template: baseline.md
+    instruction: >
+      Create the baseline document — a thorough, evidence-backed model of how
+      the system works TODAY for the scope of this change.
+
+
+      Use the evidence taxonomy from whiteboard.md. Every claim must be tagged.
+
+
+      Required sections:
+
+      - **Artifacts**: Minimum set of files for this baseline. Table format:
+      Artifact | Path | Role. Only include files that inform the baseline —
+      not every file in the project.
+
+      - **Traces**: Literal execution records — raw evidence of what
+      actually happens when the system runs. Write traces FIRST. They
+      are the evidence layer.
+
+        - <CRITICAL>HARD GATE — STOP and ask the user to confirm the
+        trace subject BEFORE reading any source files or writing any
+        trace content. Ask: "What system/format am I tracing?" For
+        extraction tools, trace the INPUT DATA FORMAT. For behavior
+        changes, trace EXECUTION FLOW. The whiteboard's motivation
+        section is context, not the trace subject. Do NOT speculatively
+        gather evidence in parallel with this confirmation
+        step.</CRITICAL>
+
+        - Numbered steps, each tagged with [OBS: file:line] or [M: command]
+
+        - Explicit boundary crossings (e.g., HOOK → CLI, RETURN ←──)
+
+        - Sub-steps for what happens inside called components
+
+        - Key lines called out where interesting behavior lives
+
+        - <CRITICAL>You must read the `writing-traces` skill for the gold standard trace format
+
+      - **Process Tree** (optional): Abstracted workflow model derived
+      FROM traces. This is the inference layer — tagged with [F-LK].
+      Omit if the workflow is purely linear (traces alone are sufficient).
+
+        - Use operators: → sequential, × exclusive choice, ∧ parallel,
+        ↻ redo loop
+
+        - Every branch/choice must reference the trace step(s) that
+        evidence it
+
+        - Write this AFTER traces — you cannot model structure until
+        you have recorded evidence
+
+      - **Measurements**: Quantified current state — output sizes, counts,
+      waste. Include reproduction commands.
+
+      - **Locked Facts [F-LK]**: Conclusions drawn from combining OBS/M
+      evidence. Each must cite which trace steps or measurements it derives
+      from.
+
+      - **Constraints [C]**: External requirements that cannot change.
+      These are hard boundaries on the delta.
+
+      - **Assumptions [A]**: Hypotheses not yet tested. These are risks —
+      if wrong, the delta changes.
+      <CRITICAL>Read the `verifying-evidence` skill for evidence tag rules,
+      [A]/[Q] utility assessment format, and verification checklist.</CRITICAL>
+
+      - **Open Questions [Q]**: Structural unknowns about the CURRENT
+      system/format being traced that affect whether the baseline is accurate.
+      Resolve before ideal if they affect same-units comparison. Test: "Does
+      resolving this change my understanding of how the system works TODAY?"
+      Yes → baseline [Q]. No → move to whiteboard Ideal Bucket. Design choices
+      about what to build or produce are NOT baseline [Q]s.
+    requires:
+      - whiteboard
+
+  - id: ideal
+    generates: ideal.md
+    description: Target system state expressed in same units as baseline
+    template: ideal.md
+    instruction: >
+      Create the ideal document — the target system configuration expressed
+      in the SAME UNITS as baseline.md.
+
+
+      Critical rule: Every attribute measured or observed in the baseline
+      MUST have a corresponding value in the ideal. If baseline says
+      `extract.output_format = JSON`, ideal must say
+      `extract.output_format = ???` or `extract.output_format = YAML`.
+      Omitting an attribute means it is unchanged — state this explicitly.
+
+
+      Use the evidence taxonomy from whiteboard.md. Tag ideal claims too —
+      most will be [A] (assumed target) or [D] (decided target).
+      <CRITICAL>Read the `verifying-evidence` skill for evidence tag rules,
+      [A]/[Q] utility assessment format, and verification checklist.</CRITICAL>
+
+
+      Required sections:
+
+      - **Ideal Traces**: Same structure as baseline traces. Changed
+      values annotated. ??? for unresolved values.
+
+      - **Ideal Process Tree** (optional): Same structure as baseline
+      process tree. Changed branches annotated.
+
+      - **Output Mockups**: Concrete examples of target output for every
+      user-facing change. One mockup per command/path affected.
+
+      - **Ideal Claims**: What we believe about the target state. Tag
+      each with evidence level. Most will be [A] until validated.
+
+      - **Same-Units Checklist**: Verify every baseline attribute has a
+      corresponding ideal value. List any gaps.
+    requires:
+      - whiteboard
+      - baseline
+
+  - id: delta
+    generates: delta.md
+    description: Computed diff between baseline and ideal with risk assessment
+    template: delta.md
+    instruction: >
+      Create the delta document — the computed diff between baseline.md and
+      ideal.md. This artifact REQUIRES both baseline and ideal to be complete.
+
+
+      The delta is NOT a wish list. It is a structured comparison showing
+      exactly what changes, what stays the same, and what is unresolved.
+
+
+      Required sections:
+
+      - **Same-Units Comparison Table**: One row per attribute. Columns:
+      Attribute | Baseline | Ideal | Delta. Every baseline attribute must
+      appear. Mark unchanged rows as "no change" (validates scope).
+      Mark unresolved rows as ??? with explanation.
+
+      - **Unresolved Decisions**: ??? rows from the table that MUST be
+      resolved before proceeding. Frame as: what question, what it depends
+      on, what it cascades to. These block the proposal.
+
+      - **Risk Assessment**: Risks visible from the comparison. Focus on
+      schema breaks, consumer compatibility, cascade effects. Each risk
+      should point to specific rows in the comparison table.
+
+      - **Scope Boundary**: What is explicitly OUT of scope. Derived from
+      "no change" rows and baseline constraints.
+    requires:
+      - baseline
+      - ideal
+
+  - id: proposal
+    generates: proposal.md
+    description: Initial proposal document outlining the change
+    template: proposal.md
+    instruction: >
+      Create the proposal document that establishes WHY this change is needed.
+      The delta.md provides the WHAT — this document provides the WHY and
+      identifies capabilities for spec writing.
+
+
+      Sections:
+
+      - **Why**: 1-2 sentences on the problem or opportunity. What problem does
+      this solve? Why now?
+
+      - **What Changes**: Bullet list of changes. Be specific about new
+      capabilities, modifications, or removals. Mark breaking changes with
+      **BREAKING**. Derived from delta.md comparison table.
+
+      - **Capabilities**: Identify which specs will be created or modified:
+        - **New Capabilities**: List capabilities being introduced. Each becomes a new `specs/<name>/spec.md`. Use kebab-case names (e.g., `user-auth`, `data-export`).
+        - **Modified Capabilities**: List existing capabilities whose REQUIREMENTS are changing. Only include if spec-level behavior changes (not just implementation details). Each needs a delta spec file. Check `openspec/specs/` for existing spec names. Leave empty if no requirement changes.
+      - **Impact**: Affected code, APIs, dependencies, or systems.
+
+
+      IMPORTANT: The Capabilities section is critical. It creates the contract
+      between
+
+      proposal and specs phases. Research existing specs before filling this in.
+
+      Each capability listed here will need a corresponding spec file.
+
+
+      Keep it concise (1-2 pages). Focus on the "why" not the "how" -
+
+      implementation details belong in design.md.
+
+
+      This is the foundation - specs, design, and tasks all build on this.
+    requires:
+      - delta
+  - id: specs
+    generates: specs/**/*.md
+    description: Detailed specifications for the change
+    template: spec.md
+    instruction: >
+      Create specification files that define WHAT the system should do.
+
+
+      Create one spec file per capability listed in the proposal's Capabilities
+      section.
+
+      - New capabilities: use the exact kebab-case name from the proposal
+      (specs/<capability>/spec.md).
+
+      - Modified capabilities: use the existing spec folder name from
+      openspec/specs/<capability>/ when creating the delta spec at
+      specs/<capability>/spec.md.
+
+
+      Delta operations (use ## headers):
+
+      - **ADDED Requirements**: New capabilities
+
+      - **MODIFIED Requirements**: Changed behavior - MUST include full updated
+      content
+
+      - **REMOVED Requirements**: Deprecated features - MUST include **Reason**
+      and **Migration**
+
+      - **RENAMED Requirements**: Name changes only - use FROM:/TO: format
+
+
+      Format requirements:
+
+      - Each requirement: `### Requirement: <name>` followed by description
+
+      - Use SHALL/MUST for normative requirements (avoid should/may)
+
+      - Each scenario: `#### Scenario: <name>` with WHEN/THEN format
+
+      - **CRITICAL**: Scenarios MUST use exactly 4 hashtags (`####`). Using 3
+      hashtags or bullets will fail silently.
+
+      - Every requirement MUST have at least one scenario.
+
+
+      MODIFIED requirements workflow:
+
+      1. Locate the existing requirement in openspec/specs/<capability>/spec.md
+
+      2. Copy the ENTIRE requirement block (from `### Requirement:` through all
+      scenarios)
+
+      3. Paste under `## MODIFIED Requirements` and edit to reflect new behavior
+
+      4. Ensure header text matches exactly (whitespace-insensitive)
+
+
+      Common pitfall: Using MODIFIED with partial content loses detail at
+      archive time.
+
+      If adding new concerns without changing existing behavior, use ADDED
+      instead.
+
+
+      Example:
+
+      ```
+
+      ## ADDED Requirements
+
+
+      ### Requirement: User can export data
+
+      The system SHALL allow users to export their data in CSV format.
+
+
+      #### Scenario: Successful export
+
+      - **WHEN** user clicks "Export" button
+
+      - **THEN** system downloads a CSV file with all user data
+
+
+      ## REMOVED Requirements
+
+
+      ### Requirement: Legacy export
+
+      **Reason**: Replaced by new export system
+
+      **Migration**: Use new export endpoint at /api/v2/export
+
+      ```
+
+
+      Specs should be testable - each scenario is a potential test case.
+
+
+      Spec vs Design boundary:
+
+      - Specs define WHAT (behavioral contracts with WHEN/THEN scenarios)
+
+      - Design docs define HOW (implementation strategies, specific APIs, file
+      patterns)
+
+      - If a requirement describes an implementation strategy (temp files, rename
+      patterns, atomic writes, specific library calls), it belongs in the design
+      doc, not the spec
+
+      - Ask: "Could a different implementation satisfy this?" If yes, it is a
+      spec requirement. If no, it is a design decision.
+
+
+      YAGNI self-check (run after drafting all requirements):
+
+      - For each requirement, ask: Does a consumer exist TODAY that needs this?
+
+      - Can the change ship without this requirement?
+
+      - Does omitting a flag/option achieve the same result as adding one?
+
+      - Count new flags/options — if >1, justify why 1 flag is insufficient
+
+      - For refactors: is each requirement a 1:1 port of existing behavior, or
+      new scope? New scope requires explicit justification.
+    requires:
+      - proposal
+  - id: design
+    generates: design.md
+    description: Technical design document with implementation details
+    template: design.md
+    instruction: >
+      Create the design document that explains HOW to implement the change.
+
+
+      When to include design.md (create only if any apply):
+
+      - Cross-cutting change (multiple services/modules) or new architectural
+      pattern
+
+      - New external dependency or significant data model changes
+
+      - Security, performance, or migration complexity
+
+      - Ambiguity that benefits from technical decisions before coding
+
+
+      Sections:
+
+      - **Context**: Background, current state, constraints, stakeholders
+
+      - **Goals / Non-Goals**: What this design achieves and explicitly excludes
+
+      - **Decisions**: Key technical choices with rationale (why X over Y?).
+      Include alternatives considered for each decision.
+
+      - **Risks / Trade-offs**: Known limitations, things that could go wrong.
+      Format: [Risk] → Mitigation
+
+      - **Migration Plan**: Steps to deploy, rollback strategy (if applicable)
+
+      - **Open Questions**: Outstanding decisions or unknowns to resolve
+
+
+      Focus on architecture and approach, not line-by-line implementation.
+
+      Reference the proposal for motivation and specs for requirements.
+
+
+      Good design docs explain the "why" behind technical decisions.
+
+
+      Evidence linking requirements:
+
+      - EVERY factual claim MUST include an inline markdown link to its evidence
+      source (proposal, whiteboard, specs, or source code paths documented in
+      whiteboard).
+
+      - Goals, Non-Goals, Decisions, and Risks sections are ALL subject to this
+      rule — not just Context.
+
+      - Claims derived from dependency artifacts: link to the specific header/anchor
+      in proposal.md, whiteboard.md, or specs/.
+
+      - Claims about source code: link to the whiteboard's Artifacts & Paths section
+      where file paths and line numbers are documented.
+
+      - Design decisions that synthesize prior artifacts are NOT new — they should
+      link to the whiteboard/proposal/spec evidence that led to the decision.
+
+      - Only genuinely novel technical assertions (e.g., YAML spec behavior,
+      library API details, runtime characteristics) that cannot be derived from
+      any prior artifact qualify as NEW. Prepend these with
+      `<mark style="background:red;color:white">NEW</mark>` so reviewers can
+      identify claims needing independent validation.
+
+      - If a claim cannot be linked and is not marked NEW, it is either wrong or
+      missing from prior artifacts. Fix the gap before including the claim.
+    requires:
+      - proposal
+      - baseline
+      - specs
+  - id: tasks
+    generates: tasks.md
+    description: Implementation checklist with trackable tasks
+    template: tasks.md
+    instruction: >
+      Create the task list that breaks down the implementation work.
+
+
+      **IMPORTANT: Follow the template below exactly.** The apply phase parses
+
+      checkbox format to track progress. Tasks not using `- [ ]` won't be
+      tracked.
+
+
+      Guidelines:
+
+      - Group related tasks under ## numbered headings
+
+      - Each task MUST be a checkbox: `- [ ] X.Y Task description`
+
+      - Tasks should be small enough to complete in one session
+
+      - Order tasks by dependency (what must be done first?)
+
+
+      Example:
+
+      ```
+
+      ## 1. Setup
+
+
+      - [ ] 1.1 Create new module structure
+
+      - [ ] 1.2 Add dependencies to package.json
+
+
+      ## 2. Core Implementation
+
+
+      - [ ] 2.1 Implement data export function
+
+      - [ ] 2.2 Add CSV formatting utilities
+
+      ```
+
+
+      Reference specs for what needs to be built, design for how to build it.
+
+      Each task should be verifiable - you know when it's done.
+    requires:
+      - specs
+      - design
+apply:
+  requires:
+    - tasks
+  tracks: tasks.md
+  instruction: |
+    Read context files, work through pending tasks, mark complete as you go.
+    Pause if you hit blockers or need clarification.
+
+```

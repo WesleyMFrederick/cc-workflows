@@ -19,11 +19,13 @@ artifacts:
 
       Evidence Taxonomy (used across all artifacts):
 
-      - **[O]** Observed — code reviewed, behavior confirmed (cite file:line)
+      - **[OBS]** Observation — code reviewed, behavior confirmed (cite file:line)
 
       - **[M]** Measured — quantified data exists (cite command + result)
 
-      - **[F-INF]** Fact Inferred — conclusion from combining O/M evidence
+      - **[F-ID]** Fact by Identity — true by definition, math, or structural logic
+
+      - **[F-LK]** Fact Locked — empirical conclusion frozen for analysis
 
       - **[A]** Assumed — hypothesis, not yet tested
 
@@ -32,6 +34,16 @@ artifacts:
       - **[D]** Decision — commitment of a resource (time, effort, scope)
 
       - **[Q]** Question — open unknown, needs investigation
+
+      - **[E]** Evidence — supporting data or artifact
+
+      - **[H]** Hypothesis — testable prediction
+
+      - **[O]** Outcome — result of an action or experiment
+
+      - **[G]** Goal — target objective
+
+      - **[P]** Priority — relative importance ranking
 
       Rule: No untagged claims.
 
@@ -90,7 +102,7 @@ artifacts:
         gather evidence in parallel with this confirmation
         step.</CRITICAL>
 
-        - Numbered steps, each tagged with [O: file:line] or [M: command]
+        - Numbered steps, each tagged with [OBS: file:line] or [M: command]
 
         - Explicit boundary crossings (e.g., HOOK → CLI, RETURN ←──)
 
@@ -101,7 +113,7 @@ artifacts:
         - <CRITICAL>You must read the `writing-traces` skill for the gold standard trace format
 
       - **Process Tree** (optional): Abstracted workflow model derived
-      FROM traces. This is the inference layer — tagged with [F-INF].
+      FROM traces. This is the inference layer — tagged with [F-LK].
       Omit if the workflow is purely linear (traces alone are sufficient).
 
         - Use operators: → sequential, × exclusive choice, ∧ parallel,
@@ -116,7 +128,7 @@ artifacts:
       - **Measurements**: Quantified current state — output sizes, counts,
       waste. Include reproduction commands.
 
-      - **Inferred Facts [F-INF]**: Conclusions drawn from combining O/M
+      - **Locked Facts [F-LK]**: Conclusions drawn from combining OBS/M
       evidence. Each must cite which trace steps or measurements it derives
       from.
 

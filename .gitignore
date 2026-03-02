@@ -142,3 +142,4 @@ tools/branded-qr-generator/output/
 # Continuous learning personal data (but allow template config)
 .claude/learned/
 !.claude/learned/config.json
+claude-code-transcripts/
